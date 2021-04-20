@@ -3,8 +3,8 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: home
-title: blag
-permalink: /blog/
+title: things
+permalink: /things/
 ---
 
-my blog
+stuff
