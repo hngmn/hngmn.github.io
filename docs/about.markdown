@@ -4,4 +4,4 @@ title: About
 permalink: /about/
 ---
 
-This is about
+My name is Sean. I like a lot of different things.
