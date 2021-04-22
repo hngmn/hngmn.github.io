@@ -5,4 +5,4 @@
 layout: page
 ---
 
-hi home
+hi this is my website
