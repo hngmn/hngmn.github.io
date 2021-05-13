@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Professional Experience
-permalink: /professional/
+title: career
+permalink: /career/
 ---
 
 Resume PDF [here]({% link /assets/files/resume.pdf %}).
