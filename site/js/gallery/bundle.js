@@ -10,13 +10,13 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./webpack/gallery/gallery.jsx":
-/*!*************************************!*\
-  !*** ./webpack/gallery/gallery.jsx ***!
-  \*************************************/
+/***/ "./src/gallery/gallery.jsx":
+/*!*********************************!*\
+  !*** ./src/gallery/gallery.jsx ***!
+  \*********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ \"./node_modules/react-dom/index.js\");\n\n\n\n\nconst e = react__WEBPACK_IMPORTED_MODULE_0__.createElement;\n\nclass LikeButton extends react__WEBPACK_IMPORTED_MODULE_0__.Component {\n  constructor(props) {\n    super(props);\n    this.state = {\n      liked: false\n    };\n  }\n\n  render() {\n    if (this.state.liked) {\n      console.log(\"like button printed\");\n      return 'You liked this.';\n    }\n\n    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"button\", {\n      onClick: () => this.setState({\n        liked: true\n      })\n    }, \"Like\");\n  }\n\n}\n\nconst domContainer = document.querySelector('#gallery_container');\nreact_dom__WEBPACK_IMPORTED_MODULE_1__.render(e(LikeButton), domContainer);\n\n//# sourceURL=webpack://hngmn.github.io/./webpack/gallery/gallery.jsx?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ \"./node_modules/react-dom/index.js\");\n\n\n\n\nconst e = react__WEBPACK_IMPORTED_MODULE_0__.createElement;\n\nclass LikeButton extends react__WEBPACK_IMPORTED_MODULE_0__.Component {\n  constructor(props) {\n    super(props);\n    this.state = {\n      liked: false\n    };\n  }\n\n  render() {\n    if (this.state.liked) {\n      console.log(\"like button printed\");\n      return 'You liked this.';\n    }\n\n    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(\"button\", {\n      onClick: () => this.setState({\n        liked: true\n      })\n    }, \"Like\");\n  }\n\n}\n\nconst domContainer = document.querySelector('#gallery_container');\nreact_dom__WEBPACK_IMPORTED_MODULE_1__.render(e(LikeButton), domContainer);\n\n//# sourceURL=webpack://hngmn.github.io/./src/gallery/gallery.jsx?");
 
 /***/ }),
 
@@ -153,7 +153,7 @@ eval("\n\nif (false) {} else {\n  module.exports = __webpack_require__(/*! ./cjs
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./webpack/gallery/gallery.jsx");
+/******/ 	var __webpack_exports__ = __webpack_require__("./src/gallery/gallery.jsx");
 /******/ 	
 /******/ })()
 ;

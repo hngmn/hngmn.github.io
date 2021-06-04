@@ -2,11 +2,11 @@ const path = require('path')
 
 module.exports = [
   {
-    mode: "development",
-    entry: "./webpack/gallery/gallery.jsx",
+    mode: 'development',
+    entry: './src/gallery/gallery.jsx',
     output: {
       // put generated javascripts here to be picked up by jekyll
-      path: path.resolve(__dirname, 'src/assets/javascripts/gallery'),
+      path: path.resolve(__dirname, 'site/js/gallery'),
       filename: 'bundle.js'
     },
     module: {
@@ -26,11 +26,11 @@ module.exports = [
   },
 
   {
-    mode: "development",
-    entry: "./webpack/another/another.jsx",
+    mode: 'development',
+    entry: './src/another/another.jsx',
     output: {
       // put generated javascripts here to be picked up by jekyll
-      path: path.resolve(__dirname, 'src/assets/javascripts/another'),
+      path: path.resolve(__dirname, 'site/js/another'),
       filename: 'bundle.js'
     },
     module: {
