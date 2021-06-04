@@ -1,5 +1,8 @@
 'use strict';
 
+import React from "react";
+import ReactDOM from "react-dom";
+
 const e = React.createElement;
 
 class LikeButton extends React.Component {
