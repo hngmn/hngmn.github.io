@@ -1,0 +1,18 @@
+{
+  "name": "hngmn.github.io",
+  "version": "1.0.0",
+  "description": "My personal website",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hngmn/hngmn.github.io.git"
+  },
+  "author": "Sean Kim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hngmn/hngmn.github.io/issues"
+  },
+  "homepage": "https://github.com/hngmn/hngmn.github.io#readme"
+}
