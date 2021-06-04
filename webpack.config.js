@@ -6,7 +6,7 @@ module.exports = [
     entry: './src/gallery/gallery.jsx',
     output: {
       // put generated javascripts here to be picked up by jekyll
-      path: path.resolve(__dirname, 'site/js/gallery'),
+      path: path.resolve(__dirname, 'docs/js/gallery'),
       filename: 'bundle.js'
     },
     module: {
@@ -30,7 +30,7 @@ module.exports = [
     entry: './src/another/another.jsx',
     output: {
       // put generated javascripts here to be picked up by jekyll
-      path: path.resolve(__dirname, 'site/js/another'),
+      path: path.resolve(__dirname, 'docs/js/another'),
       filename: 'bundle.js'
     },
     module: {
