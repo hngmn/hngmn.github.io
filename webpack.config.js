@@ -2,7 +2,7 @@ const path = require('path')
 
 module.exports = [
   {
-    mode: 'development',
+    mode: 'production',
     entry: './src/gallery/gallery.jsx',
     output: {
       // put generated javascripts here to be picked up by jekyll
@@ -26,7 +26,7 @@ module.exports = [
   },
 
   {
-    mode: 'development',
+    mode: 'production',
     entry: './src/another/another.jsx',
     output: {
       // put generated javascripts here to be picked up by jekyll
