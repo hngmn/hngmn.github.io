@@ -3,7 +3,7 @@
   <p>React is loaded as a script tag.</p>
 
   <!-- We will put our React component inside this div. -->
-  <div id="gallery_container"></div>
+  <div id="gallery_container" >{{ include.photo_dir }}</div>
 
   <!-- Load Webpack bundle. -->
   <script type="text/javascript" src="{{ site.baseurl }}/js/gallery/bundle.js" charset="utf-8"></script>

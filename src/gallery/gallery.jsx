@@ -5,7 +5,7 @@ import ReactDOM from "react-dom";
 
 const e = React.createElement;
 
-class LikeButton extends React.Component {
+class MyGallery extends React.Component {
   constructor(props) {
     super(props);
     this.state = { liked: false };
@@ -13,8 +13,8 @@ class LikeButton extends React.Component {
 
   render() {
     if (this.state.liked) {
-      console.log("like button printed")
-      return 'You liked this.';
+      console.log(this.props.photoDir)
+      return `You liked this. this.props.photoDir is ${this.props.photoDir}`;
     }
 
     return (
@@ -26,4 +26,5 @@ class LikeButton extends React.Component {
 }
 
 const domContainer = document.querySelector('#gallery_container');
-ReactDOM.render(e(LikeButton), domContainer);
+console.log(domContainer.firstChild.data)
+ReactDOM.render(<MyGallery photoDir={domContainer.firstChild.data}/>, domContainer);
