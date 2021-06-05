@@ -7,11 +7,3 @@ title: things
 permalink: /things/
 ---
 
-This is a running list of things I like
-
-* trees
-* music production
-* surfing
-* bikes
-* rhythms
-* woodworking
