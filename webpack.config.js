@@ -47,5 +47,29 @@ module.exports = [
         }
       ]
     }
+  },
+
+  {
+    mode: 'production',
+    entry: './src/audio/audio.js',
+    output: {
+      // put generated javascripts here to be picked up by jekyll
+      path: path.resolve(__dirname, 'docs/js/audio'),
+      filename: 'bundle.js'
+    },
+    module: {
+      rules: [
+        {
+          test: /\.jsx?$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-react']
+            }
+          }
+        }
+      ]
+    }
   }
 ];
