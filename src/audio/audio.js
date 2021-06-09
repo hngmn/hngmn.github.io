@@ -35,6 +35,12 @@ window.onload = function() {
     // start modifying sound
     const gainNode = audioContext.createGain();
 
+    const volumeControl = document.querySelector('#volume');
+
+    volumeControl.addEventListener('input', function() {
+        gainNode.gain.value = this.value;
+    }, false);
+
     // wire audio graph
     track.connect(gainNode).connect(audioContext.destination);
 };
