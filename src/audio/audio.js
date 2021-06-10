@@ -10,6 +10,7 @@ class BoomBox extends React.Component {
         super(props);
         this.state = {
             playing: false,
+            volume: 1
         };
 
         const AudioContext = window.AudioContext || window.webkitAudioContext
@@ -18,8 +19,7 @@ class BoomBox extends React.Component {
         this.audioElement = document.querySelector('audio');
         // handle end of sound
         this.audioElement.addEventListener('ended', (event) => {
-            this.setState({ playing: false });
-            console.log(`ended. playing=${this.state.playing}`);
+            this.setState({...this.state, playing: false });
         }, false);
 
         this.track = this.audioContext.createMediaElementSource(this.audioElement);
@@ -52,8 +52,7 @@ class BoomBox extends React.Component {
                             this.audioElement.play();
                         }
 
-                        this.setState({playing: !this.state.playing });
-                        console.log(`button clicked. setting state to ${this.state.playing}`)
+                        this.setState({...this.state, playing: !this.state.playing });
                     }}
                 >
                     <span>Play/Pause</span>
@@ -64,14 +63,15 @@ class BoomBox extends React.Component {
                     id={'volume'}
                     min={0}
                     max={2}
-                    value={1}
+                    value={this.state.gainValue}
                     step={0.01}
                     onInput={(event) => {
-                        console.log(event); // debug
                         this.gainNode.gain.value = event.target.value;
+                        this.setState({...this.state, volume: event.target.value });
                     }}
                 >
                 </input>
+
             </div>
         );
     }
