@@ -51,10 +51,10 @@ module.exports = [
 
   {
     mode: 'production',
-    entry: './src/audio/audio.js',
+    entry: './src/boombox/boombox.js',
     output: {
       // put generated javascripts here to be picked up by jekyll
-      path: path.resolve(__dirname, 'docs/js/audio'),
+      path: path.resolve(__dirname, 'docs/js/boombox'),
       filename: 'bundle.js'
     },
     module: {
