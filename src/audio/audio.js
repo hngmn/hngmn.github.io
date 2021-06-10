@@ -1,46 +1,81 @@
-window.onload = function() {
+'use strict';
 
-    const AudioContext = window.AudioContext || window.webkitAudioContext
-    var audioContext = new AudioContext();
+import React from "react";
+import ReactDOM from "react-dom";
 
-    const audioElement = document.querySelector('audio');
-    const track = audioContext.createMediaElementSource(audioElement);
+const e = React.createElement;
 
-    const playButton = document.querySelector('button');
+class BoomBox extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            playing: false,
+        };
 
-    // play/pause callback
-    playButton.addEventListener('click', function() {
+        const AudioContext = window.AudioContext || window.webkitAudioContext
+        this.audioContext = new AudioContext();
 
-        // check if context is in suspended state (autoplay policy)
-        if (audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
+        this.audioElement = document.querySelector('audio');
+        // handle end of sound
+        this.audioElement.addEventListener('ended', (event) => {
+            this.setState({ playing: false });
+            console.log(`ended. playing=${this.state.playing}`);
+        }, false);
 
-        // play or pause track depending on state
-        if (this.dataset.playing === 'false') {
-            audioElement.play();
-            this.dataset.playing = 'true';
-        } else if (this.dataset.playing === 'true') {
-            audioElement.pause();
-            this.dataset.playing = 'false';
-        }
+        this.track = this.audioContext.createMediaElementSource(this.audioElement);
 
-    }, false);
+        // start modifying sound
+        this.gainNode = this.audioContext.createGain();
 
-    // handle end of sound
-    audioElement.addEventListener('ended', function() {
-        playButton.dataset.playing = 'false';
-    }, false);
+        // wire audio graph
+        this.track.connect(this.gainNode).connect(this.audioContext.destination);
+    }
 
-    // start modifying sound
-    const gainNode = audioContext.createGain();
+    render(props) {
 
-    const volumeControl = document.querySelector('#volume');
+        return (
+            <div>
+                <span>{`BoomBox is ${this.state.playing ? 'playing' : 'paused'}`}</span>
 
-    volumeControl.addEventListener('input', function() {
-        gainNode.gain.value = this.value;
-    }, false);
+                <button
+                    onClick={(event) => {
 
-    // wire audio graph
-    track.connect(gainNode).connect(audioContext.destination);
-};
+                        // check if context is in suspended state (autoplay policy)
+                        if (this.audioContext.state === 'suspended') {
+                            this.audioContext.resume();
+                        }
+
+                        // play or pause track depending on state
+                        if (this.state.playing) {
+                            this.audioElement.pause();
+                        } else {
+                            this.audioElement.play();
+                        }
+
+                        this.setState({playing: !this.state.playing });
+                        console.log(`button clicked. setting state to ${this.state.playing}`)
+                    }}
+                >
+                    <span>Play/Pause</span>
+                </button>
+
+                <input
+                    type={'range'}
+                    id={'volume'}
+                    min={0}
+                    max={2}
+                    value={1}
+                    step={0.01}
+                    onInput={(event) => {
+                        console.log(event); // debug
+                        this.gainNode.gain.value = event.target.value;
+                    }}
+                >
+                </input>
+            </div>
+        );
+    }
+}
+
+const domContainer = document.querySelector('#boombox_container');
+ReactDOM.render(<BoomBox/>, domContainer);
