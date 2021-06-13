@@ -2,7 +2,8 @@ const path = require('path')
 
 const MODULES = [
   'boombox',
-  'gallery'
+  'gallery',
+  'stepsequencer'
 ]
 
 /**
@@ -31,7 +32,11 @@ module.exports = MODULES.map((moduleName) => {
           }
         }
       ]
-    }
+    },
+    watch: true,
+    watchOptions: {
+      ignored: /node_modules/,
+    },
   }
 });
 

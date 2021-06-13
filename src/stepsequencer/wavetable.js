@@ -4101,7 +4101,7 @@ const wavetableSource = {
 ],
 }
 
-export default const wavetable = {
+export default {
   'real': Float32Array.from(wavetableSource.real),
   'imag': Float32Array.from(wavetableSource.imag),
 };

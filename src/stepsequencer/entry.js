@@ -2,10 +2,10 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import wavetable from 'wavetable';
+import wavetable from './wavetable';
 
 class StepSequencer extends React.Component {
-    constructor() {
+    constructor(props) {
         super(props);
 
         // for cross browser compatibility
@@ -17,7 +17,10 @@ class StepSequencer extends React.Component {
 
     render(props) {
         return (
-            <p>hello</p>
+            <p>hello hello again!</p>
         );
     }
 }
+
+const domContainer = document.querySelector('#stepsequencer_container');
+ReactDOM.render(<StepSequencer/>, domContainer);
