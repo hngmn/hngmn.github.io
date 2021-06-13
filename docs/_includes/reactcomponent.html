@@ -1,0 +1,12 @@
+<!-- 
+  This is an include template for loading a React component. It takes two arguments, a div 'id' to contain the React
+  component and the script path with the React component.
+  -->
+<div>
+
+  <!-- We will put our React component inside this div. -->
+  <div id="{{ include.id }}" ></div>
+
+  <!-- Load Webpack bundle. -->
+  <script type="text/javascript" src="{{ include.scriptpath }}" charset="utf-8"></script>
+</div>
