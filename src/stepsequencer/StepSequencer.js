@@ -2,8 +2,9 @@
 
 import React from 'react';
 
-import Slider from './Slider.js';
+import Slider from './Slider';
 import wavetable from './wavetable';
+import {getSampleFromFile} from './getSampleFromFile';
 
 class StepSequencer extends React.Component {
     constructor(props) {
@@ -18,6 +19,8 @@ class StepSequencer extends React.Component {
 
             noiseDuration: 1,
             bandHz: 1000,
+
+            playbackRate: 1,
         };
 
         // for cross browser compatibility
@@ -37,6 +40,8 @@ class StepSequencer extends React.Component {
 
             noiseDuration,
             bandHz,
+
+            playbackRate,
         } = this.state;
 
         return (
@@ -52,6 +57,8 @@ class StepSequencer extends React.Component {
                 <Slider name="duration" min={0} max={2} value={noiseDuration} step={0.1} onInput={this.onInput('noiseDuration')}/>
 
                 <Slider name="band" min={400} max={1200} value={bandHz} step={5} onInput={this.onInput('bandHz')}/>
+
+                <Slider name="plabackRate" min={0.1} max={2} value={playbackRate} step={0.1} onInput={this.onInput('playbackRate')}/>
             </div>
         );
     }
@@ -129,6 +136,27 @@ class StepSequencer extends React.Component {
         noise.start();
     }
 
+    playSample(time) {
+        const {
+            playbackRate,
+        } = this.state;
+
+        const filePath = '/assets/audio/dtmf.mp3';
+        getSampleFromFile(this.audioCtx, filePath)
+            .then((sample) => {
+                this.playSample(sample);
+            });
+
+        console.log(typeof audioBuffer);
+        console.log(audioBuffer);
+        const sampleSource = this.audioCtx.createBufferSource();
+        sampleSource.buffer = audioBuffer;
+        sampleSource.playbackRate.value = playbackRate;
+        sampleSource.connect(this.audioCtx.destination)
+        sampleSource.start(time);
+        return sampleSource;
+    }
+
     onInput(name) {
         const callback = (event) => {
             this.updateState(name, event.target.value);
@@ -142,6 +170,7 @@ class StepSequencer extends React.Component {
     updateState(name, value) {
         this.setState({...this.state, [name]: value});
     }
+
 }
 
 export default StepSequencer;
