@@ -3,8 +3,9 @@
 import React from 'react';
 
 import Slider from './Slider';
-import wavetable from './wavetable';
 import {getSampleFromFile} from './getSampleFromFile';
+import wavetable from './wavetable';
+import PlayButton from './PlayButton';
 
 class StepSequencer extends React.Component {
     constructor(props) {
@@ -16,9 +17,17 @@ class StepSequencer extends React.Component {
         this.MAXNOTES = 4; // number of notes in sequencer
 
         this.state = {
+            isPlaying: false,
             tempo: 60,
             currentNote: 0,
             nextNoteTime: 0.0,
+
+            pads: [
+                [false, false, false, false],
+                [false, false, false, false],
+                [false, false, false, false],
+                [false, true, false, false],
+            ],
 
             attack: 0.2,
             release: 0.5,
@@ -37,13 +46,11 @@ class StepSequencer extends React.Component {
         this.audioCtx = new AudioContext();
 
         this.wave = this.audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);
-
-        // sequencer
-        this.notesInQueue = [];
     }
 
     render(props) {
         const {
+            isPlaying,
             tempo,
 
             attack,
@@ -60,7 +67,36 @@ class StepSequencer extends React.Component {
 
         return (
             <div>
-                <Slider name="bpm" value={tempo} onInput={this.onInput('tempo')}/>
+                <span>
+                    <Slider name="bpm" min={10} max={200} value={tempo} step={1} onInput={this.onInput('tempo')}/>
+
+                    <PlayButton
+                        isPlaying={isPlaying}
+                        onInput={(event) => {
+                            console.log(`isPlaying=${this.state.isPlaying}`)
+                            this.setState({...this.state, isPlaying: !isPlaying });
+                            console.log(`isPlaying=${this.state.isPlaying}`)
+
+                            if (this.state.isPlaying) {
+
+                                // check if context is in suspended state (autoplay policy)
+                                if (this.audioCtx.state === 'suspended') {
+                                    this.audioCtx.resume();
+                                }
+
+                                const currentTime = this.audioCtx.currentTime;
+                                console.log(`currentTime=${currentTime}`);
+                                this.setState({...this.state, currentNote: 0, nextNoteTime: currentTime});
+                                console.log(`nextNoteTime after setState call: ${this.state.nextNoteTime}`);
+                                this.scheduler();
+                            } else {
+                                window.clearTimeout(this.timerId);
+                            }
+
+                        }}
+                    />
+
+                </span>
 
                 <Slider name="attack" value={attack} onInput={this.onInput('attack')}/>
 
@@ -74,7 +110,7 @@ class StepSequencer extends React.Component {
 
                 <Slider name="band" min={400} max={1200} value={bandHz} step={5} onInput={this.onInput('bandHz')}/>
 
-                <Slider name="plabackRate" min={0.1} max={2} value={playbackRate} step={0.1} onInput={this.onInput('playbackRate')}/>
+                <Slider name="playbackRate" min={0.1} max={2} value={playbackRate} step={0.1} onInput={this.onInput('playbackRate')}/>
             </div>
         );
     }
@@ -170,6 +206,18 @@ class StepSequencer extends React.Component {
         sampleSource.start(time);
     }
 
+    playi(i, time) {
+        if (i === 0) {
+            playSweep(time);
+        } else if (i === 1) {
+            playPulse(time);
+        } else if (i === 2) {
+            playNoise(time);
+        } else if (i === 3) {
+            playSample(time);
+        }
+    }
+
     onInput(name) {
         const callback = (event) => {
             this.updateState(name, event.target.value);
@@ -191,22 +239,29 @@ class StepSequencer extends React.Component {
             nextNoteTime,
         } = this.state;
 
-        // advance the step
-        let nextNote = currentNote++;
-        if (nextNote === this.MAXNOTES) {
-            nextNote = 0;
-        }
+        console.log(`nextNote called. currentNote=${currentNote}, nextNoteTime=${nextNoteTime}`);
+
+        // advance the step, wrapping around MAXNOTES
+        let nextNote = (currentNote + 1) % this.MAXNOTES;
 
         // update nextNoteTime
         const secondsPerBeat = 60.0 / tempo;
         const nextNextNoteTime = nextNoteTime + secondsPerBeat;
+        console.log(`nextnextNoteTime=${nextNextNoteTime}`);
 
         this.setState({...this.state, currentNote: nextNote, nextNoteTime: nextNextNoteTime})
     }
 
     scheduleNote(beatNumber, time) {
-        // push the note on the queue, even if we're not playing.
-        this.notesInQueue.push({ note: beatNumber, time: time });
+        const {
+            pads,
+        } = this.state;
+
+        for (let i = 0; i < 4; i++) {
+            if (pads[i][beatNumber]) {
+                playi(i, time);
+            }
+        }
     }
 
     scheduler() {
@@ -215,12 +270,15 @@ class StepSequencer extends React.Component {
             nextNoteTime,
         } = this.state;
 
+        let n = 0;
         // while there are notes that will need to play before the next interval, schedule them and advance the pointer.
-        while (nextNoteTime < this.audioCtx.currentTime + this.SCHEDULEAHEADTIME) {
-            scheduleNote(currentNote, nextNoteTime);
-            nextNote();
+        while (n < 10 && nextNoteTime < this.audioCtx.currentTime + this.SCHEDULEAHEADTIME) {
+            n++;
+            this.scheduleNote(currentNote, nextNoteTime);
+            this.nextNote();
         }
-        timerID = window.setTimeout(scheduler, lookahead);
+
+        this.timerId = window.setTimeout(this.scheduler.bind(this), this.LOOKAHEAD);
     }
 }
 
