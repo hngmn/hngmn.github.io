@@ -10,7 +10,16 @@ class StepSequencer extends React.Component {
     constructor(props) {
         super(props);
 
+        // Constants
+        this.LOOKAHEAD = 25.0; // How frequently to call scheduling function (in milliseconds)
+        this.SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
+        this.MAXNOTES = 4; // number of notes in sequencer
+
         this.state = {
+            tempo: 60,
+            currentNote: 0,
+            nextNoteTime: 0.0,
+
             attack: 0.2,
             release: 0.5,
 
@@ -28,10 +37,15 @@ class StepSequencer extends React.Component {
         this.audioCtx = new AudioContext();
 
         this.wave = this.audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);
+
+        // sequencer
+        this.notesInQueue = [];
     }
 
     render(props) {
         const {
+            tempo,
+
             attack,
             release,
 
@@ -46,6 +60,8 @@ class StepSequencer extends React.Component {
 
         return (
             <div>
+                <Slider name="bpm" value={tempo} onInput={this.onInput('tempo')}/>
+
                 <Slider name="attack" value={attack} onInput={this.onInput('attack')}/>
 
                 <Slider name="release" value={release} onInput={this.onInput('release')}/>
@@ -147,14 +163,11 @@ class StepSequencer extends React.Component {
                 this.playSample(sample);
             });
 
-        console.log(typeof audioBuffer);
-        console.log(audioBuffer);
         const sampleSource = this.audioCtx.createBufferSource();
         sampleSource.buffer = audioBuffer;
         sampleSource.playbackRate.value = playbackRate;
         sampleSource.connect(this.audioCtx.destination)
         sampleSource.start(time);
-        return sampleSource;
     }
 
     onInput(name) {
@@ -171,6 +184,44 @@ class StepSequencer extends React.Component {
         this.setState({...this.state, [name]: value});
     }
 
+    nextNote() {
+        const {
+            tempo,
+            currentNote,
+            nextNoteTime,
+        } = this.state;
+
+        // advance the step
+        let nextNote = currentNote++;
+        if (nextNote === this.MAXNOTES) {
+            nextNote = 0;
+        }
+
+        // update nextNoteTime
+        const secondsPerBeat = 60.0 / tempo;
+        const nextNextNoteTime = nextNoteTime + secondsPerBeat;
+
+        this.setState({...this.state, currentNote: nextNote, nextNoteTime: nextNextNoteTime})
+    }
+
+    scheduleNote(beatNumber, time) {
+        // push the note on the queue, even if we're not playing.
+        this.notesInQueue.push({ note: beatNumber, time: time });
+    }
+
+    scheduler() {
+        const {
+            currentNote,
+            nextNoteTime,
+        } = this.state;
+
+        // while there are notes that will need to play before the next interval, schedule them and advance the pointer.
+        while (nextNoteTime < this.audioCtx.currentTime + this.SCHEDULEAHEADTIME) {
+            scheduleNote(currentNote, nextNoteTime);
+            nextNote();
+        }
+        timerID = window.setTimeout(scheduler, lookahead);
+    }
 }
 
 export default StepSequencer;
