@@ -19,10 +19,10 @@ class StepSequencer extends React.Component {
             currentNote: 0,
 
             pads: [
-                [false, false, false, false],
-                [false, false, false, false],
-                [false, false, false, false],
                 [false, true, false, false],
+                [false, false, false, false],
+                [false, false, false, false],
+                [false, false, false, false],
             ],
         };
 
@@ -87,7 +87,7 @@ class StepSequencer extends React.Component {
         );
     }
 
-    playi(i, time) {
+    schedulei(i, time) {
         const {
             sweep,
             pulse,
@@ -96,6 +96,7 @@ class StepSequencer extends React.Component {
         } = this.instruments;
 
         if (i === 0) {
+            console.log(`scheduling sweep at time=${time}, current time is ${this.audioCtx.currentTime}`);
             sweep.schedule(time);
         } else if (i === 1) {
             pulse.schedule(time);
@@ -107,10 +108,13 @@ class StepSequencer extends React.Component {
     }
 
     scheduleNote(beatNumber, time) {
-        return;
+        const {
+            pads,
+        } = this.state;
+
         for (let i = 0; i < 4; i++) {
             if (pads[i][beatNumber]) {
-                playi(i, time);
+                this.schedulei(i, time);
             }
         }
     }

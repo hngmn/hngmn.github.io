@@ -58,11 +58,9 @@ export default class Scheduler {
 
     schedule() {
 
-        let n = 0; // limit n to 10 for now to prevent infinite loops
         // while there are notes that will need to play before the next interval, schedule them and advance the pointer.
-        while (n < 10 && this.nextNoteTime < this.audioCtx.currentTime + SCHEDULEAHEADTIME) {
-            n++;
-            //this.scheduleNoteCallback(this.currentNote, this.nextNoteTime);
+        while (this.nextNoteTime < this.audioCtx.currentTime + SCHEDULEAHEADTIME) {
+            this.scheduleNoteCallback(this.currentNote, this.nextNoteTime);
             this.nextNote();
         }
 
