@@ -1,5 +1,6 @@
 'use strict';
 
+import wavetable from './wavetable';
 
 export class Sweep {
     constructor(audioCtx) {
@@ -24,6 +25,7 @@ export class Sweep {
         this.release = 0.5;
 
         this.audioCtx = audioCtx;
+        this.wave = this.audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);
     }
 
     schedule(time) {

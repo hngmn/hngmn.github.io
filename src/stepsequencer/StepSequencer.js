@@ -2,11 +2,11 @@
 
 import React from 'react';
 
-import wavetable from './wavetable';
 import PlayButton from './PlayButton';
 import {Sweep, Pulse, Noise, Sample} from './instruments';
 import Slider from './Slider';
 import InstrumentParameters from './InstrumentParameters';
+import Scheduler from './Scheduler';
 
 class StepSequencer extends React.Component {
     constructor(props) {
@@ -25,36 +25,52 @@ class StepSequencer extends React.Component {
             ],
         };
 
+        // for cross browser compatibility
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.audioCtx = new AudioContext();
+
+        // instruments in the sequencer
         this.instruments = {
-            sweep: new Sweep(props.audioCtx),
-            pulse: new Pulse(props.audioCtx),
-            noise: new Noise(props.audioCtx),
-            sample: new Sample(props.audioCtx),
+            sweep: new Sweep(this.audioCtx),
+            pulse: new Pulse(this.audioCtx),
+            noise: new Noise(this.audioCtx),
+            sample: new Sample(this.audioCtx),
         };
+
+        // Scheduler for precision scheduling of sounds at each beat/note
+        this.scheduler = new Scheduler(
+            this.audioCtx,
+            this.scheduleNote.bind(this),
+            (note) => {
+                this.setState({currentNote: note});
+            }
+        );
     }
 
-    render(props) {
+    render() {
         const {
             // state
             isPlaying,
             tempo,
-
-            // callbacks
-            playpause,
+            currentNote,
+            pads,
         } = this.state;
 
         return (
             <div>
+                <span>{currentNote}</span>
+                <span>{isPlaying ? 'playing' : 'paused'}</span>
+
                 <span>
                     <Slider name="bpm" min={10} max={200} value={tempo} step={1} onInput={this.onInput('tempo')}/>
 
                     <PlayButton
                         isPlaying={isPlaying}
                         onInput={(event) => {
-                            this.setState({...this.state, isPlaying: !isPlaying}); // toggle isPlaying
+                            this.setState((state, props) => ({isPlaying: !state.isPlaying}));
 
-                            // call scheduler.playpause callback
-                            playpause();
+                            // play/pause the scheduler
+                            this.scheduler.playpause();
                         }}
                     />
                 </span>
@@ -79,18 +95,26 @@ class StepSequencer extends React.Component {
     }
 
     playi(i, time) {
+        const {
+            sweep,
+            pulse,
+            noise,
+            sample,
+        } = this.instruments;
+
         if (i === 0) {
-            playSweep(time);
+            sweep.schedule(time);
         } else if (i === 1) {
-            playPulse(time);
+            pulse.schedule(time);
         } else if (i === 2) {
-            playNoise(time);
+            noise.schedule(time);
         } else if (i === 3) {
-            playSample(time);
+            sample.schedule(time);
         }
     }
 
     scheduleNote(beatNumber, time) {
+        return;
         for (let i = 0; i < 4; i++) {
             if (pads[i][beatNumber]) {
                 playi(i, time);
@@ -109,7 +133,7 @@ class StepSequencer extends React.Component {
     }
 
     updateState(name, value) {
-        this.setState({...this.state, [name]: value});
+        this.setState({[name]: value});
     }
 }
 
