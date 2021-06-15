@@ -2,11 +2,12 @@
 
 import React from 'react';
 
+import InstrumentControl from './InstrumentControl';
 import PlayButton from './PlayButton';
-import {Sweep, Pulse, Noise, Sample} from './instruments';
-import Slider from './Slider';
-import InstrumentParameters from './InstrumentParameters';
 import Scheduler from './Scheduler';
+import Slider from './Slider';
+
+import {Sweep, Pulse, Noise, Sample} from './instruments';
 
 class StepSequencer extends React.Component {
     constructor(props) {
@@ -58,7 +59,7 @@ class StepSequencer extends React.Component {
 
         return (
             <div>
-                <span>{currentNote}</span>
+                <span>{`beat ${currentNote}`}</span>
                 <span>{isPlaying ? 'playing' : 'paused'}</span>
 
                 <span>
@@ -75,21 +76,13 @@ class StepSequencer extends React.Component {
                     />
                 </span>
 
-                <span>
-                    <InstrumentParameters instrument={this.instruments.sweep}/>
-                </span>
+                <InstrumentControl name={'sweep'} instrument={this.instruments.sweep} pads={pads[0]}/>
 
-                <span>
-                    <InstrumentParameters instrument={this.instruments.pulse}/>
-                </span>
+                <InstrumentControl name={'pulse'} instrument={this.instruments.pulse} pads={pads[1]}/>
 
-                <span>
-                    <InstrumentParameters instrument={this.instruments.noise}/>
-                </span>
+                <InstrumentControl name={'noise'} instrument={this.instruments.noise} pads={pads[2]}/>
 
-                <span>
-                    <InstrumentParameters instrument={this.instruments.sample}/>
-                </span>
+                <InstrumentControl name={'sample'} instrument={this.instruments.sample} pads={pads[3]}/>
             </div>
         );
     }
