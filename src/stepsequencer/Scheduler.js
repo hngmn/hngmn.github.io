@@ -7,36 +7,23 @@ const SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
 // Given a scheduleNoteCallback, use it to schedule note plays based on tempo
 // code based on https://www.html5rocks.com/en/tutorials/audio/scheduling
 export default class Scheduler {
-    constructor(audioCtx, scheduleNoteCallback, updateNoteCallback) {
+    constructor(getTimeFromAudioCtx, getTempoFromState, scheduleNoteCallback, updateNoteCallback) {
         this.MAXNOTES = 4; // number of notes in sequencer
         this.isPlaying = false;
-        this.tempo = 60;
         this.currentNote = 0;
         this.nextNoteTime = 0.0;
 
-        this.audioCtx = audioCtx;
+        this.preciseTime = getTimeFromAudioCtx;
+        this.tempo = getTempoFromState;
         this.scheduleNoteCallback = scheduleNoteCallback;
         this.updateNoteCallback = updateNoteCallback;
-    }
-
-    getTempo() {
-        return this.tempo;
-    }
-
-    setTempo(newTempo) {
-        this.tempo = newTempo;
     }
 
     playpause() {
         this.isPlaying = !this.isPlaying; // toggle isPlaying
 
         if (this.isPlaying) {
-            // check if context is in suspended state (autoplay policy)
-            if (this.audioCtx.state === 'suspended') {
-                this.audioCtx.resume();
-            }
-
-            this.nextNoteTime = this.audioCtx.currentTime;
+            this.nextNoteTime = this.preciseTime();
 
             this.schedule();
         } else {
@@ -52,14 +39,14 @@ export default class Scheduler {
         this.updateNoteCallback(this.currentNote); // update StepSequencer with the new note
 
         // update nextNoteTime
-        const secondsPerBeat = 60.0 / this.tempo;
+        const secondsPerBeat = 60.0 / this.tempo();
         this.nextNoteTime += secondsPerBeat;
     }
 
     schedule() {
 
         // while there are notes that will need to play before the next interval, schedule them and advance the pointer.
-        while (this.nextNoteTime < this.audioCtx.currentTime + SCHEDULEAHEADTIME) {
+        while (this.nextNoteTime < this.preciseTime() + SCHEDULEAHEADTIME) {
             this.scheduleNoteCallback(this.currentNote, this.nextNoteTime);
             this.nextNote();
         }

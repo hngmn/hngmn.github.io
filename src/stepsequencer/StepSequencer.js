@@ -40,7 +40,8 @@ class StepSequencer extends React.Component {
 
         // Scheduler for precision scheduling of sounds at each beat/note
         this.scheduler = new Scheduler(
-            this.audioCtx,
+            () => (this.audioCtx.currentTime),
+            () => (this.state.tempo),
             this.scheduleNote.bind(this),
             (note) => {
                 this.setState({currentNote: note});
@@ -69,6 +70,12 @@ class StepSequencer extends React.Component {
                         isPlaying={isPlaying}
                         onInput={(event) => {
                             this.setState((state, props) => ({isPlaying: !state.isPlaying}));
+
+                            // TOOD: maybe just do this if playing
+                            // check if context is in suspended state (autoplay policy)
+                            if (this.audioCtx.state === 'suspended') {
+                                this.audioCtx.resume();
+                            }
 
                             // play/pause the scheduler
                             this.scheduler.playpause();

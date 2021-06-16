@@ -21,7 +21,7 @@ export default class InstrumentControl extends React.Component {
                 <InstrumentParameters instrument={instrument}/>
 
                 {pads.map((pad, index) => (
-                    <Pad key={`${name}${index}`}isOn={pad} onClick={() => {console.log(`pad ${index} clicked`);}}/>
+                    <Pad key={`${name}${index}`}isOn={pad} onClick={() => {console.log(`${name} pad ${index} clicked`);}}/>
                 ))}
             </span>
 
