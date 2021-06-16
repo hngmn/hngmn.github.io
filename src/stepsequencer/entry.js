@@ -2,8 +2,15 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-import StepSequencer from './StepSequencer';
+//import './index.css';
+import App from './App';
+import store from './app/store';
+import { Provider } from 'react-redux';
 
 const domContainer = document.querySelector('#stepsequencer_container');
-ReactDOM.render(<StepSequencer/>, domContainer);
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  domContainer
+);
