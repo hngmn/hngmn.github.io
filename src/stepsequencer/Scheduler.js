@@ -7,14 +7,14 @@ const SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
 // Given a scheduleNoteCallback, use it to schedule note plays based on tempo
 // code based on https://www.html5rocks.com/en/tutorials/audio/scheduling
 export default class Scheduler {
-    constructor(getTimeFromAudioCtx, getTempoFromState, scheduleNoteCallback, updateNoteCallback) {
-        this.MAXNOTES = 4; // number of notes in sequencer
+    constructor(getTimeFromAudioCtx, getTempoFromState, getMaxNotesFromState, scheduleNoteCallback, updateNoteCallback) {
         this.isPlaying = false;
         this.currentNote = 0;
         this.nextNoteTime = 0.0;
 
         this.preciseTime = getTimeFromAudioCtx;
         this.tempo = getTempoFromState;
+        this.maxNotes = getMaxNotesFromState;
         this.scheduleNoteCallback = scheduleNoteCallback;
         this.updateNoteCallback = updateNoteCallback;
     }
@@ -32,10 +32,10 @@ export default class Scheduler {
     }
 
     // Advance note by incrementing currentNote and nextNoteTime
-    // currentNote will wrap around at MAXNOTES
+    // currentNote will wrap around at maxNotes
     nextNote() {
-        // advance the step, wrapping around MAXNOTES
-        this.currentNote = (this.currentNote + 1) % this.MAXNOTES;
+        // advance the step, wrapping around maxNotes
+        this.currentNote = (this.currentNote + 1) % this.maxNotes();
         this.updateNoteCallback(this.currentNote); // update StepSequencer with the new note
 
         // update nextNoteTime

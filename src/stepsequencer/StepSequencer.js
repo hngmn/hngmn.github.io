@@ -17,6 +17,7 @@ class StepSequencer extends React.Component {
             isPlaying: false,
             tempo: 60,
             currentNote: 0,
+            maxNotes: 4,
 
             pads: [
                 [false, true, false, false],
@@ -42,6 +43,7 @@ class StepSequencer extends React.Component {
         this.scheduler = new Scheduler(
             () => (this.audioCtx.currentTime),
             () => (this.state.tempo),
+            () => (this.state.maxNotes),
             this.scheduleNote.bind(this),
             (note) => {
                 this.setState({currentNote: note});
