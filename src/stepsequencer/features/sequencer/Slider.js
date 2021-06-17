@@ -6,7 +6,6 @@ import React from 'react';
  * Slider component
  */
 export default function Slider(props) {
-    console.log(props.param);
     const {
         name = 'defaultName?',
         min = 0, // defaults

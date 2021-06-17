@@ -4,27 +4,20 @@ import React from 'react';
 import InstrumentParameters from './InstrumentParameters';
 import Pad from './Pad.js';
 
-export default class InstrumentControl extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+export default function InstrumentControl(props) {
+    const {
+        name,
+        instrument,
+        pads,
+    } = props;
 
-    render() {
-        const {
-            name,
-            instrument,
-            pads,
-        } = this.props;
+    return (
+        <span>
+            <InstrumentParameters instrument={instrument}/>
 
-        return (
-            <span>
-                <InstrumentParameters instrument={instrument}/>
-
-                {pads.map((pad, index) => (
-                    <Pad key={`${name}${index}`}isOn={pad} onClick={() => {console.log(`${name} pad ${index} clicked`);}}/>
-                ))}
-            </span>
-
-        )
-    }
+            {pads.map((pad, index) => (
+                <Pad key={`${name}${index}`}isOn={pad} onClick={() => {console.log(`${name} pad ${index} clicked`);}}/>
+            ))}
+        </span>
+    );
 }
