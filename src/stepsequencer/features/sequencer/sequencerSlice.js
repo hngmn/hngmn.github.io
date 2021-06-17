@@ -8,6 +8,14 @@ import { Sweep, Pulse, Noise, Sample } from './instruments';
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 export const audioCtx = new AudioContext();
 
+// instruments TODO: These should eventually be moved elsewhere/configurable
+export const instruments = {
+    sweep: new Sweep(audioCtx),
+    pulse: new Pulse(audioCtx),
+    noise: new Noise(audioCtx),
+    sample: new Sample(audioCtx),
+};
+
 // Constants
 const LOOKAHEAD = 25.0; // How frequently to call scheduling function (in milliseconds)
 const SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
@@ -16,12 +24,6 @@ export const sequencerSlice = createSlice({
     name: 'sequencer',
 
     initialState: {
-
-        // instruments TODO: These should eventually be moved elsewhere/configurable
-        sweep: new Sweep(audioCtx),
-        pulse: new Pulse(audioCtx),
-        noise: new Noise(audioCtx),
-        sample: new Sample(audioCtx),
 
         // currently fixed, will be configurable state eventually
         nBars: 1,
@@ -54,8 +56,6 @@ export const sequencerSlice = createSlice({
 
         pause: state => {
             state.isPlaying = false;
-
-            window.clearInterval(state.timerId);
         },
 
         advanceNote: state => {

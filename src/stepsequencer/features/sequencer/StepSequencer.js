@@ -10,6 +10,7 @@ import Slider from './Slider';
 import {
     // actions
     play,
+    pause,
     setTempo,
 
     // selectors
@@ -20,6 +21,8 @@ import {
     selectPulse,
     selectNoise,
     selectSample,
+
+    instruments,
 } from './sequencerSlice';
 
 function StepSequencer() {
@@ -30,10 +33,6 @@ function StepSequencer() {
     // Custom React Hooks for Redux state (?)
     const isPlaying = useSelector(selectIsPlaying);
     const tempo = useSelector(selectTempo);
-    const sweep = useSelector(selectSweep);
-    const pulse = useSelector(selectPulse);
-    const noise = useSelector(selectNoise);
-    const sample = useSelector(selectSample);
     const dispatch = useDispatch();
 
     return (
@@ -46,17 +45,17 @@ function StepSequencer() {
 
                 <PlayButton
                     isPlaying={isPlaying}
-                    onClick={() => dispatch(play())}
+                    onClick={() => isPlaying ? dispatch(pause()) : dispatch(play())}
                 />
             </span>
 
-            <InstrumentControl name={'sweep'} instrument={sweep} pads={[true]}/>
+            <InstrumentControl name={'sweep'} instrument={instruments.sweep} pads={[true]}/>
 
-            <InstrumentControl name={'pulse'} instrument={pulse} pads={[false]}/>
+            <InstrumentControl name={'pulse'} instrument={instruments.pulse} pads={[false]}/>
 
-            <InstrumentControl name={'noise'} instrument={noise} pads={[true]}/>
+            <InstrumentControl name={'noise'} instrument={instruments.noise} pads={[true]}/>
 
-            <InstrumentControl name={'sample'} instrument={sample} pads={[false]}/>
+            <InstrumentControl name={'sample'} instrument={instruments.sample} pads={[false]}/>
         </div>
     );
 
@@ -64,13 +63,13 @@ function StepSequencer() {
 
 function schedulei(i, time) {
     if (i === 0) {
-        sweep.schedule(time);
+        instruments.sweep.schedule(time);
     } else if (i === 1) {
-        pulse.schedule(time);
+        instruments.pulse.schedule(time);
     } else if (i === 2) {
-        noise.schedule(time);
+        instruments.noise.schedule(time);
     } else if (i === 3) {
-        sample.schedule(time);
+        instruments.sample.schedule(time);
     }
 }
 
