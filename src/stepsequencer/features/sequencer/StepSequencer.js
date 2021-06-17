@@ -8,9 +8,13 @@ import PlayButton from './PlayButton';
 import Scheduler from './Scheduler';
 import Slider from './Slider';
 import {
+    // actions
+    play,
     setTempo,
-    selectTempo,
 
+    // selectors
+    selectIsPlaying,
+    selectTempo,
     selectAudioCtx,
     selectSweep,
     selectPulse,
@@ -20,11 +24,11 @@ import {
 
 function StepSequencer() {
     // React Hooks for React State
-    const [isPlaying, setIsPlaying] = useState(false);
     const [currentNote, setCurrentNote] = useState(0);
     const [maxNotes, setMaxNotes] = useState(4);
 
     // Custom React Hooks for Redux state (?)
+    const isPlaying = useSelector(selectIsPlaying);
     const tempo = useSelector(selectTempo);
     const audioCtx = useSelector(selectAudioCtx);
     const sweep = useSelector(selectSweep);
@@ -32,7 +36,6 @@ function StepSequencer() {
     const noise = useSelector(selectNoise);
     const sample = useSelector(selectSample);
     const dispatch = useDispatch();
-
 
     return (
         <div>
@@ -44,12 +47,7 @@ function StepSequencer() {
 
                 <PlayButton
                     isPlaying={isPlaying}
-                    onInput={(event) => {
-                        setIsPlaying(!isPlaying);
-
-                        // play/pause the scheduler
-                        //this.scheduler.playpause();
-                    }}
+                    onClick={() => dispatch(play())}
                 />
             </span>
 

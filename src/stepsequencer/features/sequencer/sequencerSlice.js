@@ -16,20 +16,27 @@ export const sequencerSlice = createSlice({
     name: 'sequencer',
 
     initialState: {
+        // this 'state' doesn't really change, i just need to use it in a lot of different places
         audioCtx: audioCtx,
+
+        // instruments TODO: These should eventually be moved elsewhere/configurable
         sweep: new Sweep(audioCtx),
         pulse: new Pulse(audioCtx),
         noise: new Noise(audioCtx),
         sample: new Sample(audioCtx),
-        tempo: 60,
+
+        // currently fixed, will be configurable state eventually
+        nBars: 1,
+        notesPerBar: 4,
+
+        // timekeeping state
+        currentNote: 0,
+        nextNoteTime: 0.0,
+        tempo: 60, // bpm (beats/bars per min)
         timerId: null,
     },
 
     reducers: {
-        setTempo: (state, action) => {
-            state.tempo = action.payload;
-        },
-
         play: state => {
             state.isPlaying = true;
 
@@ -37,22 +44,49 @@ export const sequencerSlice = createSlice({
             if (state.audioCtx.state === 'suspended') {
                 state.audioCtx.resume();
             }
-
-            state.timerId = window.setInterval(schedule, LOOKAHEAD);
         },
 
         pause: state => {
             state.isPlaying = false;
 
             window.clearInterval(state.timerId);
-        }
+        },
+
+        advanceNote: state => {
+            const {
+                audioCtx,
+
+                nBars,
+                notesPerBar,
+
+                tempo,
+                currentNote,
+                nextNoteTime,
+            } = state.sequencer;
+
+            const maxNotes = nBars * notesPerBar
+            state.sequencer.currentNote = (currentNote + 1) % maxNotes;
+
+            const secondsPerBeat = 60.0 / tempo;
+            state.sequencer.nextNoteTime += secondsPerBeat / notesPerBar;
+        },
+
+        setTempo: (state, action) => {
+            state.tempo = action.payload;
+        },
     }
 });
 
 // auto generated actions
-export const { setTempo } = sequencerSlice.actions;
+export const {
+    play,
+    pause,
+    setTempo,
+    advanceNote,
+} = sequencerSlice.actions;
 
 // selectors
+export const selectIsPlaying = state => state.sequencer.isPlaying;
 export const selectTempo = state => state.sequencer.tempo;
 export const selectAudioCtx = state => state.sequencer.audioCtx;
 export const selectSweep = state => state.sequencer.sweep;

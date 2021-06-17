@@ -5,11 +5,11 @@ import React from 'react';
 export default function PlayButton(props) {
     const {
         isPlaying,
-        onInput
+        onClick
     } = props;
 
     return (
-        <button onClick={onInput}>
+        <button onClick={onClick}>
             <span>{isPlaying ? 'Pause' : 'Play'}</span>
         </button>
     );
