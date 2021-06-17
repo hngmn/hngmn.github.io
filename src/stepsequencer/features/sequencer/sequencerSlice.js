@@ -5,13 +5,20 @@ import { createSlice } from '@reduxjs/toolkit'
 export const sequencerSlice = createSlice({
     name: 'sequencer',
     initialState: {
-        value: 0
+        tempo: 60
     },
     reducers: {
-        // TODO
+        setTempo: (state, action) => {
+            state.tempo = action.payload;
+        }
     }
 });
 
-export const {} = sequencerSlice.actions;
+// auto generated actions
+export const { setTempo } = sequencerSlice.actions;
+
+// selectors
+export const selectTempo = state => state.sequencer.tempo;
 
 export default sequencerSlice.reducer;
+

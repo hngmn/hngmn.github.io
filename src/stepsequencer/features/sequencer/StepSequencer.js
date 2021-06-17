@@ -1,146 +1,108 @@
 'use strict';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import InstrumentControl from './InstrumentControl';
+import { Sweep, Pulse, Noise, Sample } from './instruments';
 import PlayButton from './PlayButton';
 import Scheduler from './Scheduler';
 import Slider from './Slider';
+import {
+    setTempo,
+    selectTempo,
+} from './sequencerSlice';
 
-import {Sweep, Pulse, Noise, Sample} from './instruments';
+// for cross browser compatibility
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
 
-class StepSequencer extends React.Component {
-    constructor(props) {
-        super(props);
+// instruments in the sequencer
+const instruments = {
+    sweep: new Sweep(audioCtx),
+    pulse: new Pulse(audioCtx),
+    noise: new Noise(audioCtx),
+    sample: new Sample(audioCtx),
+};
 
-        this.state = {
-            isPlaying: false,
-            tempo: 60,
-            currentNote: 0,
-            maxNotes: 4,
+// Scheduler for precision scheduling of sounds at each beat/note
+const scheduler = new Scheduler(
+    () => (audioCtx.currentTime),
+    () => (60),
+    () => (state.maxNotes),
+    scheduleNote,
+    (note) => (null)
+);
 
-            pads: [
-                [false, true, false, false],
-                [false, false, false, false],
-                [false, false, false, false],
-                [false, false, false, false],
-            ],
-        };
+function StepSequencer() {
+    // React Hooks for React State
+    const [isPlaying, setisPlaying] = useState(false)
+    const [currentNote, setCurrentNote] = useState(0);
+    const [maxNotes, setMaxNotes] = useState(4);
 
-        // for cross browser compatibility
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        this.audioCtx = new AudioContext();
+    // Custom React Hooks for Redux state (?)
+    const tempo = useSelector(selectTempo);
+    const dispatch = useDispatch();
 
-        // instruments in the sequencer
-        this.instruments = {
-            sweep: new Sweep(this.audioCtx),
-            pulse: new Pulse(this.audioCtx),
-            noise: new Noise(this.audioCtx),
-            sample: new Sample(this.audioCtx),
-        };
+    return (
+        <div>
+            <span>{`beat ${currentNote}`}</span>
+            <span>{isPlaying ? 'playing' : 'paused'}</span>
 
-        // Scheduler for precision scheduling of sounds at each beat/note
-        this.scheduler = new Scheduler(
-            () => (this.audioCtx.currentTime),
-            () => (this.state.tempo),
-            () => (this.state.maxNotes),
-            this.scheduleNote.bind(this),
-            (note) => {
-                this.setState({currentNote: note});
-            }
-        );
+            <span>
+                <Slider name="bpm" min={10} max={200} value={tempo} step={1} onInput={(e) => dispatch(setTempo(e.target.value))}/>
+
+                <PlayButton
+                    isPlaying={isPlaying}
+                    onInput={(event) => {
+                        setIsPlaying(!isPlaying);
+
+                        // TOOD: maybe just do this if playing
+                        // check if context is in suspended state (autoplay policy)
+                        if (audioCtx.state === 'suspended') {
+                            audioCtx.resume();
+                        }
+
+                        // play/pause the scheduler
+                        //this.scheduler.playpause();
+                    }}
+                />
+            </span>
+
+            <InstrumentControl name={'sweep'} instrument={instruments.sweep} pads={[]}/>
+
+            <InstrumentControl name={'pulse'} instrument={instruments.pulse} pads={[]}/>
+
+            <InstrumentControl name={'noise'} instrument={instruments.noise} pads={[]}/>
+
+            <InstrumentControl name={'sample'} instrument={instruments.sample} pads={[]}/>
+        </div>
+    );
+
+}
+
+function schedulei(i, time) {
+    if (i === 0) {
+        console.log(`scheduling sweep at time=${time}, current time is ${this.audioCtx.currentTime}`);
+        sweep.schedule(time);
+    } else if (i === 1) {
+        pulse.schedule(time);
+    } else if (i === 2) {
+        noise.schedule(time);
+    } else if (i === 3) {
+        sample.schedule(time);
     }
+}
 
-    render() {
-        const {
-            // state
-            isPlaying,
-            tempo,
-            currentNote,
-            pads,
-        } = this.state;
-
-        return (
-            <div>
-                <span>{`beat ${currentNote}`}</span>
-                <span>{isPlaying ? 'playing' : 'paused'}</span>
-
-                <span>
-                    <Slider name="bpm" min={10} max={200} value={tempo} step={1} onInput={this.onInput('tempo')}/>
-
-                    <PlayButton
-                        isPlaying={isPlaying}
-                        onInput={(event) => {
-                            this.setState((state, props) => ({isPlaying: !state.isPlaying}));
-
-                            // TOOD: maybe just do this if playing
-                            // check if context is in suspended state (autoplay policy)
-                            if (this.audioCtx.state === 'suspended') {
-                                this.audioCtx.resume();
-                            }
-
-                            // play/pause the scheduler
-                            this.scheduler.playpause();
-                        }}
-                    />
-                </span>
-
-                <InstrumentControl name={'sweep'} instrument={this.instruments.sweep} pads={pads[0]}/>
-
-                <InstrumentControl name={'pulse'} instrument={this.instruments.pulse} pads={pads[1]}/>
-
-                <InstrumentControl name={'noise'} instrument={this.instruments.noise} pads={pads[2]}/>
-
-                <InstrumentControl name={'sample'} instrument={this.instruments.sample} pads={pads[3]}/>
-            </div>
-        );
-    }
-
-    schedulei(i, time) {
-        const {
-            sweep,
-            pulse,
-            noise,
-            sample,
-        } = this.instruments;
-
-        if (i === 0) {
-            console.log(`scheduling sweep at time=${time}, current time is ${this.audioCtx.currentTime}`);
-            sweep.schedule(time);
-        } else if (i === 1) {
-            pulse.schedule(time);
-        } else if (i === 2) {
-            noise.schedule(time);
-        } else if (i === 3) {
-            sample.schedule(time);
+function scheduleNote(beatNumber, time) {
+    console.log(`scheduleNote(${beatNumber}, ${time})`);
+    /*
+    for (let i = 0; i < 4; i++) {
+        if (pads[i][beatNumber]) {
+            this.schedulei(i, time);
         }
     }
-
-    scheduleNote(beatNumber, time) {
-        const {
-            pads,
-        } = this.state;
-
-        for (let i = 0; i < 4; i++) {
-            if (pads[i][beatNumber]) {
-                this.schedulei(i, time);
-            }
-        }
-    }
-
-    onInput(name) {
-        const callback = (event) => {
-            this.updateState(name, event.target.value);
-        };
-
-        callback.bind(this);
-
-        return callback;
-    }
-
-    updateState(name, value) {
-        this.setState({[name]: value});
-    }
+    */
 }
 
 export default StepSequencer;
