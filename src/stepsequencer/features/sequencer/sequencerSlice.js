@@ -37,6 +37,14 @@ export const sequencerSlice = createSlice({
     },
 
     reducers: {
+        helloAsync: () => {
+            // nothing. saga watches for this
+        },
+
+        printHelloAction: () => {
+            console.log('hello!');
+        },
+
         play: state => {
             state.isPlaying = true;
 
@@ -79,6 +87,8 @@ export const sequencerSlice = createSlice({
 
 // auto generated actions
 export const {
+    helloAsync,
+    printHelloAction,
     play,
     pause,
     setTempo,

@@ -9,6 +9,8 @@ import Scheduler from './Scheduler';
 import Slider from './Slider';
 import {
     // actions
+    helloAsync,
+    printHelloAction,
     play,
     setTempo,
 
@@ -39,6 +41,10 @@ function StepSequencer() {
 
     return (
         <div>
+            <button onClick={() => dispatch(helloAsync())}>
+                Async hello
+            </button>
+
             <span>{`beat ${currentNote}`}</span>
             <span>{isPlaying ? 'playing' : 'paused'}</span>
 
