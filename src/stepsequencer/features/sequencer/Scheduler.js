@@ -1,9 +1,5 @@
 'use strict';
 
-// Constants
-const LOOKAHEAD = 25.0; // How frequently to call scheduling function (in milliseconds)
-const SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
-
 // Given a scheduleNoteCallback, use it to schedule note plays based on tempo
 // code based on https://www.html5rocks.com/en/tutorials/audio/scheduling
 export default class Scheduler {

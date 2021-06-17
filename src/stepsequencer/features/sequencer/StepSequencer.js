@@ -1,48 +1,38 @@
 'use strict';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import InstrumentControl from './InstrumentControl';
-import { Sweep, Pulse, Noise, Sample } from './instruments';
 import PlayButton from './PlayButton';
 import Scheduler from './Scheduler';
 import Slider from './Slider';
 import {
     setTempo,
     selectTempo,
+
+    selectAudioCtx,
+    selectSweep,
+    selectPulse,
+    selectNoise,
+    selectSample,
 } from './sequencerSlice';
-
-// for cross browser compatibility
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
-
-// instruments in the sequencer
-const instruments = {
-    sweep: new Sweep(audioCtx),
-    pulse: new Pulse(audioCtx),
-    noise: new Noise(audioCtx),
-    sample: new Sample(audioCtx),
-};
-
-// Scheduler for precision scheduling of sounds at each beat/note
-const scheduler = new Scheduler(
-    () => (audioCtx.currentTime),
-    () => (60),
-    () => (state.maxNotes),
-    scheduleNote,
-    (note) => (null)
-);
 
 function StepSequencer() {
     // React Hooks for React State
-    const [isPlaying, setisPlaying] = useState(false)
+    const [isPlaying, setIsPlaying] = useState(false);
     const [currentNote, setCurrentNote] = useState(0);
     const [maxNotes, setMaxNotes] = useState(4);
 
     // Custom React Hooks for Redux state (?)
     const tempo = useSelector(selectTempo);
+    const audioCtx = useSelector(selectAudioCtx);
+    const sweep = useSelector(selectSweep);
+    const pulse = useSelector(selectPulse);
+    const noise = useSelector(selectNoise);
+    const sample = useSelector(selectSample);
     const dispatch = useDispatch();
+
 
     return (
         <div>
@@ -57,25 +47,19 @@ function StepSequencer() {
                     onInput={(event) => {
                         setIsPlaying(!isPlaying);
 
-                        // TOOD: maybe just do this if playing
-                        // check if context is in suspended state (autoplay policy)
-                        if (audioCtx.state === 'suspended') {
-                            audioCtx.resume();
-                        }
-
                         // play/pause the scheduler
                         //this.scheduler.playpause();
                     }}
                 />
             </span>
 
-            <InstrumentControl name={'sweep'} instrument={instruments.sweep} pads={[]}/>
+            <InstrumentControl name={'sweep'} instrument={sweep} pads={[]}/>
 
-            <InstrumentControl name={'pulse'} instrument={instruments.pulse} pads={[]}/>
+            <InstrumentControl name={'pulse'} instrument={pulse} pads={[]}/>
 
-            <InstrumentControl name={'noise'} instrument={instruments.noise} pads={[]}/>
+            <InstrumentControl name={'noise'} instrument={noise} pads={[]}/>
 
-            <InstrumentControl name={'sample'} instrument={instruments.sample} pads={[]}/>
+            <InstrumentControl name={'sample'} instrument={sample} pads={[]}/>
         </div>
     );
 
