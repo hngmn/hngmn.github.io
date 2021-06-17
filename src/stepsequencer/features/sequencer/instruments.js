@@ -9,14 +9,14 @@ export class Sweep {
                 name: 'attack',
                 min: 0,
                 max: 1,
-                initialValue: 0.2,
+                value: 0.2,
                 step: 0.1,
             },
             {
                 name: 'release',
                 min: 0,
                 max: 1,
-                initialValue: 0.5,
+                value: 0.5,
                 step: 0.1,
             }
         ]
@@ -55,14 +55,14 @@ export class Pulse {
                 name: 'lfoHz',
                 min: 20,
                 max: 40,
-                initialValue: 30,
+                value: 30,
                 step: 1,
             },
             {
                 name: 'pulseHz',
                 min: 660,
                 max: 1320,
-                initialValue: 880,
+                value: 880,
                 step: 1,
             }
         ]
@@ -102,14 +102,14 @@ export class Noise {
                 name: 'noiseDuration',
                 min: 0,
                 max: 2,
-                initialValue: 1,
+                value: 1,
                 step: 0.1,
             },
             {
                 name: 'bandHz',
                 min: 400,
                 max: 1200,
-                initialValue: 660,
+                value: 660,
                 step: 1,
             }
         ]
@@ -148,7 +148,7 @@ export class Sample {
                 name: 'playbackRate',
                 min: 0.1,
                 max: 2,
-                initialValue: 1,
+                value: 1,
                 step: 0.1,
             }
         ]

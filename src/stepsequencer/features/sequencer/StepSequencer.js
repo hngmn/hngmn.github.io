@@ -40,7 +40,7 @@ function StepSequencer() {
             <span>{isPlaying ? 'playing' : 'paused'}</span>
 
             <span>
-                <Slider name="bpm" min={10} max={200} value={tempo} step={1} onInput={(e) => dispatch(setTempo(e.target.value))}/>
+                <Slider param={{name: "bpm", min: 10, max: 200, value: tempo, step: 1, onInput: (e) => dispatch(setTempo(e.target.value))}}/>
 
                 <PlayButton
                     isPlaying={isPlaying}
