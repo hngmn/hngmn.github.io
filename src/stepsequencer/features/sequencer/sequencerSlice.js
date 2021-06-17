@@ -6,7 +6,7 @@ import { Sweep, Pulse, Noise, Sample } from './instruments';
 
 // for cross browser compatibility
 const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
+export const audioCtx = new AudioContext();
 
 // Constants
 const LOOKAHEAD = 25.0; // How frequently to call scheduling function (in milliseconds)
@@ -16,8 +16,6 @@ export const sequencerSlice = createSlice({
     name: 'sequencer',
 
     initialState: {
-        // this 'state' doesn't really change, i just need to use it in a lot of different places
-        audioCtx: audioCtx,
 
         // instruments TODO: These should eventually be moved elsewhere/configurable
         sweep: new Sweep(audioCtx),
@@ -49,8 +47,8 @@ export const sequencerSlice = createSlice({
             state.isPlaying = true;
 
             // check if context is in suspended state (autoplay policy)
-            if (state.audioCtx.state === 'suspended') {
-                state.audioCtx.resume();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
             }
         },
 
@@ -62,8 +60,6 @@ export const sequencerSlice = createSlice({
 
         advanceNote: state => {
             const {
-                audioCtx,
-
                 nBars,
                 notesPerBar,
 
@@ -87,8 +83,6 @@ export const sequencerSlice = createSlice({
 
 // auto generated actions
 export const {
-    helloAsync,
-    printHelloAction,
     play,
     pause,
     setTempo,
@@ -98,7 +92,6 @@ export const {
 // selectors
 export const selectIsPlaying = state => state.sequencer.isPlaying;
 export const selectTempo = state => state.sequencer.tempo;
-export const selectAudioCtx = state => state.sequencer.audioCtx;
 export const selectSweep = state => state.sequencer.sweep;
 export const selectPulse = state => state.sequencer.pulse;
 export const selectNoise = state => state.sequencer.noise;

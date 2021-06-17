@@ -9,8 +9,6 @@ import Scheduler from './Scheduler';
 import Slider from './Slider';
 import {
     // actions
-    helloAsync,
-    printHelloAction,
     play,
     setTempo,
 
@@ -32,7 +30,6 @@ function StepSequencer() {
     // Custom React Hooks for Redux state (?)
     const isPlaying = useSelector(selectIsPlaying);
     const tempo = useSelector(selectTempo);
-    const audioCtx = useSelector(selectAudioCtx);
     const sweep = useSelector(selectSweep);
     const pulse = useSelector(selectPulse);
     const noise = useSelector(selectNoise);
@@ -41,10 +38,6 @@ function StepSequencer() {
 
     return (
         <div>
-            <button onClick={() => dispatch(helloAsync())}>
-                Async hello
-            </button>
-
             <span>{`beat ${currentNote}`}</span>
             <span>{isPlaying ? 'playing' : 'paused'}</span>
 
@@ -71,7 +64,6 @@ function StepSequencer() {
 
 function schedulei(i, time) {
     if (i === 0) {
-        console.log(`scheduling sweep at time=${time}, current time is ${this.audioCtx.currentTime}`);
         sweep.schedule(time);
     } else if (i === 1) {
         pulse.schedule(time);
