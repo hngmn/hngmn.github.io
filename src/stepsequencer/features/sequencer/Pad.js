@@ -2,22 +2,20 @@
 
 import React from 'react';
 
-export default class Pad extends React.Component {
-    render() {
-        const {
-            isOn,
-            onClick,
-        } = this.props;
+export default function Pad(props) {
+    const {
+        isOn,
+        onClick,
+    } = props;
 
-        const className = 'someClassName'; // TODO: this should make it so I can program styling?
+    const className = 'someClassName'; // TODO: this should make it so I can program styling?
 
-        return (
-            <button
-                className={className}
-                onClick={onClick}
-            >
-                <span>{isOn ? '[X]' : '[  ]'}</span>
-            </button>
-        )
-    }
+    return (
+        <button
+            className={className}
+            onClick={onClick}
+        >
+            <span>{isOn ? '[X]' : '[  ]'}</span>
+        </button>
+    )
 }

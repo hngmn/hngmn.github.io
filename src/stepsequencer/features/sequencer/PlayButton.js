@@ -2,17 +2,15 @@
 
 import React from 'react';
 
-export default class PlayButton extends React.Component {
-    render(props) {
-        const {
-            isPlaying,
-            onInput
-        } = this.props;
+export default function PlayButton(props) {
+    const {
+        isPlaying,
+        onInput
+    } = props;
 
-        return (
-            <button onClick={onInput}>
-                <span>{isPlaying ? 'Pause' : 'Play'}</span>
-            </button>
-        )
-    }
+    return (
+        <button onClick={onInput}>
+            <span>{isPlaying ? 'Pause' : 'Play'}</span>
+        </button>
+    );
 }

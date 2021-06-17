@@ -53,13 +53,13 @@ function StepSequencer() {
                 />
             </span>
 
-            <InstrumentControl name={'sweep'} instrument={sweep} pads={[]}/>
+            <InstrumentControl name={'sweep'} instrument={sweep} pads={[true]}/>
 
-            <InstrumentControl name={'pulse'} instrument={pulse} pads={[]}/>
+            <InstrumentControl name={'pulse'} instrument={pulse} pads={[false]}/>
 
-            <InstrumentControl name={'noise'} instrument={noise} pads={[]}/>
+            <InstrumentControl name={'noise'} instrument={noise} pads={[true]}/>
 
-            <InstrumentControl name={'sample'} instrument={sample} pads={[]}/>
+            <InstrumentControl name={'sample'} instrument={sample} pads={[false]}/>
         </div>
     );
 
