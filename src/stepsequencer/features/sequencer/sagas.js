@@ -72,12 +72,13 @@ function scheduleNoteCallback(currentNote, nextNoteTime) {
     console.log(`scheduleNoteCallback called with ${currentNote}, ${nextNoteTime}`);
 }
 
-function* watchPlay() {
-    yield takeEvery(play().type, playAsync);
-}
+// add action watchers here, as pairs of the actionCreator and the generator function watcher
+const watchers = [
+    [play, playAsync],
+].map(([actionCreator, saga]) => function* () {
+    yield takeEvery(actionCreator().type, saga);
+}());
 
 export default function* rootSaga() {
-    yield all([
-        watchPlay(),
-    ])
+    yield all(watchers);
 }
