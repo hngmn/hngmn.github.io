@@ -2,6 +2,23 @@
 
 import wavetable from './wavetable';
 
+export class InstrumentParameter {
+    constructor({name, min = 0.0, max = 1.0, initialValue = null, step = 0.1}) {
+        this.name = name;
+        this.min = min;
+        this.max = max;
+        this.value = initialValue ? initialValue : min;
+        this.step = step;
+    }
+
+    setValue(value) {
+        if (value < min || value > max) {
+            throw Error(`instrument parameter out of bounds: ${value}`);
+        }
+        this.value = value;
+    }
+}
+
 export class Sweep {
     constructor(audioCtx) {
         this.params = [
@@ -9,20 +26,17 @@ export class Sweep {
                 name: 'attack',
                 min: 0,
                 max: 1,
-                value: 0.2,
+                initialValue: 0.2,
                 step: 0.1,
             },
             {
                 name: 'release',
                 min: 0,
                 max: 1,
-                value: 0.5,
+                initialValue: 0.5,
                 step: 0.1,
-            }
-        ]
-
-        this.attack = 0.2;
-        this.release = 0.5;
+            },
+        ];
 
         this.audioCtx = audioCtx;
         this.wave = this.audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);

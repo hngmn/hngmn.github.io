@@ -6,16 +6,14 @@ import Pad from './Pad.js';
 
 export default function InstrumentControl(props) {
     const {
-        name,
         instrument,
-        pads,
     } = props;
 
     return (
         <span>
-            <InstrumentParameters instrument={instrument}/>
+            <InstrumentParameters params={instrument.params.allNames.map((id) => instrument.params.byName[id])}/>
 
-            {pads.map((pad, index) => (
+            {instrument.pads.map((pad, index) => (
                 <Pad key={`${name}${index}`}isOn={pad} onClick={() => {console.log(`${name} pad ${index} clicked`);}}/>
             ))}
         </span>

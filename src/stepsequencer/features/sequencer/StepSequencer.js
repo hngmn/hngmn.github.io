@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import InstrumentControl from './InstrumentControl';
@@ -12,18 +12,16 @@ import {
     play,
     pause,
     setTempo,
+    addInstrument,
 
     // selectors
     selectIsPlaying,
     selectTempo,
-    selectAudioCtx,
-    selectSweep,
-    selectPulse,
-    selectNoise,
-    selectSample,
-
-    instruments,
+    selectInstruments,
 } from './sequencerSlice';
+import { Sweep, Pulse, Noise, Sample } from './instruments';
+import { initAudio } from './sagas';
+
 
 function StepSequencer() {
     // React Hooks for React State
@@ -33,7 +31,25 @@ function StepSequencer() {
     // Custom React Hooks for Redux state (?)
     const isPlaying = useSelector(selectIsPlaying);
     const tempo = useSelector(selectTempo);
+    const instruments = useSelector(selectInstruments);
     const dispatch = useDispatch();
+
+    // init audio
+    useEffect(() => {
+        let audioCtx = initAudio();
+
+        let sweep = new Sweep(audioCtx);
+        dispatch(addInstrument({
+            name: 'Sweep',
+            params: sweep.params,
+        }));
+
+        let pulse = new Pulse(audioCtx);
+        dispatch(addInstrument({
+            name: 'Pulse',
+            params: pulse.params,
+        }));
+    }, []); // empty array so this hook only runs once, on mount
 
     return (
         <div>
@@ -49,39 +65,12 @@ function StepSequencer() {
                 />
             </span>
 
-            <InstrumentControl name={'sweep'} instrument={instruments.sweep} pads={[true]}/>
-
-            <InstrumentControl name={'pulse'} instrument={instruments.pulse} pads={[false]}/>
-
-            <InstrumentControl name={'noise'} instrument={instruments.noise} pads={[true]}/>
-
-            <InstrumentControl name={'sample'} instrument={instruments.sample} pads={[false]}/>
+            {instruments.map((instrument) => (
+                <InstrumentControl key={instrument.name} instrument={instrument} />
+            ))}
         </div>
     );
 
-}
-
-function schedulei(i, time) {
-    if (i === 0) {
-        instruments.sweep.schedule(time);
-    } else if (i === 1) {
-        instruments.pulse.schedule(time);
-    } else if (i === 2) {
-        instruments.noise.schedule(time);
-    } else if (i === 3) {
-        instruments.sample.schedule(time);
-    }
-}
-
-function scheduleNote(beatNumber, time) {
-    console.log(`scheduleNote(${beatNumber}, ${time})`);
-    /*
-    for (let i = 0; i < 4; i++) {
-        if (pads[i][beatNumber]) {
-            this.schedulei(i, time);
-        }
-    }
-    */
 }
 
 export default StepSequencer;

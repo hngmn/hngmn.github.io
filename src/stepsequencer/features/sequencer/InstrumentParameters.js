@@ -5,9 +5,13 @@ import React, { useState } from 'react';
 import Slider from './Slider';
 
 export default function InstrumentParameters(props) {
+    const {
+        params,
+    } = props;
+
     return (
         <div>
-            {props.instrument.params.map((param) => {
+            {params.map((param) => {
                 return (
                     <Slider
                         key={param.name}

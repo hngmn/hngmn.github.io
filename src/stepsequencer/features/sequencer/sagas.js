@@ -11,17 +11,25 @@ import {
     selectCurrentNote,
 } from './sequencerSlice';
 
-const delay = (ms) => new Promise(res => setTimeout(res, ms));
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
 
 // for cross browser compatibility
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-export const audioCtx = new AudioContext();
+export function initAudio() {
+    audioCtx = audioCtx || new AudioContext();
+
+    return audioCtx;
+}
+
+const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
 // Constants
 const LOOKAHEAD = 25.0; // How frequently to call scheduling function (in ms)
 const SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
 
 function* playAsync() {
+    console.log('playAsync');
+
     // check if context is in suspended state (autoplay policy)
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
@@ -56,7 +64,12 @@ function scheduler(nextNoteTime) {
         }
 
         timerId = window.setTimeout(scheduler(nextNoteTime), LOOKAHEAD);
+        console.log(`timer set with id=${timerId}`);
     }
+}
+
+function scheduleNoteCallback(currentNote, nextNoteTime) {
+    console.log(`scheduleNoteCallback called with ${currentNote}, ${nextNoteTime}`);
 }
 
 function* watchPlay() {

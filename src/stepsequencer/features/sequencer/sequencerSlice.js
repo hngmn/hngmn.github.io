@@ -2,17 +2,6 @@
 
 import { createSlice } from '@reduxjs/toolkit'
 
-import { Sweep, Pulse, Noise, Sample } from './instruments';
-import { audioCtx } from './sagas';
-
-// instruments TODO: These should eventually be moved elsewhere/configurable
-export const instruments = {
-    sweep: new Sweep(audioCtx),
-    pulse: new Pulse(audioCtx),
-    noise: new Noise(audioCtx),
-    sample: new Sample(audioCtx),
-};
-
 export const sequencerSlice = createSlice({
     name: 'sequencer',
 
@@ -21,6 +10,12 @@ export const sequencerSlice = createSlice({
         // currently fixed, will be configurable state eventually
         nBars: 1,
         notesPerBar: 4,
+
+        // sequencer instrument state
+        instruments: {
+            byId: {},
+            allIds: [],
+        },
 
         // timekeeping state
         currentNote: 0,
@@ -43,14 +38,40 @@ export const sequencerSlice = createSlice({
                 notesPerBar,
 
                 currentNote,
-            } = state.sequencer;
+            } = state;
 
             const maxNotes = nBars * notesPerBar
-            state.sequencer.currentNote = (currentNote + 1) % maxNotes;
+            state.currentNote = (currentNote + 1) % maxNotes;
         },
 
         setTempo: (state, action) => {
             state.tempo = action.payload;
+        },
+
+        addInstrument: (state, action) => {
+            console.log('addInstrument action');
+            const {
+                nBars,
+                notesPerBar,
+            } = state;
+
+            let id = `instrument${state.instruments.allIds.length}`; // TODO this should probably be uuid
+
+            state.instruments.allIds.push(id);
+            state.instruments.byId[id] = {
+                name: action.payload.name,
+                pads: [false, false, false, false],
+                params: {
+                    byName: {
+                    },
+                    allNames: action.payload.params.map((param) => param.name),
+                }
+            };
+
+            action.payload.params.forEach((param) => {
+                state.instruments.byId[id].params.byName[param.name] = param;
+            });
+
         },
     }
 });
@@ -61,14 +82,12 @@ export const {
     pause,
     setTempo,
     advanceNote,
+    addInstrument,
 } = sequencerSlice.actions;
 
 // selectors
 export const selectIsPlaying = state => state.sequencer.isPlaying;
 export const selectTempo = state => state.sequencer.tempo;
-export const selectSweep = state => state.sequencer.sweep;
-export const selectPulse = state => state.sequencer.pulse;
-export const selectNoise = state => state.sequencer.noise;
-export const selectSample = state => state.sequencer.sample;
+export const selectInstruments = state => state.sequencer.instruments.allIds.map((id) => state.sequencer.instruments.byId[id]);
 
 export default sequencerSlice.reducer;
