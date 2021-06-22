@@ -19,7 +19,7 @@ import {
     selectTempo,
     selectInstruments,
 } from './sequencerSlice';
-import { Sweep, Pulse, Noise, Sample } from './instruments';
+import { Sweep, Pulse, Noise, Sample } from '../instruments/defaultInstruments';
 import { initAudio } from './sagas';
 
 
