@@ -1,6 +1,6 @@
 'use strict';
 
-import { put, takeEvery, all, select } from 'redux-saga/effects';
+import { put, takeEvery, select } from 'redux-saga/effects';
 
 import {
     play,
@@ -74,12 +74,8 @@ function scheduleNoteCallback(currentNote, nextNoteTime) {
 }
 
 // add action watchers here, as pairs of the actionCreator and the generator function watcher
-const watchers = [
+export default [
     [play, playAsync],
 ].map(([actionCreator, saga]) => function* () {
     yield takeEvery(actionCreator().type, saga);
 }());
-
-export default function* rootSaga() {
-    yield all(watchers);
-}
