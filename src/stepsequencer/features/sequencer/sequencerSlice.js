@@ -2,6 +2,8 @@
 
 import { createSlice } from '@reduxjs/toolkit'
 
+import { addInstrumentToScheduler } from './instrumentPlayer.js';
+
 export const sequencerSlice = createSlice({
     name: 'sequencer',
 
@@ -80,7 +82,8 @@ export const sequencerSlice = createSlice({
             },
 
             prepare(name, instrument) {
-                // TODO: add instrument to player
+                // add instrument to player
+                addInstrumentToScheduler(name, instrument);
 
                 return {
                     payload: {

@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import InstrumentControl from './InstrumentControl';
 import PlayButton from './PlayButton';
-import Scheduler from './Scheduler';
 import Slider from './Slider';
 import {
     // actions

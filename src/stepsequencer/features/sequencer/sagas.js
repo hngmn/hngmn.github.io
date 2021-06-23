@@ -1,6 +1,5 @@
 'use strict';
 
-import { put, takeEvery, select } from 'redux-saga/effects';
 
 import {
     play,
@@ -10,6 +9,7 @@ import {
     selectTempo,
     selectCurrentNote,
 } from './sequencerSlice';
+import { schedule } from './instrumentPlayer';
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
@@ -35,7 +35,7 @@ function* playAsync() {
         audioCtx.resume();
     }
 
-    scheduler(audioCtx.currentTime)();
+    yield call(scheduler(audioCtx.currentTime))
 }
 
 /**
@@ -47,10 +47,11 @@ function scheduler(nextNoteTime) {
     // TODO: scheduleNote and how to pause/stop the timeout
     return function*() {
         console.log('scheduler running.');
-        const isPlaying = yield(select(selectIsPlaying));
+        const isPlaying = yield select(selectIsPlaying);
         console.log(`isPlaying=${isPlaying}`);
         if (!isPlaying) {
             window.clearTimeout(timerId);
+            return;
         }
 
         const tempo = yield(select(selectTempo));
@@ -67,10 +68,6 @@ function scheduler(nextNoteTime) {
         timerId = window.setTimeout(scheduler(nextNoteTime), LOOKAHEAD);
         console.log(`timer set with id=${timerId}`);
     }
-}
-
-function scheduleNoteCallback(currentNote, nextNoteTime) {
-    console.log(`scheduleNoteCallback called with ${currentNote}, ${nextNoteTime}`);
 }
 
 // add action watchers here, as pairs of the actionCreator and the generator function watcher
