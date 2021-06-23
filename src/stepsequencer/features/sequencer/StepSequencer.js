@@ -13,6 +13,7 @@ import {
     pause,
     setTempo,
     addInstrument,
+    updateInstrumentParameter,
 
     // selectors
     selectIsPlaying,
@@ -38,17 +39,8 @@ function StepSequencer() {
     useEffect(() => {
         let audioCtx = initAudio();
 
-        let sweep = new Sweep(audioCtx);
-        dispatch(addInstrument({
-            name: 'Sweep',
-            params: sweep.params,
-        }));
-
-        let pulse = new Pulse(audioCtx);
-        dispatch(addInstrument({
-            name: 'Pulse',
-            params: pulse.params,
-        }));
+        dispatch(addInstrument('sweep', new Sweep(audioCtx)));
+        dispatch(addInstrument('pulse', new Pulse(audioCtx)));
     }, []); // empty array so this hook only runs once, on mount
 
     return (
@@ -57,7 +49,10 @@ function StepSequencer() {
             <span>{isPlaying ? 'playing' : 'paused'}</span>
 
             <span>
-                <Slider param={{name: "bpm", min: 10, max: 200, value: tempo, step: 1, onInput: (e) => dispatch(setTempo(e.target.value))}}/>
+                <Slider
+                    param={{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
+                    onInput={(e) => dispatch(setTempo(e.target.value))}
+                />
 
                 <PlayButton
                     isPlaying={isPlaying}
@@ -66,7 +61,11 @@ function StepSequencer() {
             </span>
 
             {instruments.map((instrument) => (
-                <InstrumentControl key={instrument.name} instrument={instrument} />
+                <InstrumentControl
+                    key={instrument.name}
+                    instrument={instrument}
+                    onInput={(instrumentName, parameterName, value) => dispatch(updateInstrumentParameter(instrumentName, parameterName, value))}
+                />
             ))}
         </div>
     );

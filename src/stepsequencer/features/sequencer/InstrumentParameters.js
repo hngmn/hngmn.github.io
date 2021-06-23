@@ -7,6 +7,7 @@ import Slider from './Slider';
 export default function InstrumentParameters(props) {
     const {
         params,
+        onInput,
     } = props;
 
     return (
@@ -16,6 +17,7 @@ export default function InstrumentParameters(props) {
                     <Slider
                         key={param.name}
                         param={param}
+                        onInput={(e) => onInput(param.name, e.target.value)}
                     />
                 );
             })}

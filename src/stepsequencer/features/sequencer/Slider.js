@@ -17,7 +17,7 @@ export default function Slider(props) {
     return (
         <div>
             <label htmlFor={name}>slider for {name} ({value})</label>
-            <input name={name} id={name} type="range" min={min} max={max} value={value} step={step} onInput={() => {}}/>
+            <input name={name} id={name} type="range" min={min} max={max} value={value} step={step} onInput={props.onInput}/>
         </div>
     );
 }

@@ -48,31 +48,67 @@ export const sequencerSlice = createSlice({
             state.tempo = action.payload;
         },
 
-        addInstrument: (state, action) => {
-            console.log('addInstrument action');
-            const {
-                nBars,
-                notesPerBar,
-            } = state;
+        addInstrument: {
+            reducer(state, action) {
+                const {
+                    nBars,
+                    notesPerBar,
+                } = state;
 
-            let id = `instrument${state.instruments.allIds.length}`; // TODO this should probably be uuid
+                const {
+                    name,
+                    params,
+                } = action.payload;
 
-            state.instruments.allIds.push(id);
-            state.instruments.byId[id] = {
-                name: action.payload.name,
-                pads: [false, false, false, false],
-                params: {
-                    byName: {
-                    },
-                    allNames: action.payload.params.map((param) => param.name),
-                }
-            };
+                let id = name;
 
-            action.payload.params.forEach((param) => {
-                state.instruments.byId[id].params.byName[param.name] = param;
-            });
+                state.instruments.allIds.push(id);
+                state.instruments.byId[id] = {
+                    name: name,
+                    pads: [false, false, false, false],
+                    params: {
+                        byName: {
+                        },
+                        allNames: params.map((param) => param.name),
+                    }
+                };
 
+                params.forEach((param) => {
+                    state.instruments.byId[id].params.byName[param.name] = param;
+                });
+
+            },
+
+            prepare(name, instrument) {
+                // TODO: add instrument to player
+
+                return {
+                    payload: {
+                        name: name,
+                        params: instrument.params,
+                    }
+                };
+            },
         },
+
+        updateInstrumentParameter: {
+            reducer(state, action) {
+                const {
+                    instrumentName,
+                    parameterName,
+                    value,
+                } = action.payload;
+
+                state.instruments.byId[instrumentName].params.byName[parameterName].value = value;
+            },
+
+            prepare(instrumentName, parameterName, value) {
+                return {
+                    payload: { instrumentName, parameterName, value }
+                };
+            }
+        }
+
     }
 });
 
@@ -83,6 +119,7 @@ export const {
     setTempo,
     advanceNote,
     addInstrument,
+    updateInstrumentParameter,
 } = sequencerSlice.actions;
 
 // selectors

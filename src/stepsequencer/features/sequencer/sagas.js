@@ -46,8 +46,9 @@ function scheduler(nextNoteTime) {
 
     // TODO: scheduleNote and how to pause/stop the timeout
     return function*() {
+        console.log('scheduler running.');
         const isPlaying = yield(select(selectIsPlaying));
-        console.log(`scheduler running. isPlaying=${isPlaying}`);
+        console.log(`isPlaying=${isPlaying}`);
         if (!isPlaying) {
             window.clearTimeout(timerId);
         }
