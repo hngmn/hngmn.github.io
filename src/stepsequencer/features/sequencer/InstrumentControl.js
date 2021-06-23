@@ -3,12 +3,19 @@
 import React from 'react';
 import InstrumentParameters from './InstrumentParameters';
 import Pad from './Pad.js';
+import { useDispatch } from 'react-redux';
+
+import {
+    padClick,
+} from './sequencerSlice';
 
 export default function InstrumentControl(props) {
     const {
         instrument,
         onInput,
     } = props;
+
+    const dispatch = useDispatch();
 
     return (
         <span>
@@ -21,7 +28,7 @@ export default function InstrumentControl(props) {
                 <Pad
                     key={`${instrument.name}${index}`}
                     isOn={padIsOn}
-                    onClick={() => {console.log(`${instrument.name} pad ${index} clicked`);}}
+                    onClick={() => dispatch(padClick(instrument.name, index))}
                 />
             ))}
         </span>

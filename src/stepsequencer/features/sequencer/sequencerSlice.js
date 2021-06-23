@@ -107,7 +107,24 @@ export const sequencerSlice = createSlice({
                     payload: { instrumentName, parameterName, value }
                 };
             }
-        }
+        },
+
+        padClick: {
+            reducer(state, action) {
+                const {
+                    instrumentName,
+                    padi,
+                } = action.payload;
+
+                state.instruments.byId[instrumentName].pads[padi] = !state.instruments.byId[instrumentName].pads[padi];
+            },
+
+            prepare(instrumentName, padi) {
+                return {
+                    payload: { instrumentName, padi }
+                };
+            },
+        },
 
     }
 });
@@ -120,6 +137,7 @@ export const {
     advanceNote,
     addInstrument,
     updateInstrumentParameter,
+    padClick,
 } = sequencerSlice.actions;
 
 // selectors

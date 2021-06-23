@@ -27,7 +27,6 @@ import { initAudio } from './sagas';
 function StepSequencer() {
     // React Hooks for React State
     const [currentNote, setCurrentNote] = useState(0);
-    const [maxNotes, setMaxNotes] = useState(4);
 
     // Custom React Hooks for Redux state (?)
     const isPlaying = useSelector(selectIsPlaying);
