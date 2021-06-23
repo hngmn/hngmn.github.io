@@ -17,8 +17,12 @@ export default function InstrumentControl(props) {
                 onInput={(parameterName, value) => onInput(instrument.name, parameterName, value)}
             />
 
-            {instrument.pads.map((pad, index) => (
-                <Pad key={`${name}${index}`}isOn={pad} onClick={() => {console.log(`${name} pad ${index} clicked`);}}/>
+            {instrument.pads.map((padIsOn, index) => (
+                <Pad
+                    key={`${instrument.name}${index}`}
+                    isOn={padIsOn}
+                    onClick={() => {console.log(`${instrument.name} pad ${index} clicked`);}}
+                />
             ))}
         </span>
     );
