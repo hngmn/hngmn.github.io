@@ -19,6 +19,8 @@ export default function InstrumentControl(props) {
 
     return (
         <span>
+            <span>{instrument.name}</span>
+
             <InstrumentParameters
                 params={instrument.params.allNames.map((id) => instrument.params.byName[id])}
                 onInput={(parameterName, value) => onInput(instrument.name, parameterName, value)}

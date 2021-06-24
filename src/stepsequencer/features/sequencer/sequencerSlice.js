@@ -143,6 +143,7 @@ export function playThunk(dispatch, getState) {
     let currentNote = 0;
     let nextNoteTime = audioCtx.currentTime;
     let timerId = null;
+    let lastTime = audioCtx.currentTime;
 
     function schedule() {
         const {
@@ -158,7 +159,6 @@ export function playThunk(dispatch, getState) {
         if (!isPlaying) {
             // sequencer has been paused. stop scheduling
             console.log('isPlaying false. stopping schedule() timeout');
-            window.clearTimeout(timerId);
             return;
         }
 
@@ -166,7 +166,7 @@ export function playThunk(dispatch, getState) {
         const intervalEnd = audioCtx.currentTime + SCHEDULEAHEADTIME;
 
         while (nextNoteTime < intervalEnd) {
-            console.log(`scheduling note ${currentNote}`);
+            console.log(`scheduling note ${currentNote}, currentTime is ${audioCtx.currentTime}`);
             instruments.allIds.forEach((instrumentName) => {
                 if (instruments.byId[instrumentName].pads[currentNote]) {
                     console.log(`scheduling instrument ${instrumentName} for note ${currentNote}`);
@@ -177,10 +177,12 @@ export function playThunk(dispatch, getState) {
             currentNote = (currentNote + 1) % maxNotes;
             nextNoteTime += secondsPerBeat;
         }
+
+        timerId = window.setTimeout(schedule, LOOKAHEAD);
     }
 
     console.log('starting schedule()');
-    timerId = window.setInterval(schedule, LOOKAHEAD);
+    schedule();
 }
 
 // auto generated actions

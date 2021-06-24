@@ -11,7 +11,7 @@ export default function InstrumentParameters(props) {
     } = props;
 
     return (
-        <div>
+        <span>
             {params.map((param) => {
                 return (
                     <Slider
@@ -21,6 +21,6 @@ export default function InstrumentParameters(props) {
                     />
                 );
             })}
-        </div>
+        </span>
     );
 }
