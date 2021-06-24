@@ -79,8 +79,8 @@ export class Pulse extends Instrument {
             }
         }
 
-        this.lfoHz = 30;
-        this.pulseHz = 880;
+        this.lfoHz = this.params.lfoHz.value;
+        this.pulseHz = this.params.pulseHz.value;
 
         this.audioCtx = audioCtx;
     }
@@ -129,8 +129,8 @@ export class Noise extends Instrument {
             }
         };
 
-        this.bandHz = 1;
-        this.noiseDuration = 660;
+        this.noiseDuration = this.params.noiseDuration.value;
+        this.bandHz = this.params.bandHz.value;
 
         this.audioCtx = audioCtx;
     }
@@ -171,7 +171,7 @@ export class Sample extends Instrument {
         };
 
         this.filePath = '/assets/audio/dtmf.mp3';
-        this.playbackRate = 1;
+        this.playbackRate = this.params.playbackRate.value;
 
         this.audioCtx = audioCtx;
     }
