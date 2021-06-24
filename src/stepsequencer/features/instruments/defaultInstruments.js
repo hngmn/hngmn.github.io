@@ -2,44 +2,36 @@
 
 import wavetable from './wavetable';
 
-export class InstrumentParameter {
-    constructor({name, min = 0.0, max = 1.0, initialValue = null, step = 0.1}) {
-        this.name = name;
-        this.min = min;
-        this.max = max;
-        this.value = initialValue ? initialValue : min;
-        this.step = step;
-    }
-
-    setValue(value) {
-        if (value < min || value > max) {
-            throw Error(`instrument parameter out of bounds: ${value}`);
-        }
-        this.value = value;
+class Instrument {
+    setParameter(parameterName, value) {
+        this[parameterName] = value;
     }
 }
 
-export class Sweep {
+export class Sweep extends Instrument {
     constructor(audioCtx) {
-        this.params = [
-            {
+        super();
+
+        this.params = {
+            attack: {
                 name: 'attack',
                 min: 0,
                 max: 1,
                 value: 0.2,
                 step: 0.1,
             },
-            {
+
+            release: {
                 name: 'release',
                 min: 0,
                 max: 1,
-                initialValue: 0.5,
+                value: 0.5,
                 step: 0.1,
             },
-        ];
+        };
 
-        this.attack = 0.2;
-        this.release = 0.5;
+        this.attack = this.params.attack.value;
+        this.release = this.params.release.value;
 
         this.audioCtx = audioCtx;
         this.wave = this.audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);
@@ -65,24 +57,27 @@ export class Sweep {
     }
 }
 
-export class Pulse {
+export class Pulse extends Instrument {
     constructor(audioCtx) {
-        this.params = [
-            {
+        super();
+
+        this.params = {
+            lfoHz: {
                 name: 'lfoHz',
                 min: 20,
                 max: 40,
                 value: 30,
                 step: 1,
             },
-            {
+
+            pulseHz: {
                 name: 'pulseHz',
                 min: 660,
                 max: 1320,
                 value: 880,
                 step: 1,
             }
-        ]
+        }
 
         this.lfoHz = 30;
         this.pulseHz = 880;
@@ -112,24 +107,27 @@ export class Pulse {
     }
 }
 
-export class Noise {
+export class Noise extends Instrument {
     constructor(audioCtx) {
-        this.params = [
-            {
+        super();
+
+        this.params = {
+            noiseDuration: {
                 name: 'noiseDuration',
-                min: 0,
+                min: 0.1,
                 max: 2,
                 value: 1,
                 step: 0.1,
             },
-            {
+
+            bandHz: {
                 name: 'bandHz',
                 min: 400,
                 max: 1200,
                 value: 660,
                 step: 1,
             }
-        ]
+        };
 
         this.bandHz = 1;
         this.noiseDuration = 660;
@@ -158,17 +156,19 @@ export class Noise {
     }
 }
 
-export class Sample {
+export class Sample extends Instrument {
     constructor(audioCtx) {
-        this.params = [
-            {
+        super();
+
+        this.params = {
+            playbackRate: {
                 name: 'playbackRate',
                 min: 0.1,
                 max: 2,
                 value: 1,
                 step: 0.1,
             }
-        ]
+        };
 
         this.filePath = '/assets/audio/dtmf.mp3';
         this.playbackRate = 1;

@@ -21,6 +21,10 @@ export function addInstrumentToScheduler(name, instrument) {
     console.log(`instrument added: ${name}`);
 }
 
+export function getInstrument(name) {
+    return instruments[name];
+}
+
 export function scheduleInstrument(instrumentName, time) {
     // TODO: check instrument exists?
     instruments[instrumentName].schedule(time);

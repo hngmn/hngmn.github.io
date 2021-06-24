@@ -2,7 +2,12 @@
 
 import { createSlice } from '@reduxjs/toolkit'
 
-import { getAudioContext, addInstrumentToScheduler, scheduleInstrument } from './instrumentPlayer.js';
+import {
+    getAudioContext,
+    addInstrumentToScheduler,
+    getInstrument,
+    scheduleInstrument,
+} from './instrumentPlayer.js';
 
 export const sequencerSlice = createSlice({
     name: 'sequencer',
@@ -56,16 +61,10 @@ export const sequencerSlice = createSlice({
                     name: name,
                     pads: [false, false, false, false],
                     params: {
-                        byId: {
-                        },
-                        allIds: params.map((param) => param.name),
+                        byId: params,
+                        allIds: Object.keys(params),
                     }
                 };
-
-                params.forEach((param) => {
-                    state.instruments.byId[id].params.byId[param.name] = param;
-                });
-
             },
 
             prepare(name, instrument) {
@@ -78,7 +77,7 @@ export const sequencerSlice = createSlice({
             },
         },
 
-        updateInstrumentParameter: {
+        instrumentParameterUpdated: {
             reducer(state, action) {
                 const {
                     instrumentName,
@@ -121,7 +120,15 @@ export function addInstrument(name, instrument) {
     return function addInstrumentThunk(dispatch, getState) {
         addInstrumentToScheduler(name, instrument);
         dispatch(sequencerSlice.actions.instrumentAdded(name, instrument));
-    }
+    };
+}
+
+export function updateInstrumentParameter(instrumentName, parameterName, value) {
+    const valueNumber = parseFloat(value);
+    return function updateInstrumentThunk(dispatch, getState) {
+        getInstrument(instrumentName).setParameter(parameterName, valueNumber);
+        dispatch(sequencerSlice.actions.instrumentParameterUpdated(instrumentName, parameterName, valueNumber));
+    };
 }
 
 // thunk for scheduling
@@ -166,7 +173,6 @@ export function playThunk(dispatch, getState) {
         const intervalEnd = audioCtx.currentTime + SCHEDULEAHEADTIME;
 
         while (nextNoteTime < intervalEnd) {
-            console.log(`scheduling note ${currentNote}, currentTime is ${audioCtx.currentTime}`);
             instruments.allIds.forEach((instrumentName) => {
                 if (instruments.byId[instrumentName].pads[currentNote]) {
                     console.log(`scheduling instrument ${instrumentName} for note ${currentNote}`);
@@ -191,7 +197,6 @@ export const {
     setTempo,
     advanceNote,
 
-    updateInstrumentParameter,
     padClick,
 } = sequencerSlice.actions;
 
