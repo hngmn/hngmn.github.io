@@ -15,7 +15,7 @@ export const sequencerSlice = createSlice({
     initialState: {
 
         // currently fixed, will be configurable state eventually
-        nBars: 1,
+        nBars: 2,
         notesPerBar: 4,
 
         // sequencer instrument state
@@ -48,6 +48,7 @@ export const sequencerSlice = createSlice({
                     nBars,
                     notesPerBar,
                 } = state;
+                const totalNotes = nBars * notesPerBar;
 
                 const {
                     name,
@@ -59,7 +60,7 @@ export const sequencerSlice = createSlice({
                 state.instruments.allIds.push(id);
                 state.instruments.byId[id] = {
                     name: name,
-                    pads: [false, false, false, false],
+                    pads: (new Array(totalNotes)).fill(false),
                     params: {
                         byId: params,
                         allIds: Object.keys(params),
