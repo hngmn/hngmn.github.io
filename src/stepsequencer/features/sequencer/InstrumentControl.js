@@ -3,7 +3,7 @@
 import React from 'react';
 import InstrumentParameters from './InstrumentParameters';
 import Pad from './Pad.js';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
     padClick,
@@ -11,10 +11,11 @@ import {
 
 export default function InstrumentControl(props) {
     const {
-        instrument,
+        instrumentName,
         onInput,
     } = props;
 
+    const instrument = useSelector((state) => state.sequencer.instruments.byId[instrumentName]);
     const dispatch = useDispatch();
 
     return (
@@ -22,8 +23,8 @@ export default function InstrumentControl(props) {
             <span>{instrument.name}</span>
 
             <InstrumentParameters
-                params={instrument.params.allNames.map((id) => instrument.params.byName[id])}
-                onInput={(parameterName, value) => onInput(instrument.name, parameterName, value)}
+                params={instrument.params.allIds.map((id) => instrument.params.byId[id])}
+                onInput={onInput}
             />
 
             {instrument.pads.map((padIsOn, index) => (

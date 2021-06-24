@@ -56,14 +56,14 @@ export const sequencerSlice = createSlice({
                     name: name,
                     pads: [false, false, false, false],
                     params: {
-                        byName: {
+                        byId: {
                         },
-                        allNames: params.map((param) => param.name),
+                        allIds: params.map((param) => param.name),
                     }
                 };
 
                 params.forEach((param) => {
-                    state.instruments.byId[id].params.byName[param.name] = param;
+                    state.instruments.byId[id].params.byId[param.name] = param;
                 });
 
             },
@@ -86,7 +86,7 @@ export const sequencerSlice = createSlice({
                     value,
                 } = action.payload;
 
-                state.instruments.byId[instrumentName].params.byName[parameterName].value = value;
+                state.instruments.byId[instrumentName].params.byId[parameterName].value = value;
             },
 
             prepare(instrumentName, parameterName, value) {
@@ -194,10 +194,5 @@ export const {
     updateInstrumentParameter,
     padClick,
 } = sequencerSlice.actions;
-
-// selectors
-export const selectIsPlaying = state => state.sequencer.isPlaying;
-export const selectTempo = state => state.sequencer.tempo;
-export const selectInstruments = state => state.sequencer.instruments.allIds.map((id) => state.sequencer.instruments.byId[id]);
 
 export default sequencerSlice.reducer;
