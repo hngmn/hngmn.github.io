@@ -2,7 +2,7 @@
 
 import { createSlice } from '@reduxjs/toolkit'
 
-import { addInstrumentToScheduler } from './instrumentPlayer.js';
+import { getAudioContext, addInstrumentToScheduler, scheduleInstrument } from './instrumentPlayer.js';
 
 export const sequencerSlice = createSlice({
     name: 'sequencer',
@@ -20,7 +20,6 @@ export const sequencerSlice = createSlice({
         },
 
         // timekeeping state
-        currentNote: 0,
         tempo: 60, // bpm (beats/bars per min)
         timerId: null,
     },
@@ -34,23 +33,11 @@ export const sequencerSlice = createSlice({
             state.isPlaying = false;
         },
 
-        advanceNote: state => {
-            const {
-                nBars,
-                notesPerBar,
-
-                currentNote,
-            } = state;
-
-            const maxNotes = nBars * notesPerBar
-            state.currentNote = (currentNote + 1) % maxNotes;
-        },
-
         setTempo: (state, action) => {
             state.tempo = action.payload;
         },
 
-        addInstrument: {
+        instrumentAdded: {
             reducer(state, action) {
                 const {
                     nBars,
@@ -82,9 +69,6 @@ export const sequencerSlice = createSlice({
             },
 
             prepare(name, instrument) {
-                // add instrument to player
-                addInstrumentToScheduler(name, instrument);
-
                 return {
                     payload: {
                         name: name,
@@ -132,13 +116,79 @@ export const sequencerSlice = createSlice({
     }
 });
 
+// thunk for adding instrument to instrumentPlayer
+export function addInstrument(name, instrument) {
+    return function addInstrumentThunk(dispatch, getState) {
+        addInstrumentToScheduler(name, instrument);
+        dispatch(sequencerSlice.actions.instrumentAdded(name, instrument));
+    }
+}
+
+// thunk for scheduling
+export function playThunk(dispatch, getState) {
+    // Constants
+    const LOOKAHEAD = 25.0; // How frequently to call scheduling function (in ms)
+    const SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
+
+    // update UI
+    dispatch(sequencerSlice.actions.play());
+
+    const audioCtx = getAudioContext();
+
+    // check if context is in suspended state (autoplay policy)
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+
+    let currentNote = 0;
+    let nextNoteTime = audioCtx.currentTime;
+    let timerId = null;
+
+    function schedule() {
+        const {
+            nBars,
+            notesPerBar,
+
+            isPlaying,
+            tempo,
+            instruments,
+        } = getState().sequencer;
+
+        const maxNotes = nBars * notesPerBar
+        if (!isPlaying) {
+            // sequencer has been paused. stop scheduling
+            console.log('isPlaying false. stopping schedule() timeout');
+            window.clearTimeout(timerId);
+            return;
+        }
+
+        const secondsPerBeat = 60.0 / tempo;
+        const intervalEnd = audioCtx.currentTime + SCHEDULEAHEADTIME;
+
+        while (nextNoteTime < intervalEnd) {
+            console.log(`scheduling note ${currentNote}`);
+            instruments.allIds.forEach((instrumentName) => {
+                if (instruments.byId[instrumentName].pads[currentNote]) {
+                    console.log(`scheduling instrument ${instrumentName} for note ${currentNote}`);
+                    scheduleInstrument(instrumentName, nextNoteTime);
+                }
+            });
+
+            currentNote = (currentNote + 1) % maxNotes;
+            nextNoteTime += secondsPerBeat;
+        }
+    }
+
+    console.log('starting schedule()');
+    timerId = window.setInterval(schedule, LOOKAHEAD);
+}
+
 // auto generated actions
 export const {
-    play,
     pause,
     setTempo,
     advanceNote,
-    addInstrument,
+
     updateInstrumentParameter,
     padClick,
 } = sequencerSlice.actions;

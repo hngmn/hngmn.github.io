@@ -26,7 +26,7 @@ export class Sweep {
                 name: 'attack',
                 min: 0,
                 max: 1,
-                initialValue: 0.2,
+                value: 0.2,
                 step: 0.1,
             },
             {
@@ -37,6 +37,9 @@ export class Sweep {
                 step: 0.1,
             },
         ];
+
+        this.attack = 0.2;
+        this.release = 0.5;
 
         this.audioCtx = audioCtx;
         this.wave = this.audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);

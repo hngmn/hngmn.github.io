@@ -8,7 +8,7 @@ import PlayButton from './PlayButton';
 import Slider from './Slider';
 import {
     // actions
-    play,
+    playThunk,
     pause,
     setTempo,
     addInstrument,
@@ -20,13 +20,10 @@ import {
     selectInstruments,
 } from './sequencerSlice';
 import { Sweep, Pulse, Noise, Sample } from '../instruments/defaultInstruments';
-import { initAudio } from './sagas';
+import { getAudioContext } from './instrumentPlayer';
 
 
 function StepSequencer() {
-    // React Hooks for React State
-    const [currentNote, setCurrentNote] = useState(0);
-
     // Custom React Hooks for Redux state (?)
     const isPlaying = useSelector(selectIsPlaying);
     const tempo = useSelector(selectTempo);
@@ -35,7 +32,7 @@ function StepSequencer() {
 
     // init audio
     useEffect(() => {
-        let audioCtx = initAudio();
+        let audioCtx = getAudioContext();
 
         dispatch(addInstrument('sweep', new Sweep(audioCtx)));
         dispatch(addInstrument('pulse', new Pulse(audioCtx)));
@@ -45,7 +42,6 @@ function StepSequencer() {
 
     return (
         <div>
-            <span>{`beat ${currentNote}`}</span>
             <span>{isPlaying ? 'playing' : 'paused'}</span>
 
             <span>
@@ -56,7 +52,7 @@ function StepSequencer() {
 
                 <PlayButton
                     isPlaying={isPlaying}
-                    onClick={() => isPlaying ? dispatch(pause()) : dispatch(play())}
+                    onClick={() => isPlaying ? dispatch(pause()) : dispatch(playThunk)}
                 />
             </span>
 
