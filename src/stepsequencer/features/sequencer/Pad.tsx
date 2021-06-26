@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-type Props = {
+interface Props {
     isOn: boolean,
     onClick: React.MouseEventHandler,
 }

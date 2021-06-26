@@ -4,10 +4,10 @@ import * as React from 'react';
 
 import { InstrumentParameter } from '../instruments/types';
 
-type Props = {
+interface Props {
     param: InstrumentParameter,
     onInput: React.FormEventHandler,
-};
+}
 
 /**
  * Slider component
