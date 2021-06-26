@@ -30,7 +30,8 @@ module.exports = MODULES.map((moduleName) => {
               presets: ['@babel/preset-react']
             }
           }
-        }
+        },
+        { test: /\.tsx?$/, loader: 'ts-loader' },
       ]
     },
     watch: true,
