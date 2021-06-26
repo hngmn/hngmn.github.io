@@ -1,8 +1,13 @@
 'use strict';
 
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 
-export default function Pad(props) {
+type Props = {
+    isOn: boolean,
+    onClick: MouseEventHandler,
+}
+
+export default function Pad(props: Props) {
     const {
         isOn,
         onClick,
@@ -17,5 +22,5 @@ export default function Pad(props) {
         >
             <span>{isOn ? '[X]' : '[  ]'}</span>
         </button>
-    )
+    );
 }

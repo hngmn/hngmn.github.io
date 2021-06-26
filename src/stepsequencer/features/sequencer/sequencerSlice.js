@@ -176,7 +176,6 @@ export function playThunk(dispatch, getState) {
         while (nextNoteTime < intervalEnd) {
             instruments.allIds.forEach((instrumentName) => {
                 if (instruments.byId[instrumentName].pads[currentNote]) {
-                    console.log(`scheduling instrument ${instrumentName} for note ${currentNote}`);
                     scheduleInstrument(instrumentName, nextNoteTime);
                 }
             });
