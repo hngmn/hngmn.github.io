@@ -2,7 +2,7 @@
 
 import React from 'react';
 import InstrumentParameters from './InstrumentParameters';
-import Pad from './Pad.js';
+import Pad from './Pad';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {

@@ -34,6 +34,9 @@ module.exports = MODULES.map((moduleName) => {
         { test: /\.tsx?$/, loader: 'ts-loader' },
       ]
     },
+    resolve: {
+      extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
+    },
     watch: true,
     watchOptions: {
       ignored: /node_modules/,
