@@ -2,13 +2,7 @@
 
 import * as React from 'react';
 
-type InstrumentParameter = {
-    name: string,
-    min: number,
-    max: number,
-    value: number,
-    step: number,
-};
+import { InstrumentParameter } from '../instruments/types';
 
 type Props = {
     param: InstrumentParameter,
