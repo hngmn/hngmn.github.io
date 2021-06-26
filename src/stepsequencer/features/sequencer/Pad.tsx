@@ -1,10 +1,10 @@
 'use strict';
 
-import React, { MouseEventHandler } from 'react';
+import * as React from 'react';
 
 type Props = {
     isOn: boolean,
-    onClick: MouseEventHandler,
+    onClick: React.MouseEventHandler,
 }
 
 export default function Pad(props: Props) {

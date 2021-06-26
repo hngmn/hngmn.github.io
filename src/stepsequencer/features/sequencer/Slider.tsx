@@ -1,11 +1,24 @@
 'use strict';
 
-import React from 'react';
+import * as React from 'react';
+
+type InstrumentParameter = {
+    name: string,
+    min: number,
+    max: number,
+    value: number,
+    step: number,
+};
+
+type Props = {
+    param: InstrumentParameter,
+    onInput: React.FormEventHandler,
+};
 
 /**
  * Slider component
  */
-export default function Slider(props) {
+export default function Slider(props: Props) {
     const {
         name = 'defaultName?',
         min = 0, // defaults
