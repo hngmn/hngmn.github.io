@@ -1,5 +1,7 @@
 'use strict';
 
+import { NormalizedObject } from '../../global'
+
 export interface InstrumentParameter {
     name: string,
     min: number,
@@ -8,13 +10,9 @@ export interface InstrumentParameter {
     step: number,
 }
 
-export interface Instrument extends InstrumentConfig {
+export interface Instrument {
     schedule: (time: number) => void,
     setParameter: (parameterName: string, value: number) => void,
+    params: NormalizedObject<InstrumentParameter>,
 }
 
-export interface InstrumentConfig {
-    name: string,
-    params: Map<string, InstrumentParameter>,
-    pads: Array<boolean>,
-}

@@ -12,7 +12,9 @@ import {
     pause,
     setTempo,
     addInstrument,
-    updateInstrumentParameter,
+
+    // selectors
+    selectInstrumentNames,
 } from './sequencerSlice';
 import { Sweep, Pulse, Noise, Sample } from '../instruments/defaultInstruments';
 import { getAudioContext } from '../instruments/instrumentPlayer';
@@ -20,9 +22,8 @@ import { getAudioContext } from '../instruments/instrumentPlayer';
 
 function StepSequencer() {
     // Custom React Hooks for Redux state (?)
-    const isPlaying = useSelector((state) => state.sequencer.isPlaying);
-    const tempo = useSelector((state) => state.sequencer.tempo);
-    const instrumentNames = useSelector((state) => state.sequencer.instruments.allIds);
+    const isPlaying = useSelector(state => state.sequencer.isPlaying);
+    const instrumentNames = useSelector(selectInstrumentNames);
     const dispatch = useDispatch();
 
     // init audio
@@ -41,7 +42,8 @@ function StepSequencer() {
 
             <span>
                 <Slider
-                    param={{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
+                    kind={'object'}
+                    config={{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
                     onInput={(e) => dispatch(setTempo(e.target.value))}
                 />
 
@@ -55,7 +57,6 @@ function StepSequencer() {
                 <InstrumentControl
                     key={instrumentName}
                     instrumentName={instrumentName}
-                    onInput={(parameterName, value) => dispatch(updateInstrumentParameter(instrumentName, parameterName, value))}
                 />
             ))}
         </div>

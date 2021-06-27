@@ -2,23 +2,37 @@
 
 import * as React from 'react';
 
+import { useSelector } from 'react-redux';
+
+import { useAppDispatch, RootState } from '../../app/store';
+import {
+    // actions
+    padClick,
+
+    // selectors
+    selectPad,
+} from './sequencerSlice';
+
 interface Props {
-    isOn: boolean,
-    onClick: React.MouseEventHandler,
+    instrumentName: string,
+    padi: number
 }
 
 export default function Pad(props: Props) {
     const {
-        isOn,
-        onClick,
+        instrumentName,
+        padi,
     } = props;
+
+    const isOn = useSelector((state: RootState) => selectPad(state, instrumentName, padi));
+    const dispatch = useAppDispatch();
 
     const className = 'someClassName'; // TODO: this should make it so I can program styling?
 
     return (
         <button
             className={className}
-            onClick={onClick}
+            onClick={() => dispatch(padClick(instrumentName, padi))}
         >
             <span>{isOn ? '[X]' : '[  ]'}</span>
         </button>
