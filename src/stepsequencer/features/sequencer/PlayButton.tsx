@@ -1,8 +1,13 @@
 'use strict';
 
-import React from 'react';
+import * as React from 'react';
 
-export default function PlayButton(props) {
+interface Props {
+    isPlaying: boolean,
+    onClick: React.FormEventHandler,
+}
+
+export default function PlayButton(props: Props) {
     const {
         isPlaying,
         onClick
