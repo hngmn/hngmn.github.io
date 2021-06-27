@@ -6,7 +6,7 @@ import { InstrumentParameter } from '../instruments/types';
 
 interface Props {
     param: InstrumentParameter,
-    onInput: React.FormEventHandler,
+    onInput: (e: React.FormEvent<HTMLInputElement>) => void,
 }
 
 /**

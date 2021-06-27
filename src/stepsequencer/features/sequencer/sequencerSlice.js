@@ -125,10 +125,9 @@ export function addInstrument(name, instrument) {
 }
 
 export function updateInstrumentParameter(instrumentName, parameterName, value) {
-    const valueNumber = parseFloat(value);
     return function updateInstrumentThunk(dispatch, getState) {
-        getInstrument(instrumentName).setParameter(parameterName, valueNumber);
-        dispatch(sequencerSlice.actions.instrumentParameterUpdated(instrumentName, parameterName, valueNumber));
+        getInstrument(instrumentName).setParameter(parameterName, value);
+        dispatch(sequencerSlice.actions.instrumentParameterUpdated(instrumentName, parameterName, value));
     };
 }
 
