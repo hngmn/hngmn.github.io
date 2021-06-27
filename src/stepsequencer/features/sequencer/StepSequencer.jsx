@@ -15,7 +15,7 @@ import {
     updateInstrumentParameter,
 } from './sequencerSlice';
 import { Sweep, Pulse, Noise, Sample } from '../instruments/defaultInstruments';
-import { getAudioContext } from './instrumentPlayer';
+import { getAudioContext } from '../instruments/instrumentPlayer';
 
 
 function StepSequencer() {

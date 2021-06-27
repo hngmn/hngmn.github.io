@@ -8,7 +8,7 @@ import {
     addInstrumentToScheduler,
     getInstrument,
     scheduleInstrument,
-} from './instrumentPlayer.js';
+} from '../instruments/instrumentPlayer.js';
 import { Instrument, InstrumentConfig, InstrumentParameter } from '../instruments/types';
 
 interface SliceState {
