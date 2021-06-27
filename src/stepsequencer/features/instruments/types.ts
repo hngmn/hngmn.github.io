@@ -8,8 +8,13 @@ export interface InstrumentParameter {
     step: number,
 }
 
-export interface Instrument {
-    name: string,
+export interface Instrument extends InstrumentConfig {
     schedule: (time: number) => void,
     setParameter: (parameterName: string, value: number) => void,
+}
+
+export interface InstrumentConfig {
+    name: string,
+    params: Map<string, InstrumentParameter>,
+    pads: Array<boolean>,
 }

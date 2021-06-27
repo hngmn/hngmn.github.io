@@ -1,13 +1,26 @@
 'use strict';
 
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+import { AppDispatch } from '../../app/store';
 import {
     getAudioContext,
     addInstrumentToScheduler,
     getInstrument,
     scheduleInstrument,
 } from './instrumentPlayer.js';
+import { Instrument, InstrumentConfig, InstrumentParameter } from '../instruments/types';
+
+interface SliceState {
+    nBars: number,
+    notesPerBar: number,
+
+    instruments: Map<string, InstrumentConfig>,
+
+    isPlaying: boolean,
+    tempo: number,
+    timerId: number,
+}
 
 export const sequencerSlice = createSlice({
     name: 'sequencer',
@@ -19,15 +32,13 @@ export const sequencerSlice = createSlice({
         notesPerBar: 4,
 
         // sequencer instrument state
-        instruments: {
-            byId: {},
-            allIds: [],
-        },
+        instruments: new Map(),
 
         // timekeeping state
+        isPlaying: false,
         tempo: 60, // bpm (beats/bars per min)
-        timerId: null,
-    },
+        timerId: 0,
+    } as SliceState,
 
     reducers: {
         play: state => {
@@ -43,7 +54,7 @@ export const sequencerSlice = createSlice({
         },
 
         instrumentAdded: {
-            reducer(state, action) {
+            reducer(state, action: PayloadAction<{ name: string, params: Map<string, InstrumentParameter> }>) {
                 const {
                     nBars,
                     notesPerBar,
@@ -57,18 +68,17 @@ export const sequencerSlice = createSlice({
 
                 let id = name;
 
-                state.instruments.allIds.push(id);
-                state.instruments.byId[id] = {
-                    name: name,
-                    pads: (new Array(totalNotes)).fill(false),
-                    params: {
-                        byId: params,
-                        allIds: Object.keys(params),
+                state.instruments.set(
+                    id,
+                    {
+                        name: name,
+                        pads: (new Array(totalNotes)).fill(false),
+                        params: params,
                     }
-                };
+                );
             },
 
-            prepare(name, instrument) {
+            prepare(name: string, instrument: Instrument) {
                 return {
                     payload: {
                         name: name,
@@ -79,17 +89,18 @@ export const sequencerSlice = createSlice({
         },
 
         instrumentParameterUpdated: {
-            reducer(state, action) {
+            reducer(state, action: PayloadAction<{ instrumentName: string, parameterName: string, value: number }>) {
                 const {
                     instrumentName,
                     parameterName,
                     value,
                 } = action.payload;
 
-                state.instruments.byId[instrumentName].params.byId[parameterName].value = value;
+                let ins = state.instruments.get(instrumentName) as InstrumentConfig;
+                (ins.params.get(parameterName) as InstrumentParameter).value = value;
             },
 
-            prepare(instrumentName, parameterName, value) {
+            prepare(instrumentName: string, parameterName: string, value: number) {
                 return {
                     payload: { instrumentName, parameterName, value }
                 };
@@ -97,16 +108,17 @@ export const sequencerSlice = createSlice({
         },
 
         padClick: {
-            reducer(state, action) {
+            reducer(state, action: PayloadAction<{ instrumentName: string, padi: number }>) {
                 const {
                     instrumentName,
                     padi,
                 } = action.payload;
 
-                state.instruments.byId[instrumentName].pads[padi] = !state.instruments.byId[instrumentName].pads[padi];
+                let ins = state.instruments.get(instrumentName) as InstrumentConfig;
+                ins.pads[padi] = !ins.pads[padi];
             },
 
-            prepare(instrumentName, padi) {
+            prepare(instrumentName: string, padi: number) {
                 return {
                     payload: { instrumentName, padi }
                 };
@@ -117,22 +129,22 @@ export const sequencerSlice = createSlice({
 });
 
 // thunk for adding instrument to instrumentPlayer
-export function addInstrument(name, instrument) {
-    return function addInstrumentThunk(dispatch, getState) {
+export function addInstrument(name: string, instrument: Instrument) {
+    return function addInstrumentThunk(dispatch: AppDispatch, getState: any) {
         addInstrumentToScheduler(name, instrument);
         dispatch(sequencerSlice.actions.instrumentAdded(name, instrument));
     };
 }
 
-export function updateInstrumentParameter(instrumentName, parameterName, value) {
-    return function updateInstrumentThunk(dispatch, getState) {
+export function updateInstrumentParameter(instrumentName: string, parameterName: string, value: number) {
+    return function updateInstrumentThunk(dispatch: AppDispatch, getState: any) {
         getInstrument(instrumentName).setParameter(parameterName, value);
         dispatch(sequencerSlice.actions.instrumentParameterUpdated(instrumentName, parameterName, value));
     };
 }
 
 // thunk for scheduling
-export function playThunk(dispatch, getState) {
+export function playThunk(dispatch: AppDispatch, getState: any) {
     // Constants
     const LOOKAHEAD = 25.0; // How frequently to call scheduling function (in ms)
     const SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
@@ -173,7 +185,7 @@ export function playThunk(dispatch, getState) {
         const intervalEnd = audioCtx.currentTime + SCHEDULEAHEADTIME;
 
         while (nextNoteTime < intervalEnd) {
-            instruments.allIds.forEach((instrumentName) => {
+            instruments.allIds.forEach((instrumentName: string) => {
                 if (instruments.byId[instrumentName].pads[currentNote]) {
                     scheduleInstrument(instrumentName, nextNoteTime);
                 }
@@ -194,7 +206,6 @@ export function playThunk(dispatch, getState) {
 export const {
     pause,
     setTempo,
-    advanceNote,
 
     padClick,
 } = sequencerSlice.actions;
