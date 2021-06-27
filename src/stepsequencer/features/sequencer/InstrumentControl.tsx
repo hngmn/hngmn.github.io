@@ -3,8 +3,10 @@
 import * as React from 'react';
 import InstrumentParameters from './InstrumentParameters';
 import Pad from './Pad';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
+import { useAppDispatch, RootState } from '../../app/store';
+import { InstrumentConfig } from '../instruments/types';
 import {
     padClick,
 } from './sequencerSlice';
@@ -20,19 +22,20 @@ export default function InstrumentControl(props: Props) {
         onInput,
     } = props;
 
-    const instrument = useSelector((state: any) => state.sequencer.instruments.byId[instrumentName]);
-    const dispatch = useDispatch();
+    const instrument = useSelector((state: RootState) => state.sequencer.instruments.get(instrumentName) as InstrumentConfig);
+    const pads = useSelector((state: RootState) => state.sequencer.pads.get(instrumentName) as Array<boolean>);
+    const dispatch = useAppDispatch();
 
     return (
         <span>
             <span>{instrument.name}</span>
 
             <InstrumentParameters
-                params={instrument.params.allIds.map((id: string) => instrument.params.byId[id])}
+                params={Array.from(instrument.params.values())}
                 onInput={onInput}
             />
 
-            {instrument.pads.map((padIsOn: boolean, index: number) => (
+            {pads.map((padIsOn: boolean, index: number) => (
                 <Pad
                     key={`${instrument.name}${index}`}
                     isOn={padIsOn}

@@ -16,6 +16,7 @@ interface SliceState {
     notesPerBar: number,
 
     instruments: Map<string, InstrumentConfig>,
+    pads: Map<string, Array<boolean>>,
 
     isPlaying: boolean,
     tempo: number,
@@ -33,6 +34,7 @@ export const sequencerSlice = createSlice({
 
         // sequencer instrument state
         instruments: new Map(),
+        pads: new Map(),
 
         // timekeeping state
         isPlaying: false,
@@ -76,6 +78,8 @@ export const sequencerSlice = createSlice({
                         params: params,
                     }
                 );
+
+                state.pads.set(id, (new Array(totalNotes)).fill(false));
             },
 
             prepare(name: string, instrument: Instrument) {
@@ -116,6 +120,9 @@ export const sequencerSlice = createSlice({
 
                 let ins = state.instruments.get(instrumentName) as InstrumentConfig;
                 ins.pads[padi] = !ins.pads[padi];
+
+                let pads = state.pads.get(instrumentName) as Array<boolean>;
+                pads[padi] = !pads[padi];
             },
 
             prepare(instrumentName: string, padi: number) {

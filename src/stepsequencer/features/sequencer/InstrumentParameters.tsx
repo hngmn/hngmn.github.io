@@ -6,7 +6,7 @@ import Slider from './Slider';
 import { InstrumentParameter } from '../instruments/types';
 
 interface Props {
-    params: [InstrumentParameter],
+    params: Array<InstrumentParameter>,
     onInput: (parameterName: string, value: number) => void,
 }
 
