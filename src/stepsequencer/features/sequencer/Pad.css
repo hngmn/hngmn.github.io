@@ -1,0 +1,26 @@
+.padOn {
+  display: inline-block;
+  background-color: yellow;
+  border-radius: 10px;
+  border: 4px double #cccccc;
+  text-align: center;
+  font-size: 14px;
+  padding: 20px;
+  width: 50;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.padOff {
+  display: inline-block;
+  background-color: #7b38d8;
+  border-radius: 10px;
+  border: 4px double #cccccc;
+  color: #eeeeee;
+  text-align: center;
+  font-size: 14px;
+  padding: 20px;
+  width: 50;
+  cursor: pointer;
+  margin: 5px;
+}
