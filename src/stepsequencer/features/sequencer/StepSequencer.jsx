@@ -11,17 +11,19 @@ import {
     playThunk,
     pause,
     setTempo,
+} from './sequencerSlice';
+import {
     addInstrument,
 
-    // selectors
     selectInstrumentNames,
-} from './sequencerSlice';
+} from '../instruments/instrumentsSlice';
 import { Sweep, Pulse, Noise, Sample } from '../instruments/defaultInstruments';
 import { getAudioContext } from '../instruments/instrumentPlayer';
 
 
 function StepSequencer() {
     // Custom React Hooks for Redux state (?)
+    const tempo = useSelector(state => state.sequencer.tempo);
     const isPlaying = useSelector(state => state.sequencer.isPlaying);
     const instrumentNames = useSelector(selectInstrumentNames);
     const dispatch = useDispatch();
@@ -31,9 +33,9 @@ function StepSequencer() {
         let audioCtx = getAudioContext();
 
         dispatch(addInstrument('sweep', new Sweep(audioCtx)));
-        dispatch(addInstrument('pulse', new Pulse(audioCtx)));
-        dispatch(addInstrument('noise', new Noise(audioCtx)));
-        dispatch(addInstrument('sample', new Sample(audioCtx)));
+        // dispatch(addInstrument('pulse', new Pulse(audioCtx)));
+        // dispatch(addInstrument('noise', new Noise(audioCtx)));
+        // dispatch(addInstrument('sample', new Sample(audioCtx)));
     }, []); // empty array so this hook only runs once, on mount
 
     return (

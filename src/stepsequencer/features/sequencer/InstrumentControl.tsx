@@ -9,12 +9,12 @@ import InstrumentParameters from './InstrumentParameters';
 import Pad from './Pad';
 import {
     // actions
-    updateInstrumentParameter,
     padClick,
 
     // selectors
     selectNumberOfBeats,
 } from './sequencerSlice';
+import { updateInstrumentParameter } from '../instruments/instrumentsSlice';
 
 interface Props {
     instrumentName: string,
@@ -26,6 +26,7 @@ export default function InstrumentControl(props: Props) {
     } = props;
 
     const nPads = useSelector(selectNumberOfBeats);
+    console.log(`control: nPads=${nPads}`);
     const dispatch = useAppDispatch();
 
     return (
@@ -36,7 +37,7 @@ export default function InstrumentControl(props: Props) {
                 instrumentName={instrumentName}
             />
 
-            {Array.from(range(1, nPads)).map(index => (
+            {Array.from(range(0, nPads)).map(index => (
                 <Pad
                     key={`${instrumentName}${index}`}
                     instrumentName={instrumentName}

@@ -13,7 +13,7 @@ import {
     // selectors
     selectParameterNamesForInstrument,
     selectInstrumentParameter
-} from './sequencerSlice';
+} from '../instruments/instrumentsSlice';
 
 interface Props {
     instrumentName: string,

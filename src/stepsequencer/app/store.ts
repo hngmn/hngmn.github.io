@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 
+import instrumentsReducer from '../features/instruments/instrumentsSlice';
 import sequencerReducer from '../features/sequencer/sequencerSlice';
 
 const store = configureStore({
     reducer: {
-        sequencer: sequencerReducer
+        sequencer: sequencerReducer,
+        instruments: instrumentsReducer,
     },
 });
 export default store;

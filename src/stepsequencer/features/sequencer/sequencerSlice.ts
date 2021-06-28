@@ -11,18 +11,12 @@ import {
     scheduleInstrument,
 } from '../instruments/instrumentPlayer.js';
 import { Instrument, InstrumentParameter } from '../instruments/types';
-
-interface InstrumentConfig {
-    name: string,
-    params: NormalizedObject<InstrumentParameter>,
-    pads: Array<boolean>,
-}
+import { instrumentAdded } from '../instruments/instrumentsSlice';
 
 interface SliceState {
     nBars: number,
     notesPerBar: number,
 
-    instruments: NormalizedObject<InstrumentConfig>,
     pads: NormalizedObject<Array<boolean>>,
 
     isPlaying: boolean,
@@ -36,14 +30,10 @@ export const sequencerSlice = createSlice({
     initialState: {
 
         // currently fixed, will be configurable state eventually
-        nBars: 2,
+        nBars: 1,
         notesPerBar: 4,
 
-        // sequencer instrument state
-        instruments: {
-            byId: {},
-            allIds: [],
-        },
+        // sequencer pad state
         pads: {
             byId: {},
             allIds: [],
@@ -68,68 +58,12 @@ export const sequencerSlice = createSlice({
             state.tempo = action.payload;
         },
 
-        instrumentAdded: {
-            reducer(state, action: PayloadAction<{ name: string, params: NormalizedObject<InstrumentParameter> }>) {
-                const {
-                    nBars,
-                    notesPerBar,
-                } = state;
-                const totalNotes = nBars * notesPerBar;
-
-                const {
-                    name,
-                    params,
-                } = action.payload;
-
-                let id = name;
-
-                state.instruments.allIds.push(id);
-                state.instruments.byId[id] = {
-                    name: name,
-                    pads: (new Array(totalNotes)).fill(false),
-                    params: params,
-                };
-
-                state.pads.allIds.push(id);
-                state.pads.byId[id] = (new Array(totalNotes)).fill(false); 
-            },
-
-            prepare(name: string, instrument: Instrument) {
-                return {
-                    payload: {
-                        name: name,
-                        params: instrument.params,
-                    }
-                };
-            },
-        },
-
-        instrumentParameterUpdated: {
-            reducer(state, action: PayloadAction<{ instrumentName: string, parameterName: string, value: number }>) {
-                const {
-                    instrumentName,
-                    parameterName,
-                    value,
-                } = action.payload;
-
-                state.instruments.byId[instrumentName].params.byId[parameterName].value = value;
-            },
-
-            prepare(instrumentName: string, parameterName: string, value: number) {
-                return {
-                    payload: { instrumentName, parameterName, value }
-                };
-            }
-        },
-
         padClick: {
             reducer(state, action: PayloadAction<{ instrumentName: string, padi: number }>) {
                 const {
                     instrumentName,
                     padi,
                 } = action.payload;
-
-                state.instruments.byId[instrumentName].pads[padi] = !state.instruments.byId[instrumentName].pads[padi];
 
                 state.pads.byId[instrumentName][padi] = !state.pads.byId[instrumentName][padi];
             },
@@ -141,28 +75,31 @@ export const sequencerSlice = createSlice({
             },
         },
 
-    }
+    },
+
+    extraReducers: builder => {
+        builder
+        .addCase(instrumentAdded, (state, action) => {
+            const {
+                nBars,
+                notesPerBar,
+            } = state;
+            const totalNotes = nBars * notesPerBar;
+
+            const {
+                name,
+            } = action.payload;
+
+            state.pads.allIds.push(name);
+            state.pads.byId[name] = (new Array(totalNotes)).fill(false); 
+        })
+    },
 });
 
 
 /////////////////////////////
 // Thunks for side effects //
 /////////////////////////////
-
-// thunk for adding instrument to instrumentPlayer
-export function addInstrument(name: string, instrument: Instrument) {
-    return function addInstrumentThunk(dispatch: AppDispatch, getState: any) {
-        addInstrumentToScheduler(name, instrument);
-        dispatch(sequencerSlice.actions.instrumentAdded(name, instrument));
-    };
-}
-
-export function updateInstrumentParameter(instrumentName: string, parameterName: string, value: number) {
-    return function updateInstrumentThunk(dispatch: AppDispatch, getState: any) {
-        getInstrument(instrumentName).setParameter(parameterName, value);
-        dispatch(sequencerSlice.actions.instrumentParameterUpdated(instrumentName, parameterName, value));
-    };
-}
 
 // thunk for scheduling
 export function playThunk(dispatch: AppDispatch, getState: any) {
@@ -192,8 +129,11 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
 
             isPlaying,
             tempo,
-            instruments,
+            pads,
         } = getState().sequencer;
+        const {
+            instruments,
+        } = getState().instruments;
 
         const maxNotes = nBars * notesPerBar
         if (!isPlaying) {
@@ -207,7 +147,7 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
 
         while (nextNoteTime < intervalEnd) {
             instruments.allIds.forEach((instrumentName: string) => {
-                if (instruments.byId[instrumentName].pads[currentNote]) {
+                if (pads.byId[instrumentName][currentNote]) {
                     scheduleInstrument(instrumentName, nextNoteTime);
                 }
             });
@@ -227,27 +167,6 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
 ///////////////
 // Selectors //
 ///////////////
-
-// instrument names (in order)
-export const selectInstrumentNames = (state: RootState) => state.sequencer.instruments.allIds;
-
-// config for given instrument id
-export const selectInstrumentConfig = (state: RootState, instrumentName: string) => state.sequencer.instruments.byId[instrumentName];
-
-// all instrument configs (in order)
-export const selectInstrumentConfigs = createSelector(
-    [
-        selectInstrumentNames,
-        (state) => state.sequencer.instruments.byId,
-    ],
-    (instrumentNames, byId) => instrumentNames.map(iname => byId[iname])
-);
-
-// parameter names (in order) for given instrument id
-export const selectParameterNamesForInstrument = (state: RootState, instrumentName: string) => state.sequencer.instruments.byId[instrumentName].params.allIds;
-
-// given instrument, parameter
-export const selectInstrumentParameter = (state: RootState, instrumentName: string, parameterName: string) => state.sequencer.instruments.byId[instrumentName].params.byId[parameterName];
 
 // # pads per instrument
 export const selectNumberOfBeats = (state: RootState) => state.sequencer.nBars * state.sequencer.notesPerBar;

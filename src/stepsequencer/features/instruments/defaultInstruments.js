@@ -3,9 +3,17 @@
 import wavetable from './wavetable';
 
 class Instrument {
-    setParameter(parameterName, value) {
-        this[parameterName] = value;
+    getParameterValue(parameterName) {
+        return this.params.byId[parameterName].value;
     }
+
+    setParameter(parameterName, value) {
+        this.params.byId[parameterName] = {
+            ...this.params.byId[parameterName],
+            value: value,
+        };
+    }
+
 }
 
 export class Sweep extends Instrument {
@@ -13,25 +21,25 @@ export class Sweep extends Instrument {
         super();
 
         this.params = {
-            attack: {
-                name: 'attack',
-                min: 0,
-                max: 1,
-                value: 0.2,
-                step: 0.1,
-            },
+            byId: {
+                attack: {
+                    name: 'attack',
+                    min: 0,
+                    max: 1,
+                    value: 0.2,
+                    step: 0.1,
+                },
 
-            release: {
-                name: 'release',
-                min: 0,
-                max: 1,
-                value: 0.5,
-                step: 0.1,
+                release: {
+                    name: 'release',
+                    min: 0,
+                    max: 1,
+                    value: 0.5,
+                    step: 0.1,
+                },
             },
+            allIds: ['attack', 'release'],
         };
-
-        this.attack = this.params.attack.value;
-        this.release = this.params.release.value;
 
         this.audioCtx = audioCtx;
         this.wave = this.audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);
@@ -47,9 +55,9 @@ export class Sweep extends Instrument {
         sweepEnv.gain.cancelScheduledValues(time);
         sweepEnv.gain.setValueAtTime(0, time);
         // set our attack
-        sweepEnv.gain.linearRampToValueAtTime(1, time + this.attack);
+        sweepEnv.gain.linearRampToValueAtTime(1, time + this.getParameterValue('attack'));
         // set our release
-        sweepEnv.gain.linearRampToValueAtTime(0, time + sweepLength - this.release);
+        sweepEnv.gain.linearRampToValueAtTime(0, time + sweepLength - this.getParameterValue('release'));
 
         osc.connect(sweepEnv).connect(this.audioCtx.destination);
         osc.start(time);
