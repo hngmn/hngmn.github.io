@@ -1,23 +1,32 @@
 'use strict';
 
+import { NormalizedObject } from '../../global'
 import wavetable from './wavetable';
+import {
+    Instrument,
+    InstrumentParameter,
+} from './types';
 
-class Instrument {
-    getParameterValue(parameterName) {
+abstract class BaseInstrument implements Instrument {
+    getParameterValue(parameterName: string) {
         return this.params.byId[parameterName].value;
     }
 
-    setParameter(parameterName, value) {
-        this.params.byId[parameterName] = {
-            ...this.params.byId[parameterName],
-            value: value,
-        };
+    setParameter(parameterName: string, value: number) {
+        console.log('setParameter: not implemented yet');
+        return;
     }
 
+    abstract schedule(time: number): void;
+    abstract params: NormalizedObject<InstrumentParameter>;
 }
 
-export class Sweep extends Instrument {
-    constructor(audioCtx) {
+export class Sweep extends BaseInstrument {
+    params: NormalizedObject<InstrumentParameter>;
+    audioCtx: any; // TODO
+    wave: any; // TODO
+
+    constructor(audioCtx: any) {
         super();
 
         this.params = {
@@ -45,7 +54,7 @@ export class Sweep extends Instrument {
         this.wave = this.audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);
     }
 
-    schedule(time) {
+    schedule(time: number) {
         const osc = this.audioCtx.createOscillator();
         osc.setPeriodicWave(this.wave);
         osc.frequency.value = 440;
@@ -65,6 +74,7 @@ export class Sweep extends Instrument {
     }
 }
 
+/*
 export class Pulse extends Instrument {
     constructor(audioCtx) {
         super();
@@ -201,3 +211,4 @@ export class Sample extends Instrument {
         return audioBuffer;
     }
 }
+*/
