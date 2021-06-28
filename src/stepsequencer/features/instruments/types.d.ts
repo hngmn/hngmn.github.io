@@ -12,7 +12,9 @@ export interface IInstrumentParameter {
 
 export interface IInstrument {
     schedule: (time: number) => void,
-    setParameter: (parameterName: string, value: number) => void,
-    params: NormalizedObject<InstrumentParameter>,
+    getAllParameterNames: () => Array<string>,
+    getParameterConfig: (parameterName: string) => IInstrumentParameter,
+    getParameterValue: (parameterName: string) => number,
+    setParameterValue: (parameterName: string, value: number) => void,
 }
 

@@ -3,6 +3,7 @@
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
 
 import { INormalizedObject } from '../../global';
+import { normalizedObjectFromTuples } from '../../util/util';
 import { AppDispatch, RootState } from '../../app/store';
 import {
     getAudioContext,
@@ -53,7 +54,7 @@ export const instrumentsSlice = createSlice({
                 return {
                     payload: {
                         name: name,
-                        params: instrument.params,
+                        params: normalizedObjectFromTuples(instrument.getAllParameterNames().map((pName: string) => [pName, instrument.getParameterConfig(pName)]))
                     }
                 };
             },
@@ -91,7 +92,7 @@ export function addInstrument(name: string, instrument: IInstrument) {
 
 export function updateInstrumentParameter(instrumentName: string, parameterName: string, value: number) {
     return function updateInstrumentThunk(dispatch: AppDispatch, getState: any) {
-        getInstrument(instrumentName).setParameter(parameterName, value);
+        getInstrument(instrumentName).setParameterValue(parameterName, value);
         dispatch(instrumentsSlice.actions.instrumentParameterUpdated(instrumentName, parameterName, value));
     };
 }

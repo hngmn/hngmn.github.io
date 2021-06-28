@@ -2,53 +2,29 @@
 
 import { INormalizedObject } from '../../global'
 import wavetable from './wavetable';
-import {
-    IInstrument,
-    IInstrumentParameter,
-} from './types';
-
-abstract class BaseInstrument implements IInstrument {
-    getParameterValue(parameterName: string) {
-        return this.params.byId[parameterName].value;
-    }
-
-    setParameter(parameterName: string, value: number) {
-        console.log('setParameter: not implemented yet');
-        return;
-    }
-
-    abstract schedule(time: number): void;
-    abstract params: INormalizedObject<IInstrumentParameter>;
-}
+import { BaseInstrument, InstrumentParameter } from './Instrument';
 
 export class Sweep extends BaseInstrument {
-    params: INormalizedObject<IInstrumentParameter>;
     audioCtx: any; // TODO
     wave: any; // TODO
 
     constructor(audioCtx: any) {
-        super();
-
-        this.params = {
-            byId: {
-                attack: {
-                    name: 'attack',
-                    min: 0,
-                    max: 1,
-                    value: 0.2,
-                    step: 0.1,
-                },
-
-                release: {
-                    name: 'release',
-                    min: 0,
-                    max: 1,
-                    value: 0.5,
-                    step: 0.1,
-                },
+        super([
+            {
+                name: 'attack',
+                min: 0,
+                max: 1,
+                value: 0.2,
+                step: 0.1,
             },
-            allIds: ['attack', 'release'],
-        };
+            {
+                name: 'release',
+                min: 0,
+                max: 1,
+                value: 0.5,
+                step: 0.1,
+            }
+        ]);
 
         this.audioCtx = audioCtx;
         this.wave = this.audioCtx.createPeriodicWave(wavetable.real, wavetable.imag);
@@ -74,13 +50,12 @@ export class Sweep extends BaseInstrument {
     }
 }
 
-/*
-export class Pulse extends Instrument {
-    constructor(audioCtx) {
-        super();
+export class Pulse extends BaseInstrument {
+    audioCtx: any; // TODO
 
-        this.params = {
-            lfoHz: {
+    constructor(audioCtx: any) {
+        super([
+            {
                 name: 'lfoHz',
                 min: 20,
                 max: 40,
@@ -88,34 +63,31 @@ export class Pulse extends Instrument {
                 step: 1,
             },
 
-            pulseHz: {
+            {
                 name: 'pulseHz',
                 min: 660,
                 max: 1320,
                 value: 880,
                 step: 1,
             }
-        }
-
-        this.lfoHz = this.params.lfoHz.value;
-        this.pulseHz = this.params.pulseHz.value;
+        ]);
 
         this.audioCtx = audioCtx;
     }
 
-    schedule(time) {
+    schedule(time: number) {
         const pulseTime = 1;
 
         let osc = this.audioCtx.createOscillator();
         osc.type = 'sine';
-        osc.frequency.value = this.pulseHz;
+        osc.frequency.value = this.getParameterValue('pulseHz');
 
         let amp = this.audioCtx.createGain();
         amp.gain.value = 1;
 
         let lfo = this.audioCtx.createOscillator();
         lfo.type = 'square';
-        lfo.frequency.value = this.lfoHz;
+        lfo.frequency.value = this.getParameterValue('lfoHz');
 
         lfo.connect(amp.gain);
         osc.connect(amp).connect(this.audioCtx.destination);
@@ -125,12 +97,12 @@ export class Pulse extends Instrument {
     }
 }
 
-export class Noise extends Instrument {
-    constructor(audioCtx) {
-        super();
+export class Noise extends BaseInstrument {
+    audioCtx: any;
 
-        this.params = {
-            noiseDuration: {
+    constructor(audioCtx: any) {
+        super([
+            {
                 name: 'noiseDuration',
                 min: 0.1,
                 max: 2,
@@ -138,23 +110,20 @@ export class Noise extends Instrument {
                 step: 0.1,
             },
 
-            bandHz: {
+            {
                 name: 'bandHz',
                 min: 400,
                 max: 1200,
                 value: 660,
                 step: 1,
             }
-        };
-
-        this.noiseDuration = this.params.noiseDuration.value;
-        this.bandHz = this.params.bandHz.value;
+        ]);
 
         this.audioCtx = audioCtx;
     }
 
-    schedule(time) {
-        const bufferSize = this.audioCtx.sampleRate * this.noiseDuration;
+    schedule(time: number) {
+        const bufferSize = this.audioCtx.sampleRate * this.getParameterValue('noiseDuration');
         const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
 
         let data = buffer.getChannelData(0);
@@ -167,39 +136,39 @@ export class Noise extends Instrument {
 
         let bandpass = this.audioCtx.createBiquadFilter();
         bandpass.type = 'bandpass';
-        bandpass.frequency.value = this.bandHz;
+        bandpass.frequency.value = this.getParameterValue('bandHz');
 
         noise.connect(bandpass).connect(this.audioCtx.destination);
         noise.start(time);
     }
 }
 
-export class Sample extends Instrument {
-    constructor(audioCtx) {
-        super();
+export class Sample extends BaseInstrument {
+    audioCtx: any;
+    filePath: string;
+    audioBuffer: any;
 
-        this.params = {
-            playbackRate: {
+    constructor(audioCtx: any) {
+        super([
+            {
                 name: 'playbackRate',
                 min: 0.1,
                 max: 2,
                 value: 1,
                 step: 0.1,
             }
-        };
-
-        this.filePath = '/assets/audio/dtmf.mp3';
-        this.playbackRate = this.params.playbackRate.value;
+        ]);
 
         this.audioCtx = audioCtx;
+        this.filePath = '/assets/audio/dtmf.mp3';
     }
 
-    schedule(time) {
-        this.audioBuffer = this.getSampleFromFile().then((sampleBuffer) => sampleBuffer);
+    async schedule(time: number) {
+        this.audioBuffer = this.audioBuffer || await this.getSampleFromFile();
 
         const sampleSource = this.audioCtx.createBufferSource();
         sampleSource.buffer = this.audioBuffer;
-        sampleSource.playbackRate.value = this.playbackRate;
+        sampleSource.playbackRate.value = this.getParameterValue('playbackRate');
         sampleSource.connect(this.audioCtx.destination)
         sampleSource.start(time);
     }
@@ -211,4 +180,3 @@ export class Sample extends Instrument {
         return audioBuffer;
     }
 }
-*/

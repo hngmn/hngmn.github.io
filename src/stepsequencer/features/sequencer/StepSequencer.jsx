@@ -33,9 +33,9 @@ function StepSequencer() {
         let audioCtx = getAudioContext();
 
         dispatch(addInstrument('sweep', new Sweep(audioCtx)));
-        // dispatch(addInstrument('pulse', new Pulse(audioCtx)));
-        // dispatch(addInstrument('noise', new Noise(audioCtx)));
-        // dispatch(addInstrument('sample', new Sample(audioCtx)));
+        dispatch(addInstrument('pulse', new Pulse(audioCtx)));
+        dispatch(addInstrument('noise', new Noise(audioCtx)));
+        dispatch(addInstrument('sample', new Sample(audioCtx)));
     }, []); // empty array so this hook only runs once, on mount
 
     return (
