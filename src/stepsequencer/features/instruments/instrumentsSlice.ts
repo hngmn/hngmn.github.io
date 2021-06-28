@@ -2,7 +2,7 @@
 
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
 
-import { NormalizedObject } from '../../global';
+import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
 import {
     getAudioContext,
@@ -10,15 +10,15 @@ import {
     getInstrument,
     scheduleInstrument,
 } from './instrumentPlayer.js';
-import { Instrument, InstrumentParameter } from './types';
+import { IInstrument, IInstrumentParameter } from './types';
 
-interface InstrumentConfig {
+interface IInstrumentConfig {
     name: string,
-    params: NormalizedObject<InstrumentParameter>,
+    params: INormalizedObject<IInstrumentParameter>,
 }
 
-interface SliceState {
-    instruments: NormalizedObject<InstrumentConfig>;
+interface ISliceState {
+    instruments: INormalizedObject<IInstrumentConfig>;
 }
 
 export const instrumentsSlice = createSlice({
@@ -29,11 +29,11 @@ export const instrumentsSlice = createSlice({
             byId: {},
             allIds: [],
         },
-    } as SliceState,
+    } as ISliceState,
 
     reducers: {
         instrumentAdded: {
-            reducer(state, action: PayloadAction<{ name: string, params: NormalizedObject<InstrumentParameter> }>) {
+            reducer(state, action: PayloadAction<{ name: string, params: INormalizedObject<IInstrumentParameter> }>) {
                 const {
                     name,
                     params,
@@ -49,7 +49,7 @@ export const instrumentsSlice = createSlice({
 
             },
 
-            prepare(name: string, instrument: Instrument) {
+            prepare(name: string, instrument: IInstrument) {
                 return {
                     payload: {
                         name: name,
@@ -82,7 +82,7 @@ export const instrumentsSlice = createSlice({
 
 
 // thunk for adding instrument to instrumentPlayer
-export function addInstrument(name: string, instrument: Instrument) {
+export function addInstrument(name: string, instrument: IInstrument) {
     return function addInstrumentThunk(dispatch: AppDispatch, getState: any) {
         addInstrumentToScheduler(name, instrument);
         dispatch(instrumentsSlice.actions.instrumentAdded(name, instrument));

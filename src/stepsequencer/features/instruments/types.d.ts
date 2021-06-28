@@ -2,7 +2,7 @@
 
 import { NormalizedObject } from '../../global'
 
-export interface InstrumentParameter {
+export interface IInstrumentParameter {
     name: string,
     min: number,
     max: number,
@@ -10,7 +10,7 @@ export interface InstrumentParameter {
     step: number,
 }
 
-export interface Instrument {
+export interface IInstrument {
     schedule: (time: number) => void,
     setParameter: (parameterName: string, value: number) => void,
     params: NormalizedObject<InstrumentParameter>,

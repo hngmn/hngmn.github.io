@@ -1,13 +1,13 @@
 'use strict';
 
-import { NormalizedObject } from '../../global'
+import { INormalizedObject } from '../../global'
 import wavetable from './wavetable';
 import {
-    Instrument,
-    InstrumentParameter,
+    IInstrument,
+    IInstrumentParameter,
 } from './types';
 
-abstract class BaseInstrument implements Instrument {
+abstract class BaseInstrument implements IInstrument {
     getParameterValue(parameterName: string) {
         return this.params.byId[parameterName].value;
     }
@@ -18,11 +18,11 @@ abstract class BaseInstrument implements Instrument {
     }
 
     abstract schedule(time: number): void;
-    abstract params: NormalizedObject<InstrumentParameter>;
+    abstract params: INormalizedObject<IInstrumentParameter>;
 }
 
 export class Sweep extends BaseInstrument {
-    params: NormalizedObject<InstrumentParameter>;
+    params: INormalizedObject<IInstrumentParameter>;
     audioCtx: any; // TODO
     wave: any; // TODO
 

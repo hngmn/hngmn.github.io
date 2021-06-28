@@ -1,6 +1,6 @@
 'use strict';
 
-export interface NormalizedObject<Type> {
+export interface INormalizedObject<Type> {
     byId: {
         [id: string]: Type
     },

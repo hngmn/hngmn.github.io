@@ -46,7 +46,7 @@ function StepSequencer() {
                 <Slider
                     kind={'object'}
                     config={{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
-                    onInput={(e) => dispatch(setTempo(e.target.value))}
+                    onInput={(newTempoValue) => dispatch(setTempo(newTempoValue))}
                 />
 
                 <PlayButton

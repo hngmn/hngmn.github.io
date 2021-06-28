@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { RootState } from '../../app/store';
-import { InstrumentParameter } from '../instruments/types';
+import { IInstrumentParameter } from '../instruments/types';
 
 interface BaseProps {
     kind: 'selector' | 'object';
@@ -13,7 +13,7 @@ interface BaseProps {
 
 interface PropsFromSelector extends BaseProps {
     kind: 'selector';
-    selector: (state: RootState) => InstrumentParameter;
+    selector: (state: RootState) => IInstrumentParameter;
 }
 
 interface PropsFromObject extends BaseProps {

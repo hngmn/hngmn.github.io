@@ -2,7 +2,7 @@
 
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
 
-import { NormalizedObject } from '../../global';
+import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
 import {
     getAudioContext,
@@ -10,14 +10,13 @@ import {
     getInstrument,
     scheduleInstrument,
 } from '../instruments/instrumentPlayer.js';
-import { Instrument, InstrumentParameter } from '../instruments/types';
 import { instrumentAdded } from '../instruments/instrumentsSlice';
 
-interface SliceState {
+interface ISliceState {
     nBars: number,
     notesPerBar: number,
 
-    pads: NormalizedObject<Array<boolean>>,
+    pads: INormalizedObject<Array<boolean>>,
 
     isPlaying: boolean,
     tempo: number,
@@ -43,7 +42,7 @@ export const sequencerSlice = createSlice({
         isPlaying: false,
         tempo: 60, // bpm (beats/bars per min)
         timerId: 0,
-    } as SliceState,
+    } as ISliceState,
 
     reducers: {
         play: state => {

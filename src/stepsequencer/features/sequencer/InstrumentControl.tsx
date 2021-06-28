@@ -26,7 +26,6 @@ export default function InstrumentControl(props: Props) {
     } = props;
 
     const nPads = useSelector(selectNumberOfBeats);
-    console.log(`control: nPads=${nPads}`);
     const dispatch = useAppDispatch();
 
     return (
