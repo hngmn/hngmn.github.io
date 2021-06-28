@@ -32,6 +32,10 @@ module.exports = MODULES.map((moduleName) => {
           }
         },
         { test: /\.tsx?$/, loader: 'ts-loader' },
+        {
+          test: /\.(css)$/,
+          use: ['style-loader', 'css-loader'],
+        }
       ]
     },
     resolve: {
