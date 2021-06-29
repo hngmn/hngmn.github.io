@@ -148,7 +148,7 @@ export class Sample extends BaseInstrument {
     filePath: string;
     audioBuffer: any;
 
-    constructor(audioCtx: any) {
+    constructor(audioCtx: any, sampleFilePath: string) {
         super([
             {
                 name: 'playbackRate',
@@ -160,7 +160,7 @@ export class Sample extends BaseInstrument {
         ]);
 
         this.audioCtx = audioCtx;
-        this.filePath = '/assets/audio/dtmf.mp3';
+        this.filePath = sampleFilePath;
     }
 
     async schedule(time: number) {

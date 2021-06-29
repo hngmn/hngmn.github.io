@@ -32,10 +32,12 @@ function StepSequencer() {
     useEffect(() => {
         let audioCtx = getAudioContext();
 
-        dispatch(addInstrument('sweep', new Sweep(audioCtx)));
-        dispatch(addInstrument('pulse', new Pulse(audioCtx)));
-        dispatch(addInstrument('noise', new Noise(audioCtx)));
-        dispatch(addInstrument('sample', new Sample(audioCtx)));
+        dispatch(addInstrument('hat', new Sample(audioCtx, '/assets/audio/hat.wav')));
+        dispatch(addInstrument('lazertom', new Sample(audioCtx, '/assets/audio/lazertom.wav')));
+        dispatch(addInstrument('electrotom', new Sample(audioCtx, '/assets/audio/electrotom.wav')));
+        dispatch(addInstrument('snare', new Sample(audioCtx, '/assets/audio/snare.wav')));
+        dispatch(addInstrument('kick', new Sample(audioCtx, '/assets/audio/kick.wav')));
+        dispatch(addInstrument('phone?', new Sample(audioCtx, '/assets/audio/dtmf.mp3')));
     }, []); // empty array so this hook only runs once, on mount
 
     return (

@@ -4,5 +4,7 @@ docs/_site
 .jekyll-metadata
 vendor
 
+.DS_STORE
+
 public/
 node_modules/
