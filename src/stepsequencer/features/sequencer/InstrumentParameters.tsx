@@ -27,7 +27,7 @@ export default function InstrumentParameters(props: Props) {
     const dispatch = useAppDispatch();
 
     return (
-        <span>
+        <>
             {parameterNames.map((parameterName) => {
                 return (
                     <Slider
@@ -38,6 +38,6 @@ export default function InstrumentParameters(props: Props) {
                     />
                 );
             })}
-        </span>
+        </>
     );
 }

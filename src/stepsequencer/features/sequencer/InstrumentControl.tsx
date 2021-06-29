@@ -1,5 +1,6 @@
 'use strict';
 
+import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -28,8 +29,10 @@ export default function InstrumentControl(props: Props) {
     const nPads = useSelector(selectNumberOfBeats);
     const dispatch = useAppDispatch();
 
+    const trackClassname = classnames('track', instrumentName);
+
     return (
-        <span>
+        <section className={trackClassname}>
             <span>{instrumentName}</span>
 
             <InstrumentParameters
@@ -43,6 +46,6 @@ export default function InstrumentControl(props: Props) {
                     padi={index}
                 />
             ))}
-        </span>
+        </section>
     );
 }
