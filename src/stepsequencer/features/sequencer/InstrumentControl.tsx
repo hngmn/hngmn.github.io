@@ -13,7 +13,7 @@ import {
     padClick,
 
     // selectors
-    selectNumberOfBeats,
+    selectNumberOfPads,
 } from './sequencerSlice';
 import { updateInstrumentParameter } from '../instruments/instrumentsSlice';
 
@@ -26,7 +26,7 @@ export default function InstrumentControl(props: Props) {
         instrumentName,
     } = props;
 
-    const nPads = useSelector(selectNumberOfBeats);
+    const nPads = useSelector(selectNumberOfPads);
     const dispatch = useAppDispatch();
 
     const trackClassname = classnames('track', instrumentName);

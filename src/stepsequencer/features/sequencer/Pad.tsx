@@ -1,5 +1,6 @@
 'use strict';
 
+import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -26,7 +27,7 @@ export default function Pad(props: Props) {
     const isOn = useSelector((state: RootState) => selectPad(state, instrumentName, padi));
     const dispatch = useAppDispatch();
 
-    const className = isOn ? 'padOn' : 'padOff';
+    const className = classnames('pad', isOn ? 'on' : 'off');
 
     return (
         <button

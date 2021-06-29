@@ -26,29 +26,19 @@
   padding: 5px;
 }
 
-.padOn {
+.pad {
   display: inline-block;
-  background-color: yellow;
   border-radius: 10px;
-  border: 4px double #cccccc;
-  text-align: center;
-  font-size: 14px;
-  padding: 20px;
-  width: 50;
+  padding: 10px 10px;
   cursor: pointer;
-  margin: 5px;
 }
 
-.padOff {
-  display: inline-block;
-  background-color: #7b38d8;
-  border-radius: 10px;
-  border: 4px double #cccccc;
-  color: #eeeeee;
-  text-align: center;
-  font-size: 14px;
-  padding: 20px;
-  width: 50;
-  cursor: pointer;
-  margin: 5px;
+.pad.on {
+  background-color: #e5f523;
+  border: 2px solid black;
+}
+
+.pad.off {
+  background-color: #829bb1;
+  border: 2px solid black;
 }

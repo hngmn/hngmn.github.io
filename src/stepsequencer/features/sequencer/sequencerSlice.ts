@@ -14,7 +14,8 @@ import { instrumentAdded } from '../instruments/instrumentsSlice';
 
 interface ISliceState {
     nBars: number,
-    notesPerBar: number,
+    beatsPerBar: number,
+    padsPerBeat: number,
 
     pads: INormalizedObject<Array<boolean>>,
 
@@ -30,7 +31,8 @@ export const sequencerSlice = createSlice({
 
         // currently fixed, will be configurable state eventually
         nBars: 1,
-        notesPerBar: 4,
+        beatsPerBar: 4,
+        padsPerBeat: 4,
 
         // sequencer pad state
         pads: {
@@ -81,9 +83,10 @@ export const sequencerSlice = createSlice({
         .addCase(instrumentAdded, (state, action) => {
             const {
                 nBars,
-                notesPerBar,
+                beatsPerBar,
+                padsPerBeat,
             } = state;
-            const totalNotes = nBars * notesPerBar;
+            const totalNotes = calculateTotalPads(nBars, beatsPerBar, padsPerBeat);
 
             const {
                 name,
@@ -123,8 +126,7 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
 
     function schedule() {
         const {
-            nBars,
-            notesPerBar,
+            padsPerBeat,
 
             isPlaying,
             tempo,
@@ -134,14 +136,14 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
             instruments,
         } = getState().instruments;
 
-        const maxNotes = nBars * notesPerBar
+        const nPads = selectNumberOfPads(getState());
         if (!isPlaying) {
             // sequencer has been paused. stop scheduling
             console.log('isPlaying false. stopping schedule() timeout');
             return;
         }
 
-        const secondsPerBeat = 60.0 / tempo;
+        const secondsPerPad = 60.0 / tempo / padsPerBeat;
         const intervalEnd = audioCtx.currentTime + SCHEDULEAHEADTIME;
 
         while (nextNoteTime < intervalEnd) {
@@ -151,8 +153,8 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
                 }
             });
 
-            currentNote = (currentNote + 1) % maxNotes;
-            nextNoteTime += secondsPerBeat;
+            currentNote = (currentNote + 1) % nPads;
+            nextNoteTime += secondsPerPad;
         }
 
         timerId = window.setTimeout(schedule, LOOKAHEAD);
@@ -168,7 +170,10 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
 ///////////////
 
 // # pads per instrument
-export const selectNumberOfBeats = (state: RootState) => state.sequencer.nBars * state.sequencer.notesPerBar;
+function calculateTotalPads(nBars: number, beatsPerBar: number, padsPerBeat: number) {
+    return nBars * beatsPerBar * padsPerBeat;
+}
+export const selectNumberOfPads = (state: RootState) => calculateTotalPads(state.sequencer.nBars, state.sequencer.beatsPerBar, state.sequencer.padsPerBeat);
 
 // pad names (instrument ids)
 export const selectPadNames = (state: RootState) => state.sequencer.pads.allIds;
