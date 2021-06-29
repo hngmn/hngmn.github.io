@@ -13,7 +13,9 @@ import {
     padClick,
 
     // selectors
-    selectNumberOfPads,
+    selectNBars,
+    selectBeatsPerBar,
+    selectPadsPerBeat,
 } from './sequencerSlice';
 import { updateInstrumentParameter } from '../instruments/instrumentsSlice';
 
@@ -26,7 +28,9 @@ export default function InstrumentControl(props: Props) {
         instrumentName,
     } = props;
 
-    const nPads = useSelector(selectNumberOfPads);
+    const nBars = useSelector(selectNBars);
+    const beatsPerBar = useSelector(selectBeatsPerBar);
+    const padsPerBeat = useSelector(selectPadsPerBeat);
     const dispatch = useAppDispatch();
 
     const trackClassname = classnames('track', instrumentName);
@@ -39,13 +43,21 @@ export default function InstrumentControl(props: Props) {
                 instrumentName={instrumentName}
             />
 
-            {Array.from(range(0, nPads)).map(index => (
-                <Pad
-                    key={`${instrumentName}${index}`}
-                    instrumentName={instrumentName}
-                    padi={index}
-                />
-            ))}
+            {Array.from(range(0, nBars)).map(bari => (
+                Array.from(range(0, beatsPerBar)).map(beati => (
+                    <>
+                        {beati+1}
+                        {Array.from(range(0, padsPerBeat)).map(padi => (
+                            <Pad
+                                key={`${instrumentName}${bari}${beati}${padi}`}
+                                instrumentName={instrumentName}
+                                bari={bari}
+                                beati={beati}
+                                padi={padi}
+                            />))}
+                    </>
+                ))))}
+
         </section>
     );
 }

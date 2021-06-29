@@ -15,16 +15,20 @@ import {
 
 interface Props {
     instrumentName: string,
+    bari: number,
+    beati: number,
     padi: number
 }
 
 export default function Pad(props: Props) {
     const {
         instrumentName,
+        bari,
+        beati,
         padi,
     } = props;
 
-    const isOn = useSelector((state: RootState) => selectPad(state, instrumentName, padi));
+    const isOn = useSelector((state: RootState) => selectPad(state, instrumentName, bari, beati, padi));
     const dispatch = useAppDispatch();
 
     const className = classnames('pad', isOn ? 'on' : 'off');
@@ -32,7 +36,7 @@ export default function Pad(props: Props) {
     return (
         <button
             className={className}
-            onClick={() => dispatch(padClick(instrumentName, padi))}
+            onClick={() => dispatch(padClick(instrumentName, bari, beati, padi))}
         />
     );
 }

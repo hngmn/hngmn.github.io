@@ -28,17 +28,16 @@
 
 .pad {
   display: inline-block;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 10px 10px;
   cursor: pointer;
+  border: 1px solid gray;
 }
 
 .pad.on {
   background-color: #e5f523;
-  border: 2px solid black;
 }
 
 .pad.off {
   background-color: #829bb1;
-  border: 2px solid black;
 }

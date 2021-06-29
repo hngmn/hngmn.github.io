@@ -17,7 +17,7 @@ interface ISliceState {
     beatsPerBar: number,
     padsPerBeat: number,
 
-    pads: INormalizedObject<Array<boolean>>,
+    pads: INormalizedObject<Array<Array<Array<boolean>>>>,
 
     isPlaying: boolean,
     tempo: number,
@@ -60,18 +60,20 @@ export const sequencerSlice = createSlice({
         },
 
         padClick: {
-            reducer(state, action: PayloadAction<{ instrumentName: string, padi: number }>) {
+            reducer(state, action: PayloadAction<{ instrumentName: string, bari: number, beati: number, padi: number }>) {
                 const {
                     instrumentName,
+                    bari,
+                    beati,
                     padi,
                 } = action.payload;
 
-                state.pads.byId[instrumentName][padi] = !state.pads.byId[instrumentName][padi];
+                state.pads.byId[instrumentName][bari][beati][padi] = !state.pads.byId[instrumentName][bari][beati][padi];
             },
 
-            prepare(instrumentName: string, padi: number) {
+            prepare(instrumentName: string, bari: number, beati: number, padi: number) {
                 return {
-                    payload: { instrumentName, padi }
+                    payload: { instrumentName, bari, beati, padi }
                 };
             },
         },
@@ -86,14 +88,17 @@ export const sequencerSlice = createSlice({
                 beatsPerBar,
                 padsPerBeat,
             } = state;
-            const totalNotes = calculateTotalPads(nBars, beatsPerBar, padsPerBeat);
 
             const {
                 name,
             } = action.payload;
 
             state.pads.allIds.push(name);
-            state.pads.byId[name] = (new Array(totalNotes)).fill(false); 
+            state.pads.byId[name] = (new Array(nBars)).fill(
+                (new Array(beatsPerBar)).fill(
+                    (new Array(padsPerBeat)).fill(false)
+                )
+            );
         })
     },
 });
@@ -119,13 +124,17 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
         audioCtx.resume();
     }
 
-    let currentNote = 0;
+    let currentBar = 0;
+    let currentBeat = 0;
+    let currentPad = 0;
     let nextNoteTime = audioCtx.currentTime;
     let timerId = null;
     let lastTime = audioCtx.currentTime;
 
     function schedule() {
         const {
+            nBars,
+            beatsPerBar,
             padsPerBeat,
 
             isPlaying,
@@ -148,12 +157,19 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
 
         while (nextNoteTime < intervalEnd) {
             instruments.allIds.forEach((instrumentName: string) => {
-                if (pads.byId[instrumentName][currentNote]) {
+                if (pads.byId[instrumentName][currentBar][currentBeat][currentPad]) {
                     scheduleInstrument(instrumentName, nextNoteTime);
                 }
             });
 
-            currentNote = (currentNote + 1) % nPads;
+            // TODO: clean this up
+            currentPad = (currentPad + 1) % padsPerBeat;
+            if (currentPad === 0) {
+                currentBeat = (currentBeat + 1) % beatsPerBar;
+                if (currentBeat === 0) {
+                    currentBar = (currentBar + 1) % nBars;
+                }
+            }
             nextNoteTime += secondsPerPad;
         }
 
@@ -175,10 +191,14 @@ function calculateTotalPads(nBars: number, beatsPerBar: number, padsPerBeat: num
 }
 export const selectNumberOfPads = (state: RootState) => calculateTotalPads(state.sequencer.nBars, state.sequencer.beatsPerBar, state.sequencer.padsPerBeat);
 
+export const selectNBars = (state: RootState) => state.sequencer.nBars;
+export const selectBeatsPerBar = (state: RootState) => state.sequencer.beatsPerBar;
+export const selectPadsPerBeat = (state: RootState) => state.sequencer.padsPerBeat;
+
 // pad names (instrument ids)
 export const selectPadNames = (state: RootState) => state.sequencer.pads.allIds;
 
-export const selectPad = (state: RootState, instrumentName: string, padi: number) => state.sequencer.pads.byId[instrumentName][padi];
+export const selectPad = (state: RootState, instrumentName: string, bari: number, beati: number, padi: number) => state.sequencer.pads.byId[instrumentName][bari][beati][padi];
 
 
 // Auto-generated Actions //
