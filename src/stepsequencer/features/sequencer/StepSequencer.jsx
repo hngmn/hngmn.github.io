@@ -39,29 +39,31 @@ function StepSequencer() {
     }, []); // empty array so this hook only runs once, on mount
 
     return (
-        <div>
-            <span>{isPlaying ? 'playing' : 'paused'}</span>
+        <section className={'stepSequencer'}>
+            <section className={'sequencerControls'}>
+                <span>
+                    <Slider
+                        kind={'object'}
+                        config={{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
+                        onInput={(newTempoValue) => dispatch(setTempo(newTempoValue))}
+                    />
 
-            <span>
-                <Slider
-                    kind={'object'}
-                    config={{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
-                    onInput={(newTempoValue) => dispatch(setTempo(newTempoValue))}
-                />
+                    <PlayButton
+                        isPlaying={isPlaying}
+                        onClick={() => isPlaying ? dispatch(pause()) : dispatch(playThunk)}
+                    />
+                </span>
+            </section>
 
-                <PlayButton
-                    isPlaying={isPlaying}
-                    onClick={() => isPlaying ? dispatch(pause()) : dispatch(playThunk)}
-                />
-            </span>
-
-            {instrumentNames.map((instrumentName) => (
-                <InstrumentControl
-                    key={instrumentName}
-                    instrumentName={instrumentName}
-                />
-            ))}
-        </div>
+            <section className={'tracks'}>
+                {instrumentNames.map((instrumentName) => (
+                    <InstrumentControl
+                        key={instrumentName}
+                        instrumentName={instrumentName}
+                    />
+                ))}
+            </section>
+        </section>
     );
 
 }

@@ -1,3 +1,32 @@
+.stepSequencer {
+  display: block;
+  border-radius: 10px;
+  background-color: #006aaa;
+  padding: 40px;
+  border: 4px black;
+}
+
+.sequencerControls {
+  display: block;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.tracks {
+  display: block;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.track {
+  display: block;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 5px;
+}
+
 .padOn {
   display: inline-block;
   background-color: yellow;
