@@ -19,6 +19,7 @@ import {
 } from '../instruments/instrumentsSlice';
 import { Sweep, Pulse, Noise, Sample } from '../instruments/defaultInstruments';
 import { getAudioContext } from '../instruments/instrumentPlayer';
+import { useKeyboardShortcut } from '../../util/useKeyboardShortcut';
 
 
 function StepSequencer() {
@@ -40,6 +41,9 @@ function StepSequencer() {
         dispatch(addInstrument('phone?', new Sample(audioCtx, '/assets/audio/dtmf.mp3')));
     }, []); // empty array so this hook only runs once, on mount
 
+    const playpause = () => isPlaying ? dispatch(pause()) : dispatch(playThunk);
+    useKeyboardShortcut([' '], playpause);
+
     return (
         <section className={'stepSequencer'}>
             <section className={'sequencerControls'}>
@@ -52,7 +56,7 @@ function StepSequencer() {
 
                     <PlayButton
                         isPlaying={isPlaying}
-                        onClick={() => isPlaying ? dispatch(pause()) : dispatch(playThunk)}
+                        onClick={playpause}
                     />
                 </span>
             </section>
