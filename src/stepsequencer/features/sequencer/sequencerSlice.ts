@@ -6,6 +6,7 @@ import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
 import {
     getAudioContext,
+    getCurrentTime,
     addInstrumentToScheduler,
     getInstrument,
     scheduleInstrument,
@@ -117,19 +118,12 @@ export async function playThunk(dispatch: AppDispatch, getState: any) {
     // update UI
     dispatch(sequencerSlice.actions.play());
 
-    const audioCtx = await getAudioContext();
-
-    // check if context is in suspended state (autoplay policy)
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-
     let currentBar = 0;
     let currentBeat = 0;
     let currentPad = 0;
-    let nextNoteTime = audioCtx.currentTime;
+    let nextNoteTime = getCurrentTime();
     let timerId = null;
-    let lastTime = audioCtx.currentTime;
+    let lastTime = getCurrentTime();
 
     function schedule() {
         const {
@@ -153,7 +147,7 @@ export async function playThunk(dispatch: AppDispatch, getState: any) {
         }
 
         const secondsPerPad = 60.0 / tempo / padsPerBeat;
-        const intervalEnd = audioCtx.currentTime + SCHEDULEAHEADTIME;
+        const intervalEnd = getCurrentTime() + SCHEDULEAHEADTIME;
 
         while (nextNoteTime < intervalEnd) {
             instruments.allIds.forEach((instrumentName: string) => {

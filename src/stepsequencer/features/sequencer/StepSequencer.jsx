@@ -1,6 +1,6 @@
 'use strict';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import InstrumentControl from './InstrumentControl';

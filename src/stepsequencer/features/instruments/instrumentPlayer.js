@@ -19,6 +19,10 @@ export function getTone() {
     return tone;
 }
 
+export function getCurrentTime() {
+    return tone.now();
+}
+
 // instruments
 let instruments = {};
 

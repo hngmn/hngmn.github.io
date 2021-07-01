@@ -6,10 +6,8 @@ import { INormalizedObject } from '../../global';
 import { normalizedObjectFromTuples } from '../../util/util';
 import { AppDispatch, RootState } from '../../app/store';
 import {
-    getAudioContext,
     addInstrumentToScheduler,
     getInstrument,
-    scheduleInstrument,
 } from './instrumentPlayer.js';
 import { IInstrument, IInstrumentParameter } from './types';
 
