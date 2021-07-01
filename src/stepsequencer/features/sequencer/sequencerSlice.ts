@@ -79,6 +79,22 @@ export const sequencerSlice = createSlice({
             },
         },
 
+        clearAllPads: (state) => {
+            const {
+                nBars,
+                beatsPerBar,
+                padsPerBeat,
+            } = state;
+            state.pads.allIds.forEach((instrumentName) => {
+                for (let bari = 0; bari < nBars; bari++) {
+                    for (let beati = 0; beati < beatsPerBar; beati++) {
+                        for (let padi = 0; padi < padsPerBeat; padi++) {
+                            state.pads.byId[instrumentName][bari][beati][padi] = false;
+                        }
+                    }
+                }
+            });
+        },
     },
 
     extraReducers: builder => {
@@ -202,6 +218,7 @@ export const {
     setTempo,
 
     padClick,
+    clearAllPads,
 } = sequencerSlice.actions;
 
 export default sequencerSlice.reducer;

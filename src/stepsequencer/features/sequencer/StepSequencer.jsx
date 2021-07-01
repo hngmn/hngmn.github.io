@@ -11,6 +11,7 @@ import {
     playThunk,
     pause,
     setTempo,
+    clearAllPads,
 } from './sequencerSlice';
 import {
     addInstrument,
@@ -59,6 +60,12 @@ function StepSequencer() {
                         isPlaying={isPlaying}
                         onClick={playpause}
                     />
+
+                    <button
+                        onClick={() => dispatch(clearAllPads())}
+                    >
+                        Clear All
+                    </button>
                 </span>
             </section>
 
