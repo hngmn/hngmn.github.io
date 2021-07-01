@@ -9,11 +9,11 @@ import {
     addInstrumentToScheduler,
     getInstrument,
 } from './instrumentPlayer.js';
-import { IInstrument, IInstrumentParameter } from './types';
+import { IInstrument, IInstrumentParameter, IInstrumentParameterConfig } from './types';
 
 interface IInstrumentConfig {
     name: string,
-    params: INormalizedObject<IInstrumentParameter>,
+    params: INormalizedObject<IInstrumentParameterConfig>,
 }
 
 interface ISliceState {
@@ -32,7 +32,7 @@ export const instrumentsSlice = createSlice({
 
     reducers: {
         instrumentAdded: {
-            reducer(state, action: PayloadAction<{ name: string, params: INormalizedObject<IInstrumentParameter> }>) {
+            reducer(state, action: PayloadAction<{ name: string, params: INormalizedObject<IInstrumentParameterConfig> }>) {
                 const {
                     name,
                     params,

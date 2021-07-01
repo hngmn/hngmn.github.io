@@ -4,24 +4,19 @@ import { INormalizedObject } from '../../global'
 import {
     IInstrument,
     IInstrumentParameter,
+    IInstrumentParameterConfig,
 } from './types';
 
 export abstract class BaseInstrument implements IInstrument {
     params: INormalizedObject<InstrumentParameter>;
 
-    constructor(params: Array<IInstrumentParameter>) {
+    constructor(params: Array<IInstrumentParameterConfig>) {
         this.params = {
             byId: {},
             allIds: params.map(p => p.name)
         };
         for (let p of params) {
-            this.params.byId[p.name] = new InstrumentParameter(
-                p.name,
-                p.min,
-                p.max,
-                p.value,
-                p.step
-            );
+            this.params.byId[p.name] = new InstrumentParameter(p);
         }
     }
 
@@ -57,18 +52,12 @@ export class InstrumentParameter implements IInstrumentParameter {
     value: number;
     step: number;
 
-    constructor(
-        name: string,
-        min: number,
-        max: number,
-        initialValue: number,
-        step: number,
-    ) {
-        this.name = name;
-        this.min = min;
-        this.max = max;
-        this.value = initialValue;
-        this.step = step;
+    constructor(config: IInstrumentParameterConfig) {
+        this.name = config.name;
+        this.min = config.min;
+        this.max = config.max;
+        this.value = config.value;
+        this.step = config.step;
     }
 
     getValue() {
