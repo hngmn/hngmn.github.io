@@ -1,7 +1,6 @@
 'use strict';
 
-import * as Tone from 'tone';
-
+import { getTone } from './instrumentPlayer';
 import { IInstrument } from './types';
 import { BaseInstrument } from './Instrument';
 
@@ -11,7 +10,8 @@ export class FirstToneInstrument extends BaseInstrument {
     constructor() {
         super([]);
 
-        this.synth = new Tone.Synth().toDestination();
+        const tone = getTone();
+        this.synth = new tone.Synth().toDestination();
     }
 
     schedule(time: number) {
@@ -25,7 +25,8 @@ export class ToneSampler extends BaseInstrument {
     constructor(sampleFilepath: string) {
         super([]);
 
-        this.player = new Tone.Player(sampleFilepath).toDestination();
+        const tone = getTone();
+        this.player = new tone.Player(sampleFilepath).toDestination();
     }
 
     schedule(time: number) {

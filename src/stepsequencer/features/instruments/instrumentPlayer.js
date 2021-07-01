@@ -1,7 +1,6 @@
 'use strict';
 
-import * as Tone from 'tone';
-
+let tone;
 let audioCtx;
 
 export async function getAudioContext() {
@@ -10,9 +9,14 @@ export async function getAudioContext() {
 }
 
 async function initAudioContext() {
-    await Tone.start();
-    audioCtx = Tone.context;
+    tone = await import('tone');
+    await tone.start();
+    audioCtx = tone.context;
     return audioCtx;
+}
+
+export function getTone() {
+    return tone;
 }
 
 // instruments
