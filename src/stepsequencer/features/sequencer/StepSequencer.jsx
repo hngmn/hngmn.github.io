@@ -1,9 +1,10 @@
 'use strict';
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import InstrumentControl from './InstrumentControl';
+import Loading from './Loading';
 import PlayButton from './PlayButton';
 import Slider from './Slider';
 import {
@@ -18,13 +19,14 @@ import {
 
     selectInstrumentNames,
 } from '../instruments/instrumentsSlice';
-import { Sweep, Pulse, Noise, Sample } from '../instruments/defaultInstruments';
 import { FirstToneInstrument, ToneSampler } from '../instruments/toneInstruments';
-import { getAudioContext } from '../instruments/instrumentPlayer';
+import * as InstrumentPlayer from '../instruments/instrumentPlayer';
 import { useKeyboardShortcut } from '../../util/useKeyboardShortcut';
 
-
 function StepSequencer() {
+    // React state for loading
+    const [isLoading, setLoading] = React.useState(true);
+
     // Custom React Hooks for Redux state (?)
     const tempo = useSelector(state => state.sequencer.tempo);
     const isPlaying = useSelector(state => state.sequencer.isPlaying);
@@ -32,8 +34,8 @@ function StepSequencer() {
     const dispatch = useDispatch();
 
     // init audio
-    useEffect(async () => {
-        const audioCtx = await getAudioContext();
+    React.useEffect(async () => {
+        await InstrumentPlayer.init();
 
         dispatch(addInstrument('hat', new ToneSampler('/assets/audio/hat.wav')));
         dispatch(addInstrument('lazertom', new ToneSampler('/assets/audio/lazertom.wav')));
@@ -41,10 +43,17 @@ function StepSequencer() {
         dispatch(addInstrument('snare', new ToneSampler('/assets/audio/snare.wav')));
         dispatch(addInstrument('kick', new ToneSampler('/assets/audio/kick.wav')));
         dispatch(addInstrument('tonesynth', new FirstToneInstrument()));
+
+        await InstrumentPlayer.getTone().loaded();
+        setLoading(false);
     }, []); // empty array so this hook only runs once, on mount
 
     const playpause = () => isPlaying ? dispatch(pause()) : dispatch(playThunk);
     useKeyboardShortcut([' '], playpause);
+
+    if (isLoading) {
+        return (<Loading/>);
+    }
 
     return (
         <section className={'stepSequencer'}>

@@ -8,7 +8,7 @@ export async function getAudioContext() {
     return audioCtx;
 }
 
-async function initAudioContext() {
+export async function init() {
     tone = await import('tone');
     await tone.start();
     audioCtx = tone.context;
