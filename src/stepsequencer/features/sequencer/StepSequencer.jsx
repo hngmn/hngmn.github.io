@@ -18,6 +18,7 @@ import {
     selectInstrumentNames,
 } from '../instruments/instrumentsSlice';
 import { Sweep, Pulse, Noise, Sample } from '../instruments/defaultInstruments';
+import { FirstToneInstrument, ToneSampler } from '../instruments/toneInstruments';
 import { getAudioContext } from '../instruments/instrumentPlayer';
 import { useKeyboardShortcut } from '../../util/useKeyboardShortcut';
 
@@ -30,15 +31,15 @@ function StepSequencer() {
     const dispatch = useDispatch();
 
     // init audio
-    useEffect(() => {
-        let audioCtx = getAudioContext();
+    useEffect(async () => {
+        const audioCtx = await getAudioContext();
 
-        dispatch(addInstrument('hat', new Sample(audioCtx, '/assets/audio/hat.wav')));
-        dispatch(addInstrument('lazertom', new Sample(audioCtx, '/assets/audio/lazertom.wav')));
-        dispatch(addInstrument('electrotom', new Sample(audioCtx, '/assets/audio/electrotom.wav')));
-        dispatch(addInstrument('snare', new Sample(audioCtx, '/assets/audio/snare.wav')));
-        dispatch(addInstrument('kick', new Sample(audioCtx, '/assets/audio/kick.wav')));
-        dispatch(addInstrument('phone?', new Sample(audioCtx, '/assets/audio/dtmf.mp3')));
+        dispatch(addInstrument('hat', new ToneSampler('/assets/audio/hat.wav')));
+        dispatch(addInstrument('lazertom', new ToneSampler('/assets/audio/lazertom.wav')));
+        dispatch(addInstrument('electrotom', new ToneSampler('/assets/audio/electrotom.wav')));
+        dispatch(addInstrument('snare', new ToneSampler('/assets/audio/snare.wav')));
+        dispatch(addInstrument('kick', new ToneSampler('/assets/audio/kick.wav')));
+        dispatch(addInstrument('tonesynth', new FirstToneInstrument()));
     }, []); // empty array so this hook only runs once, on mount
 
     const playpause = () => isPlaying ? dispatch(pause()) : dispatch(playThunk);

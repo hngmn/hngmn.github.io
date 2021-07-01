@@ -1,12 +1,17 @@
 'use strict';
 
-// for cross browser compatibility
-const AudioContext = window.AudioContext || window.webkitAudioContext;
+import * as Tone from 'tone';
+
 let audioCtx;
 
-export function getAudioContext() {
-    audioCtx = audioCtx || new AudioContext();
+export async function getAudioContext() {
+    audioCtx = audioCtx || await initAudioContext();
+    return audioCtx;
+}
 
+async function initAudioContext() {
+    await Tone.start();
+    audioCtx = Tone.context;
     return audioCtx;
 }
 
@@ -27,5 +32,6 @@ export function getInstrument(name) {
 
 export function scheduleInstrument(instrumentName, time) {
     // TODO: check instrument exists?
+    console.log(`scheduling instrument ${instrumentName} at time ${time}`);
     instruments[instrumentName].schedule(time);
 }

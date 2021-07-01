@@ -109,7 +109,7 @@ export const sequencerSlice = createSlice({
 /////////////////////////////
 
 // thunk for scheduling
-export function playThunk(dispatch: AppDispatch, getState: any) {
+export async function playThunk(dispatch: AppDispatch, getState: any) {
     // Constants
     const LOOKAHEAD = 25.0; // How frequently to call scheduling function (in ms)
     const SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
@@ -117,7 +117,7 @@ export function playThunk(dispatch: AppDispatch, getState: any) {
     // update UI
     dispatch(sequencerSlice.actions.play());
 
-    const audioCtx = getAudioContext();
+    const audioCtx = await getAudioContext();
 
     // check if context is in suspended state (autoplay policy)
     if (audioCtx.state === 'suspended') {
