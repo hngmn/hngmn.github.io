@@ -1,9 +1,6 @@
 'use strict';
 
-import type Tone from 'tone';
-import type {
-    Unit
-} from 'tone';
+import * as Tone from 'tone';
 
 import type {
     IInstrument,
@@ -11,19 +8,16 @@ import type {
     IInstrumentParameterConfig,
 } from './types';
 
-let tone: typeof Tone;
-
 async function init() {
-    tone = await import('tone');
-    await tone.start();
+    await Tone.start();
 }
 
 function getTone() {
-    return tone;
+    return Tone;
 }
 
 function getCurrentTime(): number {
-    return tone.now();
+    return Tone.now();
 }
 
 // instruments
@@ -41,7 +35,7 @@ function getInstrument(instrumentName: string) {
     return instruments[instrumentName];
 }
 
-function scheduleInstrument(instrumentName: string, time: Unit.Time) {
+function scheduleInstrument(instrumentName: string, time: Tone.Unit.Time) {
     // TODO: check instrument exists?
     console.log(`scheduling instrument ${instrumentName} at time ${time}`);
     instruments[instrumentName].schedule(time);
