@@ -1,5 +1,9 @@
 'use strict';
 
+import type {
+    Unit,
+} from 'tone';
+
 import { NormalizedObject } from '../../global'
 
 export interface IInstrumentParameter {
@@ -16,7 +20,7 @@ export interface IInstrumentParameterConfig {
 }
 
 export interface IInstrument {
-    schedule: (time: number) => void;
+    schedule: (time: Unit.Time) => void;
     getAllParameterNames: () => Array<string>;
     getParameterConfig: (parameterName: string) => IInstrumentParameterConfig;
     getParameterValue: (parameterName: string) => number;

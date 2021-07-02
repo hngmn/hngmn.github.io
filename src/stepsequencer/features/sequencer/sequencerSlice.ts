@@ -4,7 +4,7 @@ import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
 
 import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
-import instrumentPlayer from '../instruments/instrumentPlayer.js';
+import instrumentPlayer from '../instruments/instrumentPlayer';
 import { instrumentAdded } from '../instruments/instrumentsSlice';
 
 interface ISliceState {

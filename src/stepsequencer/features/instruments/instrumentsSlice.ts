@@ -5,7 +5,7 @@ import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
 import { INormalizedObject } from '../../global';
 import { normalizedObjectFromTuples } from '../../util/util';
 import { AppDispatch, RootState } from '../../app/store';
-import instrumentPlayer from './instrumentPlayer.js';
+import instrumentPlayer from './instrumentPlayer';
 import { IInstrument, IInstrumentParameter, IInstrumentParameterConfig } from './types';
 
 interface IInstrumentConfig {

@@ -1,7 +1,11 @@
 'use strict';
 
-import { INormalizedObject } from '../../global'
-import {
+import type {
+    Unit,
+} from 'tone';
+
+import type { INormalizedObject } from '../../global'
+import type {
     IInstrument,
     IInstrumentParameter,
     IInstrumentParameterConfig,
@@ -42,7 +46,7 @@ export abstract class BaseInstrument implements IInstrument {
         this.params.byId[parameterName].value = value;
     }
 
-    abstract schedule(time: number): void;
+    abstract schedule(time: Unit.Time): void;
 }
 
 export class InstrumentParameter implements IInstrumentParameter {

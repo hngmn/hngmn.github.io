@@ -1,5 +1,9 @@
 'use strict';
 
+import type {
+    Unit,
+} from 'tone';
+
 import instrumentPlayer from './instrumentPlayer';
 import { IInstrument } from './types';
 import { BaseInstrument } from './Instrument';
@@ -14,7 +18,7 @@ export class FirstToneInstrument extends BaseInstrument {
         this.synth = new tone.Synth().toDestination();
     }
 
-    schedule(time: number) {
+    schedule(time: Unit.Time) {
         this.synth.triggerAttackRelease('C2', '4n', time);
     }
 }
@@ -29,7 +33,7 @@ export class ToneSampler extends BaseInstrument {
         this.player = new tone.Player(sampleFilepath).toDestination();
     }
 
-    schedule(time: number) {
+    schedule(time: Unit.Time) {
         this.player.start(time);
     }
 }
