@@ -1,39 +1,35 @@
 'use strict';
 
-import type {
-    Unit,
-} from 'tone';
+import * as Tone from 'tone';
 
 import instrumentPlayer from './instrumentPlayer';
 import { IInstrument } from './types';
 import { BaseInstrument } from './Instrument';
 
 export class FirstToneInstrument extends BaseInstrument {
-    synth: any;
+    synth: Tone.Synth;
 
     constructor() {
         super([]);
 
-        const tone = instrumentPlayer.getTone();
-        this.synth = new tone.Synth().toDestination();
+        this.synth = new Tone.Synth().toDestination();
     }
 
-    schedule(time: Unit.Time) {
+    schedule(time: Tone.Unit.Time) {
         this.synth.triggerAttackRelease('C2', '4n', time);
     }
 }
 
 export class ToneSampler extends BaseInstrument {
-    player: any;
+    player: Tone.Player;
 
     constructor(sampleFilepath: string) {
         super([]);
 
-        const tone = instrumentPlayer.getTone();
-        this.player = new tone.Player(sampleFilepath).toDestination();
+        this.player = new Tone.Player(sampleFilepath).toDestination();
     }
 
-    schedule(time: Unit.Time) {
+    schedule(time: Tone.Unit.Time) {
         this.player.start(time);
     }
 }

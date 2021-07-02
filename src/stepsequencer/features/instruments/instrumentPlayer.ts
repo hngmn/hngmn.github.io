@@ -37,8 +37,36 @@ function getInstrument(instrumentName: string) {
 
 function scheduleInstrument(instrumentName: string, time: Tone.Unit.Time) {
     // TODO: check instrument exists?
-    console.log(`scheduling instrument ${instrumentName} at time ${time}`);
     instruments[instrumentName].schedule(time);
+}
+
+let loops: Array<Array<Array<Tone.Loop>>>;
+function setUpLoops(nBars: number, beatsPerBar: number, padsPerBeat: number, getInstrumentsForNote: (bari: number, beati: number, padi: number) => Array<string>) {
+
+    loops = (new Array(nBars)).fill(
+        (new Array(beatsPerBar)).fill(
+            (new Array(padsPerBeat)).fill(false)));
+
+    for (let bari = 0; bari < nBars; bari++) {
+        for (let beati = 0; beati < beatsPerBar; beati++) {
+            for (let padi = 0; padi < padsPerBeat; padi++) {
+                loops[bari][beati][padi] = new Tone.Loop(
+                    time => {
+                        getInstrumentsForNote(bari, beati, padi).forEach((instrumentName) => scheduleInstrument(instrumentName, time));
+                    },
+                    `${nBars}m`
+                ).start(`${bari}:${beati}:${padi}`);
+            }
+        }
+    }
+}
+
+function play() {
+    Tone.Transport.start();
+}
+
+function pause() {
+    Tone.Transport.stop();
 }
 
 export default {
@@ -48,4 +76,7 @@ export default {
     addInstrumentToScheduler: addInstrumentToScheduler,
     getInstrument: getInstrument,
     scheduleInstrument: scheduleInstrument,
+    setUpLoops: setUpLoops,
+    play: play,
+    pause: pause,
 };

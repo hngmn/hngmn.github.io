@@ -1,11 +1,12 @@
 'use strict';
 
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
+import * as Tone from 'tone';
 
 import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
-import instrumentPlayer from '../instruments/instrumentPlayer';
 import { instrumentAdded } from '../instruments/instrumentsSlice';
+import instrumentPlayer from '../instruments/instrumentPlayer';
 
 interface ISliceState {
     nBars: number,
@@ -121,69 +122,17 @@ export const sequencerSlice = createSlice({
 
 // thunk for scheduling
 export async function playThunk(dispatch: AppDispatch, getState: any) {
-    // Constants
-    const LOOKAHEAD = 25.0; // How frequently to call scheduling function (in ms)
-    const SCHEDULEAHEADTIME = 0.1; // How far ahead to schedule audio (sec)
-
     // update UI
     dispatch(sequencerSlice.actions.play());
 
-    let currentBar = 0;
-    let currentBeat = 0;
-    let currentPad = 0;
-    let nextNoteTime = instrumentPlayer.getCurrentTime();
-    let timerId = null;
-    let lastTime = instrumentPlayer.getCurrentTime();
-
-    function schedule() {
-        const {
-            nBars,
-            beatsPerBar,
-            padsPerBeat,
-
-            isPlaying,
-            tempo,
-            pads,
-        } = getState().sequencer;
-        const {
-            instruments,
-        } = getState().instruments;
-
-        const nPads = selectNumberOfPads(getState());
-        if (!isPlaying) {
-            // sequencer has been paused. stop scheduling
-            console.log('isPlaying false. stopping schedule() timeout');
-            return;
-        }
-
-        const secondsPerPad = 60.0 / tempo / padsPerBeat;
-        const intervalEnd = instrumentPlayer.getCurrentTime() + SCHEDULEAHEADTIME;
-
-        while (nextNoteTime < intervalEnd) {
-            instruments.allIds.forEach((instrumentName: string) => {
-                if (pads.byId[instrumentName][currentBar][currentBeat][currentPad]) {
-                    instrumentPlayer.scheduleInstrument(instrumentName, nextNoteTime);
-                }
-            });
-
-            // TODO: clean this up
-            currentPad = (currentPad + 1) % padsPerBeat;
-            if (currentPad === 0) {
-                currentBeat = (currentBeat + 1) % beatsPerBar;
-                if (currentBeat === 0) {
-                    currentBar = (currentBar + 1) % nBars;
-                }
-            }
-            nextNoteTime += secondsPerPad;
-        }
-
-        timerId = window.setTimeout(schedule, LOOKAHEAD);
-    }
-
-    console.log('starting schedule()');
-    schedule();
+    instrumentPlayer.play();
 }
 
+export async function pauseThunk(dispatch: AppDispatch, getState: any) {
+    // update UI
+    dispatch(sequencerSlice.actions.pause());
+    instrumentPlayer.pause();
+}
 
 ///////////////
 // Selectors //
@@ -204,11 +153,13 @@ export const selectPadNames = (state: RootState) => state.sequencer.pads.allIds;
 
 export const selectPad = (state: RootState, instrumentName: string, bari: number, beati: number, padi: number) => state.sequencer.pads.byId[instrumentName][bari][beati][padi];
 
+export const selectInstrumentsEnabledForPad = (state: RootState, bari: number, beati: number, padi: number) =>
+    state.sequencer.pads.allIds.filter((instrumentName) => state.sequencer.pads.byId[instrumentName][bari][beati][padi]);
+
 
 // Auto-generated Actions //
 
 export const {
-    pause,
     setTempo,
 
     padClick,

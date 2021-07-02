@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import store from '../../app/store';
 import InstrumentControl from './InstrumentControl';
 import Loading from './Loading';
 import PlayButton from './PlayButton';
@@ -10,9 +11,14 @@ import Slider from './Slider';
 import {
     // actions
     playThunk,
-    pause,
+    pauseThunk,
     setTempo,
     clearAllPads,
+
+    selectNBars,
+    selectBeatsPerBar,
+    selectPadsPerBeat,
+    selectInstrumentsEnabledForPad,
 } from './sequencerSlice';
 import {
     addInstrument,
@@ -28,6 +34,9 @@ function StepSequencer() {
     const [isLoading, setLoading] = React.useState(true);
 
     // Custom React Hooks for Redux state (?)
+    const nBars = useSelector(selectNBars);
+    const beatsPerBar = useSelector(selectBeatsPerBar);
+    const padsPerBeat = useSelector(selectPadsPerBeat);
     const tempo = useSelector(state => state.sequencer.tempo);
     const isPlaying = useSelector(state => state.sequencer.isPlaying);
     const instrumentNames = useSelector(selectInstrumentNames);
@@ -45,10 +54,20 @@ function StepSequencer() {
         dispatch(addInstrument('tonesynth', new FirstToneInstrument()));
 
         await instrumentPlayer.getTone().loaded();
+
         setLoading(false);
     }, []); // empty array so this hook only runs once, on mount
 
-    const playpause = () => isPlaying ? dispatch(pause()) : dispatch(playThunk);
+    React.useEffect(() => {
+        console.log('setting up loops');
+        instrumentPlayer.setUpLoops(
+            nBars,
+            beatsPerBar,
+            padsPerBeat,
+            (bari, beati, padi) => selectInstrumentsEnabledForPad(store.getState(), bari, beati, padi));
+    }, [nBars, beatsPerBar, padsPerBeat])
+
+    const playpause = () => isPlaying ? dispatch(pauseThunk) : dispatch(playThunk);
     useKeyboardShortcut([' '], playpause);
 
     if (isLoading) {
