@@ -20,7 +20,7 @@ import {
     selectInstrumentNames,
 } from '../instruments/instrumentsSlice';
 import { FirstToneInstrument, ToneSampler } from '../instruments/toneInstruments';
-import * as InstrumentPlayer from '../instruments/instrumentPlayer';
+import instrumentPlayer from '../instruments/instrumentPlayer';
 import { useKeyboardShortcut } from '../../util/useKeyboardShortcut';
 
 function StepSequencer() {
@@ -35,7 +35,7 @@ function StepSequencer() {
 
     // init audio
     React.useEffect(async () => {
-        await InstrumentPlayer.init();
+        await instrumentPlayer.init();
 
         dispatch(addInstrument('hat', new ToneSampler('/assets/audio/hat.wav')));
         dispatch(addInstrument('lazertom', new ToneSampler('/assets/audio/lazertom.wav')));
@@ -44,7 +44,7 @@ function StepSequencer() {
         dispatch(addInstrument('kick', new ToneSampler('/assets/audio/kick.wav')));
         dispatch(addInstrument('tonesynth', new FirstToneInstrument()));
 
-        await InstrumentPlayer.getTone().loaded();
+        await instrumentPlayer.getTone().loaded();
         setLoading(false);
     }, []); // empty array so this hook only runs once, on mount
 

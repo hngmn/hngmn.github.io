@@ -3,23 +3,23 @@
 let tone;
 let audioCtx;
 
-export async function getAudioContext() {
+async function getAudioContext() {
     audioCtx = audioCtx || await initAudioContext();
     return audioCtx;
 }
 
-export async function init() {
+async function init() {
     tone = await import('tone');
     await tone.start();
     audioCtx = tone.context;
     return audioCtx;
 }
 
-export function getTone() {
+function getTone() {
     return tone;
 }
 
-export function getCurrentTime() {
+function getCurrentTime() {
     return tone.now();
 }
 
@@ -29,17 +29,27 @@ let instruments = {};
 // TODO: currently instrument parameters can't be updated; they don't look up redux store nor is there a mechanism to
 // update on updateInstrumentParameter action
 
-export function addInstrumentToScheduler(name, instrument) {
+function addInstrumentToScheduler(name, instrument) {
     instruments[name] = instrument;
     console.log(`instrument added: ${name}`);
 }
 
-export function getInstrument(name) {
+function getInstrument(name) {
     return instruments[name];
 }
 
-export function scheduleInstrument(instrumentName, time) {
+function scheduleInstrument(instrumentName, time) {
     // TODO: check instrument exists?
     console.log(`scheduling instrument ${instrumentName} at time ${time}`);
     instruments[instrumentName].schedule(time);
 }
+
+export default {
+    getAudioContext: getAudioContext,
+    init: init,
+    getTone: getTone,
+    getCurrentTime: getCurrentTime,
+    addInstrumentToScheduler: addInstrumentToScheduler,
+    getInstrument: getInstrument,
+    scheduleInstrument: scheduleInstrument,
+};

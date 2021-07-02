@@ -5,10 +5,7 @@ import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
 import { INormalizedObject } from '../../global';
 import { normalizedObjectFromTuples } from '../../util/util';
 import { AppDispatch, RootState } from '../../app/store';
-import {
-    addInstrumentToScheduler,
-    getInstrument,
-} from './instrumentPlayer.js';
+import instrumentPlayer from './instrumentPlayer.js';
 import { IInstrument, IInstrumentParameter, IInstrumentParameterConfig } from './types';
 
 interface IInstrumentConfig {
@@ -83,14 +80,14 @@ export const instrumentsSlice = createSlice({
 // thunk for adding instrument to instrumentPlayer
 export function addInstrument(name: string, instrument: IInstrument) {
     return function addInstrumentThunk(dispatch: AppDispatch, getState: any) {
-        addInstrumentToScheduler(name, instrument);
+        instrumentPlayer.addInstrumentToScheduler(name, instrument);
         dispatch(instrumentsSlice.actions.instrumentAdded(name, instrument));
     };
 }
 
 export function updateInstrumentParameter(instrumentName: string, parameterName: string, value: number) {
     return function updateInstrumentThunk(dispatch: AppDispatch, getState: any) {
-        getInstrument(instrumentName).setParameterValue(parameterName, value);
+        instrumentPlayer.getInstrument(instrumentName).setParameterValue(parameterName, value);
         dispatch(instrumentsSlice.actions.instrumentParameterUpdated(instrumentName, parameterName, value));
     };
 }

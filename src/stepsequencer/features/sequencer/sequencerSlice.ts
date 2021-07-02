@@ -4,13 +4,7 @@ import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
 
 import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
-import {
-    getAudioContext,
-    getCurrentTime,
-    addInstrumentToScheduler,
-    getInstrument,
-    scheduleInstrument,
-} from '../instruments/instrumentPlayer.js';
+import instrumentPlayer from '../instruments/instrumentPlayer.js';
 import { instrumentAdded } from '../instruments/instrumentsSlice';
 
 interface ISliceState {
@@ -137,9 +131,9 @@ export async function playThunk(dispatch: AppDispatch, getState: any) {
     let currentBar = 0;
     let currentBeat = 0;
     let currentPad = 0;
-    let nextNoteTime = getCurrentTime();
+    let nextNoteTime = instrumentPlayer.getCurrentTime();
     let timerId = null;
-    let lastTime = getCurrentTime();
+    let lastTime = instrumentPlayer.getCurrentTime();
 
     function schedule() {
         const {
@@ -163,12 +157,12 @@ export async function playThunk(dispatch: AppDispatch, getState: any) {
         }
 
         const secondsPerPad = 60.0 / tempo / padsPerBeat;
-        const intervalEnd = getCurrentTime() + SCHEDULEAHEADTIME;
+        const intervalEnd = instrumentPlayer.getCurrentTime() + SCHEDULEAHEADTIME;
 
         while (nextNoteTime < intervalEnd) {
             instruments.allIds.forEach((instrumentName: string) => {
                 if (pads.byId[instrumentName][currentBar][currentBeat][currentPad]) {
-                    scheduleInstrument(instrumentName, nextNoteTime);
+                    instrumentPlayer.scheduleInstrument(instrumentName, nextNoteTime);
                 }
             });
 
