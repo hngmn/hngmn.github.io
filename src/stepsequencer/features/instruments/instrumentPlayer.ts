@@ -69,6 +69,10 @@ function pause() {
     Tone.Transport.stop();
 }
 
+function setTempo(tempo: number) {
+    Tone.Transport.bpm.value = tempo;
+}
+
 export default {
     init: init,
     getTone: getTone,
@@ -79,4 +83,5 @@ export default {
     setUpLoops: setUpLoops,
     play: play,
     pause: pause,
+    setTempo: setTempo,
 };

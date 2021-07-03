@@ -126,18 +126,25 @@ export const sequencerSlice = createSlice({
 /////////////////////////////
 
 // thunk for scheduling
-export async function playThunk(dispatch: AppDispatch, getState: any) {
+export function playThunk(dispatch: AppDispatch, getState: () => RootState) {
     // update UI
     dispatch(sequencerSlice.actions.play());
-
     instrumentPlayer.play();
 }
 
-export async function pauseThunk(dispatch: AppDispatch, getState: any) {
+export function pauseThunk(dispatch: AppDispatch, getState: () => RootState) {
     // update UI
     dispatch(sequencerSlice.actions.pause());
     instrumentPlayer.pause();
 }
+
+export function setTempo(tempo: number) {
+    return function setTempoThunk(dispatch: AppDispatch, getState: () => RootState) {
+        dispatch(sequencerSlice.actions.setTempo(tempo));
+        instrumentPlayer.setTempo(tempo);
+    };
+}
+
 
 ///////////////
 // Selectors //
@@ -165,8 +172,6 @@ export const selectInstrumentsEnabledForPad = (state: RootState, bari: number, b
 // Auto-generated Actions //
 
 export const {
-    setTempo,
-
     padClick,
     clearAllPads,
 } = sequencerSlice.actions;
