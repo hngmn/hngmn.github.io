@@ -8,15 +8,30 @@ import { BaseInstrument } from './Instrument';
 
 export class FirstToneInstrument extends BaseInstrument {
     synth: Tone.Synth;
+    distortion: Tone.Distortion;
 
     constructor() {
-        super([]);
+        super([{
+            name: 'distortion',
+            min: 0.0,
+            max: 1.0,
+            value: 0.0,
+            step: 0.1,
+        }]);
 
-        this.synth = new Tone.Synth().toDestination();
+        this.distortion = new Tone.Distortion(0.0).toDestination();
+        this.synth = new Tone.Synth().connect(this.distortion);
     }
 
     schedule(time: Tone.Unit.Time) {
         this.synth.triggerAttackRelease('C2', '4n', time);
+    }
+
+    setParameterValue(parameterName: string, value: number) {
+        this.params.byId[parameterName].value = value;
+        this.distortion.set({
+            distortion: value,
+        });
     }
 }
 
