@@ -31,6 +31,12 @@ function addInstrumentToScheduler(name: string, instrument: IInstrument) {
     console.log(`instrument added: ${name}`);
 }
 
+function removeInstrumentFromScheduler(name: string) {
+    const i = instruments[name];
+    delete instruments[name];
+    return i;
+}
+
 function getInstrument(instrumentName: string) {
     return instruments[instrumentName];
 }
@@ -78,6 +84,7 @@ export default {
     getTone: getTone,
     getCurrentTime: getCurrentTime,
     addInstrumentToScheduler: addInstrumentToScheduler,
+    removeInstrumentFromScheduler: removeInstrumentFromScheduler,
     getInstrument: getInstrument,
     scheduleInstrument: scheduleInstrument,
     setUpLoops: setUpLoops,

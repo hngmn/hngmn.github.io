@@ -5,7 +5,7 @@ import * as Tone from 'tone';
 
 import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
-import { instrumentAdded } from '../instruments/instrumentsSlice';
+import { instrumentAdded, instrumentRemoved } from '../instruments/instrumentsSlice';
 import instrumentPlayer from '../instruments/instrumentPlayer';
 
 interface ISliceState {
@@ -113,6 +113,24 @@ export const sequencerSlice = createSlice({
                 for (let beati = 0; beati < beatsPerBar; beati++) {
                     for (let padi = 0; padi < padsPerBeat; padi++) {
                         state.pads[bari][beati][padi][name] = false;
+                    }
+                }
+            }
+        })
+
+        .addCase(instrumentRemoved, (state, action) => {
+            const {
+                nBars,
+                beatsPerBar,
+                padsPerBeat,
+            } = state;
+
+            const name = action.payload;
+
+            for (let bari = 0; bari < nBars; bari++) {
+                for (let beati = 0; beati < beatsPerBar; beati++) {
+                    for (let padi = 0; padi < padsPerBeat; padi++) {
+                        delete state.pads[bari][beati][padi][name];
                     }
                 }
             }

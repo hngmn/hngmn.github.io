@@ -17,7 +17,7 @@ import {
     selectBeatsPerBar,
     selectPadsPerBeat,
 } from './sequencerSlice';
-import { updateInstrumentParameter } from '../instruments/instrumentsSlice';
+import { updateInstrumentParameter, removeInstrument } from '../instruments/instrumentsSlice';
 
 interface Props {
     instrumentName: string,
@@ -37,6 +37,10 @@ export default function InstrumentControl(props: Props) {
 
     return (
         <section className={trackClassname}>
+            <button onClick={(e => dispatch(removeInstrument(instrumentName)))}>
+                <span>remove</span>
+            </button>
+
             <span>{instrumentName}</span>
 
             <InstrumentParameters

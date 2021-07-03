@@ -55,6 +55,13 @@ export const instrumentsSlice = createSlice({
             },
         },
 
+        instrumentRemoved: (state, action) => {
+            const name = action.payload;
+
+            delete state.instruments.byId[name];
+            state.instruments.allIds.splice(state.instruments.allIds.indexOf(name), 1);
+        },
+
         instrumentParameterUpdated: {
             reducer(state, action: PayloadAction<{ instrumentName: string, parameterName: string, value: number }>) {
                 const {
@@ -79,14 +86,21 @@ export const instrumentsSlice = createSlice({
 
 // thunk for adding instrument to instrumentPlayer
 export function addInstrument(name: string, instrument: IInstrument) {
-    return function addInstrumentThunk(dispatch: AppDispatch, getState: any) {
+    return function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
         instrumentPlayer.addInstrumentToScheduler(name, instrument);
         dispatch(instrumentsSlice.actions.instrumentAdded(name, instrument));
     };
 }
 
+export function removeInstrument(name: string) {
+    return function removeInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
+        instrumentPlayer.removeInstrumentFromScheduler(name);
+        return dispatch(instrumentsSlice.actions.instrumentRemoved(name));
+    }
+}
+
 export function updateInstrumentParameter(instrumentName: string, parameterName: string, value: number) {
-    return function updateInstrumentThunk(dispatch: AppDispatch, getState: any) {
+    return function updateInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
         instrumentPlayer.getInstrument(instrumentName).setParameterValue(parameterName, value);
         dispatch(instrumentsSlice.actions.instrumentParameterUpdated(instrumentName, parameterName, value));
     };
@@ -99,7 +113,8 @@ export function updateInstrumentParameter(instrumentName: string, parameterName:
 export const selectInstrumentNames = (state: RootState) => state.instruments.instruments.allIds;
 
 // config for given instrument id
-export const selectInstrumentConfig = (state: RootState, instrumentName: string) => state.instruments.instruments.byId[instrumentName];
+export const selectInstrumentConfig = (state: RootState, instrumentName: string) =>
+    state.instruments.instruments.byId[instrumentName];
 
 // all instrument configs (in order)
 export const selectInstrumentConfigs = createSelector(
@@ -111,15 +126,18 @@ export const selectInstrumentConfigs = createSelector(
 );
 
 // parameter names (in order) for given instrument id
-export const selectParameterNamesForInstrument = (state: RootState, instrumentName: string) => state.instruments.instruments.byId[instrumentName].params.allIds;
+export const selectParameterNamesForInstrument = (state: RootState, instrumentName: string) =>
+    state.instruments.instruments.byId[instrumentName].params.allIds;
 
 // given instrument, parameter
-export const selectInstrumentParameter = (state: RootState, instrumentName: string, parameterName: string) => state.instruments.instruments.byId[instrumentName].params.byId[parameterName];
+export const selectInstrumentParameter = (state: RootState, instrumentName: string, parameterName: string) =>
+    state.instruments.instruments.byId[instrumentName].params.byId[parameterName];
 
 
 // Actions //
 export const {
     instrumentAdded,
+    instrumentRemoved,
 } = instrumentsSlice.actions;
 
 export default instrumentsSlice.reducer;
