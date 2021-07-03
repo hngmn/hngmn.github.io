@@ -8,23 +8,29 @@ import type {
     IInstrumentParameterConfig,
 } from './types';
 
-async function init() {
-    await Tone.start();
-}
+// instruments
+let instruments: Record<string, IInstrument> = {};
 
-function getTone() {
-    return Tone;
+/**
+ * One Tone.Loop per pad/note, to play all instruments with the corresponding pad on.
+ */
+let loops: Array<Array<Array<Tone.Loop>>>;
+
+async function init(bpm: number) {
+    await Tone.start();
+    Tone.Transport.bpm.value = bpm;
 }
 
 function getCurrentTime(): number {
     return Tone.now();
 }
 
-// instruments
-let instruments: Record<string, IInstrument> = {};
+function getTone() {
+    return Tone;
+}
 
-// TODO: currently instrument parameters can't be updated; they don't look up redux store nor is there a mechanism to
-// update on updateInstrumentParameter action
+
+// instruments store //
 
 function addInstrumentToScheduler(name: string, instrument: IInstrument) {
     instruments[name] = instrument;
@@ -41,31 +47,8 @@ function getInstrument(instrumentName: string) {
     return instruments[instrumentName];
 }
 
-function scheduleInstrument(instrumentName: string, time: Tone.Unit.Time) {
-    // TODO: check instrument exists?
-    instruments[instrumentName].schedule(time);
-}
 
-let loops: Array<Array<Array<Tone.Loop>>>;
-function setUpLoops(nBars: number, beatsPerBar: number, padsPerBeat: number, getInstrumentsForNote: (bari: number, beati: number, padi: number) => Array<string>) {
-
-    loops = (new Array(nBars)).fill(
-        (new Array(beatsPerBar)).fill(
-            (new Array(padsPerBeat)).fill(false)));
-
-    for (let bari = 0; bari < nBars; bari++) {
-        for (let beati = 0; beati < beatsPerBar; beati++) {
-            for (let padi = 0; padi < padsPerBeat; padi++) {
-                loops[bari][beati][padi] = new Tone.Loop(
-                    time => {
-                        getInstrumentsForNote(bari, beati, padi).forEach((instrumentName) => scheduleInstrument(instrumentName, time));
-                    },
-                    `${nBars}m`
-                ).start(`${bari}:${beati}:${padi}`);
-            }
-        }
-    }
-}
+// Player controls //
 
 function play() {
     Tone.Transport.start();
@@ -79,14 +62,38 @@ function setTempo(tempo: number) {
     Tone.Transport.bpm.value = tempo;
 }
 
+/**
+ * Setup a Tone.Loop per pad. Each loop will will fetch all instruments enabled for its corresponding pad (via the
+ * getInstrumentsForNote callback) and schedule each one.
+ */
+function setUpLoops(nBars: number, beatsPerBar: number, padsPerBeat: number,
+                    getInstrumentsForNote: (bari: number, beati: number, padi: number) => Array<string>) {
+    loops = (new Array(nBars)).fill(
+        (new Array(beatsPerBar)).fill(
+            (new Array(padsPerBeat)).fill(false)));
+
+    for (let bari = 0; bari < nBars; bari++) {
+        for (let beati = 0; beati < beatsPerBar; beati++) {
+            for (let padi = 0; padi < padsPerBeat; padi++) {
+                loops[bari][beati][padi] = new Tone.Loop(
+                    time => {
+                        getInstrumentsForNote(bari, beati, padi).forEach(
+                            (instrumentName) => instruments[instrumentName].schedule(time));
+                    },
+                    `${nBars}m`
+                ).start(`${bari}:${beati}:${padi}`);
+            }
+        }
+    }
+}
+
 export default {
     init: init,
-    getTone: getTone,
     getCurrentTime: getCurrentTime,
+    getTone: getTone,
     addInstrumentToScheduler: addInstrumentToScheduler,
     removeInstrumentFromScheduler: removeInstrumentFromScheduler,
     getInstrument: getInstrument,
-    scheduleInstrument: scheduleInstrument,
     setUpLoops: setUpLoops,
     play: play,
     pause: pause,

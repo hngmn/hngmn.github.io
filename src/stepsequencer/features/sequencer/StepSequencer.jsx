@@ -44,7 +44,7 @@ function StepSequencer() {
 
     // init audio
     React.useEffect(async () => {
-        await instrumentPlayer.init();
+        await instrumentPlayer.init(tempo);
 
         dispatch(addInstrument('hat', new ToneSampler('/assets/audio/hat.wav')));
         dispatch(addInstrument('lazertom', new ToneSampler('/assets/audio/lazertom.wav')));
