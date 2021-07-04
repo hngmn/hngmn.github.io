@@ -4,7 +4,7 @@ import * as Tone from 'tone';
 
 import instrumentPlayer from '../instrumentPlayer';
 import { IInstrument } from '../types';
-import { BaseInstrument } from './Instrument';
+import BaseInstrument from './BaseInstrument';
 
 export class FirstToneInstrument extends BaseInstrument {
     synth: Tone.Synth;
@@ -46,5 +46,14 @@ export class ToneSampler extends BaseInstrument {
 
     schedule(time: Tone.Unit.Time) {
         this.player.start(time);
+    }
+
+    setParameterValue(parameterName: string, value: number) {
+        super.setParameterValue(parameterName, value);
+    }
+
+    reverse() {
+        this.player.reverse = true;
+        return this;
     }
 }
