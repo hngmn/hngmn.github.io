@@ -4,12 +4,12 @@ import type {
     Unit,
 } from 'tone';
 
-import type { INormalizedObject } from '../../global'
+import type { INormalizedObject } from '../../../global'
 import type {
     IInstrument,
     IInstrumentParameter,
     IInstrumentParameterConfig,
-} from './types';
+} from '../types';
 
 export abstract class BaseInstrument implements IInstrument {
     params: INormalizedObject<InstrumentParameter>;

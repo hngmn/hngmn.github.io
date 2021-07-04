@@ -25,7 +25,7 @@ import {
 
     selectInstrumentNames,
 } from '../instruments/instrumentsSlice';
-import { FirstToneInstrument, ToneSampler } from '../instruments/toneInstruments';
+import { FirstToneInstrument, ToneSampler } from '../instruments/classes/toneInstruments';
 import instrumentPlayer from '../instruments/instrumentPlayer';
 import { useKeyboardShortcut } from '../../util/useKeyboardShortcut';
 

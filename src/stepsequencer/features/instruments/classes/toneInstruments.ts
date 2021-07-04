@@ -2,8 +2,8 @@
 
 import * as Tone from 'tone';
 
-import instrumentPlayer from './instrumentPlayer';
-import { IInstrument } from './types';
+import instrumentPlayer from '../instrumentPlayer';
+import { IInstrument } from '../types';
 import { BaseInstrument } from './Instrument';
 
 export class FirstToneInstrument extends BaseInstrument {
@@ -24,7 +24,7 @@ export class FirstToneInstrument extends BaseInstrument {
     }
 
     schedule(time: Tone.Unit.Time) {
-        this.synth.triggerAttackRelease('C2', '4n', time);
+        this.synth.triggerAttackRelease('C2', '8n', time);
     }
 
     setParameterValue(parameterName: string, value: number) {
