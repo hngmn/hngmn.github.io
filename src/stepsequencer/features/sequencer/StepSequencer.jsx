@@ -25,7 +25,11 @@ import {
 
     selectInstrumentNames,
 } from '../instruments/instrumentsSlice';
-import { FirstToneInstrument, ToneSampler } from '../instruments/classes/toneInstruments';
+import {
+    FirstToneInstrument,
+    TonePlayer,
+    Conjunction,
+} from '../instruments/classes/toneInstruments';
 import instrumentPlayer from '../instruments/instrumentPlayer';
 import { useKeyboardShortcut } from '../../util/useKeyboardShortcut';
 
@@ -46,13 +50,15 @@ function StepSequencer() {
     React.useEffect(async () => {
         await instrumentPlayer.init(tempo);
 
-        dispatch(addInstrument('hat', new ToneSampler('/assets/audio/hat.wav')));
-        dispatch(addInstrument('lazertom', new ToneSampler('/assets/audio/lazertom.wav')));
-        dispatch(addInstrument('electrotom', new ToneSampler('/assets/audio/electrotom.wav')));
-        dispatch(addInstrument('snare', new ToneSampler('/assets/audio/snare.wav')));
-        dispatch(addInstrument('kick', new ToneSampler('/assets/audio/kick.wav')));
-        dispatch(addInstrument('kickreverse', new ToneSampler('/assets/audio/kick.wav').reverse()));
-        dispatch(addInstrument('tonesynth', new FirstToneInstrument()));
+        dispatch(addInstrument('hat', new TonePlayer('/assets/audio/hat.wav')));
+        dispatch(addInstrument('lazertom', new TonePlayer('/assets/audio/lazertom.wav')));
+        dispatch(addInstrument('electrotom', new TonePlayer('/assets/audio/electrotom.wav')));
+        dispatch(addInstrument('snare', new TonePlayer('/assets/audio/snare.wav')));
+        dispatch(addInstrument('kick+synth', new Conjunction(
+            new TonePlayer('/assets/audio/kick.wav'),
+            new FirstToneInstrument()
+        )));
+        dispatch(addInstrument('kickreverse', new TonePlayer('/assets/audio/kick.wav').reverse()));
 
         await instrumentPlayer.getTone().loaded();
 

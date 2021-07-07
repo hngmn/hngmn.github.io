@@ -4,9 +4,10 @@ import * as Tone from 'tone';
 
 import instrumentPlayer from '../instrumentPlayer';
 import { IInstrument } from '../types';
+import ToneInstrument from './ToneInstrument';
 import BaseInstrument from './BaseInstrument';
 
-export class FirstToneInstrument extends BaseInstrument {
+export class FirstToneInstrument extends ToneInstrument {
     synth: Tone.Synth;
     distortion: Tone.Distortion;
 
@@ -35,7 +36,7 @@ export class FirstToneInstrument extends BaseInstrument {
     }
 }
 
-export class ToneSampler extends BaseInstrument {
+export class TonePlayer extends ToneInstrument {
     player: Tone.Player;
 
     constructor(sampleFilepath: string) {
@@ -55,5 +56,21 @@ export class ToneSampler extends BaseInstrument {
     reverse() {
         this.player.reverse = true;
         return this;
+    }
+}
+
+export class Conjunction extends BaseInstrument {
+    instrument1: BaseInstrument;
+    instrument2: BaseInstrument;
+    constructor(instrument1: BaseInstrument, instrument2: BaseInstrument) {
+        super([]);
+
+        this.instrument1 = instrument1;
+        this.instrument2 = instrument2;
+    }
+
+    schedule(time: Tone.Unit.Time) {
+        this.instrument1.schedule(time);
+        this.instrument2.schedule(time);
     }
 }
