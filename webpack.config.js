@@ -22,17 +22,20 @@ module.exports = MODULES.map((moduleName) => {
     module: {
       rules: [
         {
-          test: /\.jsx?$/,
+          test: /\.(ts|tsx)$/,
           exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-react'],
-              plugins: ['@babel/plugin-syntax-dynamic-import']
-            }
-          }
+          use: [
+            'babel-loader',
+            'ts-loader',
+          ],
         },
-        { test: /\.tsx?$/, loader: 'ts-loader' },
+        {
+          test: /\.(js|jsx)$/,
+          exclude: /node_modules/,
+          use: [
+            'babel-loader',
+          ],
+        },
         {
           test: /\.(css)$/,
           use: ['style-loader', 'css-loader'],
