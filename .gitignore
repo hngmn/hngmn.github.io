@@ -8,3 +8,6 @@ vendor
 
 public/
 node_modules/
+
+# jest
+coverage/
