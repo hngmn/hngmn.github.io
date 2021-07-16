@@ -176,6 +176,7 @@ export default {
 
   // A map from regular expressions to paths to transformers
   transform: {
+    '.jsx': 'babel-jest',
     '.(ts|tsx)': 'ts-jest'
   },
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
