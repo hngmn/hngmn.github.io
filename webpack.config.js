@@ -22,15 +22,7 @@ module.exports = MODULES.map((moduleName) => {
     module: {
       rules: [
         {
-          test: /\.(ts|tsx)$/,
-          exclude: /node_modules/,
-          use: [
-            'babel-loader',
-            'ts-loader',
-          ],
-        },
-        {
-          test: /\.(js|jsx)$/,
+          test: /\.(js|jsx|ts|tsx)$/,
           exclude: /node_modules/,
           use: [
             'babel-loader',
@@ -45,7 +37,7 @@ module.exports = MODULES.map((moduleName) => {
     resolve: {
       extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
     },
-    watch: true,
+    watch: false,
     watchOptions: {
       ignored: /node_modules/,
     },

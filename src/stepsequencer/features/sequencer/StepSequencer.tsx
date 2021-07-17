@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { RootState } from '../../app/store';
 import store from '../../app/store';
 import InstrumentControl from './InstrumentControl';
 import Loading from './Loading';
@@ -41,28 +42,31 @@ function StepSequencer() {
     const nBars = useSelector(selectNBars);
     const beatsPerBar = useSelector(selectBeatsPerBar);
     const padsPerBeat = useSelector(selectPadsPerBeat);
-    const tempo = useSelector(state => state.sequencer.tempo);
-    const isPlaying = useSelector(state => state.sequencer.isPlaying);
+    const tempo = useSelector((state: RootState) => state.sequencer.tempo);
+    const isPlaying = useSelector((state: RootState) => state.sequencer.isPlaying);
     const instrumentNames = useSelector(selectInstrumentNames);
     const dispatch = useDispatch();
 
     // init audio
-    React.useEffect(async () => {
-        await instrumentPlayer.init(tempo);
+    React.useEffect(() => {
+        // initialize instrumentPlayer with instruments
+        (async () => {
+            await instrumentPlayer.init(tempo);
 
-        dispatch(addInstrument('hat', new TonePlayer('/assets/audio/hat.wav')));
-        dispatch(addInstrument('lazertom', new TonePlayer('/assets/audio/lazertom.wav')));
-        dispatch(addInstrument('electrotom', new TonePlayer('/assets/audio/electrotom.wav')));
-        dispatch(addInstrument('snare', new TonePlayer('/assets/audio/snare.wav')));
-        dispatch(addInstrument('kick+synth', new Conjunction(
-            new TonePlayer('/assets/audio/kick.wav'),
-            new FirstToneInstrument()
-        )));
-        dispatch(addInstrument('kickreverse', new TonePlayer('/assets/audio/kick.wav').reverse()));
+            dispatch(addInstrument('hat', new TonePlayer('/assets/audio/hat.wav')));
+            dispatch(addInstrument('lazertom', new TonePlayer('/assets/audio/lazertom.wav')));
+            dispatch(addInstrument('electrotom', new TonePlayer('/assets/audio/electrotom.wav')));
+            dispatch(addInstrument('snare', new TonePlayer('/assets/audio/snare.wav')));
+            dispatch(addInstrument('kick+synth', new Conjunction(
+                new TonePlayer('/assets/audio/kick.wav'),
+                new FirstToneInstrument()
+            )));
+            dispatch(addInstrument('kickreverse', new TonePlayer('/assets/audio/kick.wav').reverse()));
 
-        await instrumentPlayer.getTone().loaded();
+            await instrumentPlayer.getTone().loaded();
 
-        setLoading(false);
+            setLoading(false);
+         })();
     }, []); // empty array so this hook only runs once, on mount
 
     React.useEffect(() => {
