@@ -18,28 +18,28 @@ test('Displays Loading', async () => {
 
     expect(screen.getByText(/Loading/i)).toBeTruthy();
 
-    expect(await screen.findByText(/Play/i)).toBeTruthy();
+    expect(await screen.findByRole('button', { name: /Play/i })).toBeTruthy();
     expect(screen.queryByText(/Loading/i)).toBeFalsy();
 });
 
 test('Initializes with instruments', async () => {
     render(<StepSequencer/>);
-    await screen.findByText(/Play/i);
+    await screen.findByRole('button', { name: /Play/i });
 
     expect(screen.getAllByRole('button', { name: /remove/i })).toBeTruthy();
 });
 
 test('Play/pause', async() => {
     render(<StepSequencer/>);
-    expect(await screen.findByText(/Play/i)).toBeTruthy();
+    expect(await screen.findByRole('button', { name: /Play/i })).toBeTruthy();
 
-    fireEvent.click(screen.getByText(/Play/i));
-    expect(await screen.findByText(/Pause/i)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Play/i }));
+    expect(await screen.findByRole('button', { name: /Pause/i })).toBeTruthy();
     expect(screen.queryByText(/Play/i)).toBeFalsy();
     // TODO expect Tone.start() to have been called (?)
 
-    fireEvent.click(screen.getByText(/Pause/i));
-    expect(await screen.findByText(/Play/i)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Pause/i }));
+    expect(await screen.findByRole('button', { name: /Play/i })).toBeTruthy();
     expect(screen.queryByText(/Pause/i)).toBeFalsy();
     // TODO expect Tone.stop() to have been called (?)
 });
