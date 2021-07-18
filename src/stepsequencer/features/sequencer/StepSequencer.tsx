@@ -55,6 +55,7 @@ function StepSequencer() {
         (async () => {
             await instrumentPlayer.init(tempo);
 
+            dispatch(setTempo(99));
             dispatch(addInstrument('hat', new TonePlayer('/assets/audio/hat.wav')));
             dispatch(addInstrument('lazertom', new TonePlayer('/assets/audio/lazertom.wav')));
             dispatch(addInstrument('electrotom', new TonePlayer('/assets/audio/electrotom.wav')));
