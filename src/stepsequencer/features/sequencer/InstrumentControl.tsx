@@ -35,6 +35,26 @@ export default function InstrumentControl(props: Props) {
 
     const trackClassname = classnames('track', instrumentName);
 
+    let pads = [];
+    for (let bari = 0; bari < nBars; bari++) {
+        for (let beati = 0; beati < beatsPerBar; beati++) {
+            pads.push(
+                <span key={`span${bari}${beati}`}>{beati+1}</span>
+            );
+
+            for (let padi = 0; padi < padsPerBeat; padi++) {
+                pads.push(
+                    <Pad
+                        key={`${instrumentName}${bari}${beati}${padi}`}
+                        instrumentName={instrumentName}
+                        bari={bari}
+                        beati={beati}
+                        padi={padi}
+                    />);
+            }
+        }
+    }
+
     return (
         <section className={trackClassname}>
             <button onClick={(e => dispatch(removeInstrument(instrumentName)))}>
@@ -43,25 +63,9 @@ export default function InstrumentControl(props: Props) {
 
             <span>{instrumentName}</span>
 
-            <InstrumentParameters
-                instrumentName={instrumentName}
-            />
+            <InstrumentParameters instrumentName={instrumentName}/>
 
-            {Array.from(range(0, nBars)).map(bari => (
-                Array.from(range(0, beatsPerBar)).map(beati => (
-                    <>
-                        {beati+1}
-                        {Array.from(range(0, padsPerBeat)).map(padi => (
-                            <Pad
-                                key={`${instrumentName}${bari}${beati}${padi}`}
-                                instrumentName={instrumentName}
-                                bari={bari}
-                                beati={beati}
-                                padi={padi}
-                            />))}
-                    </>
-                ))))}
-
+            {pads}
         </section>
     );
 }
