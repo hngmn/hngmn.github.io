@@ -58,7 +58,7 @@ export default function InstrumentControl(props: Props) {
     return (
         <section className={trackClassname}>
             <button onClick={(e => dispatch(removeInstrument(instrumentName)))}>
-                <span>remove</span>
+                remove
             </button>
 
             <span>{instrumentName}</span>
