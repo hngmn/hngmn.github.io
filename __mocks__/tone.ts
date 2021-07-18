@@ -40,8 +40,14 @@ class TransportC {
 
 export const Transport = new TransportC();
 
+let isLoaded = false;
 export function loaded() {
-    return new Promise(() => {});
+    return new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+            isLoaded = true;
+            resolve();
+        }, 150);
+    });
 }
 
 export function start() {

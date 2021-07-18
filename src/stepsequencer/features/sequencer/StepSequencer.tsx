@@ -49,6 +49,8 @@ function StepSequencer() {
 
     // init audio
     React.useEffect(() => {
+        let isMounted = true;
+
         // initialize instrumentPlayer with instruments
         (async () => {
             await instrumentPlayer.init(tempo);
@@ -57,7 +59,7 @@ function StepSequencer() {
             dispatch(addInstrument('lazertom', new TonePlayer('/assets/audio/lazertom.wav')));
             dispatch(addInstrument('electrotom', new TonePlayer('/assets/audio/electrotom.wav')));
             dispatch(addInstrument('snare', new TonePlayer('/assets/audio/snare.wav')));
-            dispatch(addInstrument('kick+synth', new Conjunction(
+            dispatch(addInstrument('kicksynth', new Conjunction(
                 new TonePlayer('/assets/audio/kick.wav'),
                 new FirstToneInstrument()
             )));
@@ -65,8 +67,12 @@ function StepSequencer() {
 
             await instrumentPlayer.getTone().loaded();
 
-            setLoading(false);
+            if (isMounted) {
+                setLoading(false);
+            }
          })();
+
+         return () => { isMounted = false; }
     }, []); // empty array so this hook only runs once, on mount
 
     React.useEffect(() => {
