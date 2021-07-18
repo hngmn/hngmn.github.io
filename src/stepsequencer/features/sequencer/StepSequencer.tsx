@@ -70,7 +70,6 @@ function StepSequencer() {
     }, []); // empty array so this hook only runs once, on mount
 
     React.useEffect(() => {
-        console.log('setting up loops');
         instrumentPlayer.setUpLoops(
             nBars,
             beatsPerBar,

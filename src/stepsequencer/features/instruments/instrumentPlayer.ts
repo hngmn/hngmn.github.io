@@ -34,7 +34,6 @@ function getTone() {
 
 function addInstrumentToScheduler(name: string, instrument: IInstrument) {
     instruments[name] = instrument;
-    console.log(`instrument added: ${name}`);
 }
 
 function removeInstrumentFromScheduler(name: string) {
