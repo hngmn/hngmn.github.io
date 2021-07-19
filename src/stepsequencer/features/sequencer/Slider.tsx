@@ -1,56 +1,34 @@
 'use strict';
 
+import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { RootState } from '../../app/store';
 import { IInstrumentParameterConfig } from '../instruments/types';
 
-interface BaseProps {
-    kind: 'selector' | 'object';
+interface SliderProps extends IInstrumentParameterConfig {
     onInput: (value: number) => void;
-}
-
-interface PropsFromSelector extends BaseProps {
-    kind: 'selector';
-    selector: (state: RootState) => IInstrumentParameterConfig;
-}
-
-interface PropsFromObject extends BaseProps {
-    kind: 'object';
-    config: {
-        name: string,
-        min: number,
-        max: number,
-        value: number,
-        step: number,
-    };
 }
 
 /**
  * Slider component
  */
-export default function Slider(props: PropsFromSelector | PropsFromObject) {
-    let sliderProps;
-    switch (props.kind) {
-    case 'selector':
-        sliderProps = useSelector(props.selector);
-        break;
-    case 'object':
-        sliderProps = (props as PropsFromObject).config;
-    }
-
+export function Slider(props: SliderProps) {
     const {
-        name = 'defaultName?',
+        name,
         min = 0, // defaults
         max = 1,
         value = 0.5,
         step = 0.1,
-    } = sliderProps;
+        onInput,
+    } = props;
+
+    const className = classnames('slider', name);
 
     return (
-        <div>
-            <label htmlFor={name}>slider for {name} ({value})</label>
+        <div className={className}>
+            <label htmlFor={name}>{name} ({value})</label>
             <input
                 name={name}
                 id={name}
@@ -59,7 +37,22 @@ export default function Slider(props: PropsFromSelector | PropsFromObject) {
                 max={max}
                 value={value}
                 step={step}
-                onInput={(e: React.FormEvent<HTMLInputElement>) => props.onInput(parseFloat((e.target as HTMLInputElement).value))}/>
+                onInput={(e: React.FormEvent<HTMLInputElement>) => onInput(parseFloat((e.target as HTMLInputElement).value))}/>
         </div>
     );
+}
+
+
+// Selector Slider
+
+interface PropsFromSelector {
+    onInput: (value: number) => void;
+    selector: (state: RootState) => IInstrumentParameterConfig;
+}
+
+/**
+ * Compose Slider. Pass in a Selector function to fill the IInstrumentParameterConfig values
+ */
+export function SelectorSlider(props: PropsFromSelector) {
+    return (<Slider onInput={props.onInput} {...useSelector(props.selector)}/>);
 }

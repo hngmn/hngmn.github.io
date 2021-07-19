@@ -8,7 +8,7 @@ import store from '../../app/store';
 import Track from './Track';
 import Loading from './Loading';
 import PlayButton from './PlayButton';
-import Slider from './Slider';
+import { Slider } from './Slider';
 import {
     // actions
     playThunk,
@@ -47,7 +47,7 @@ function StepSequencer() {
     const instrumentNames = useSelector(selectInstrumentNames);
     const dispatch = useAppDispatch();
 
-    // init audio
+    // init audio and instruments
     React.useEffect(() => {
         let isMounted = true;
 
@@ -76,6 +76,7 @@ function StepSequencer() {
          return () => { isMounted = false; }
     }, []); // empty array so this hook only runs once, on mount
 
+    // Set up Tone.Loops for given time signature
     React.useEffect(() => {
         instrumentPlayer.setUpLoops(
             nBars,
@@ -84,6 +85,7 @@ function StepSequencer() {
             (bari, beati, padi) => selectInstrumentsEnabledForPad(store.getState(), bari, beati, padi));
     }, [nBars, beatsPerBar, padsPerBeat])
 
+    // Play/Pause functionality for 'Space' key and the Play button
     const playpause = () => isPlaying ? dispatch(pauseThunk) : dispatch(playThunk);
     useKeyboardShortcut([' '], playpause);
 
@@ -96,8 +98,7 @@ function StepSequencer() {
             <section className={'sequencerControls'}>
                 <span>
                     <Slider
-                        kind={'object'}
-                        config={{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
+                        {...{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
                         onInput={(newTempoValue) => dispatch(setTempo(newTempoValue))}
                     />
 

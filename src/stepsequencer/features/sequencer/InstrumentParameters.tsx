@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch, RootState } from '../../app/store';
-import Slider from './Slider';
+import { SelectorSlider } from './Slider';
 import {
     // actions
     updateInstrumentParameter,
@@ -30,9 +30,8 @@ export default function InstrumentParameters(props: Props) {
         <>
             {parameterNames.map((parameterName) => {
                 return (
-                    <Slider
+                    <SelectorSlider
                         key={parameterName}
-                        kind={'selector'}
                         selector={(state: RootState) => selectInstrumentParameter(state, instrumentName, parameterName)}
                         onInput={(value: number) => dispatch(updateInstrumentParameter(instrumentName, parameterName, value))}
                     />
