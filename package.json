@@ -12,11 +12,11 @@
     "build": "npx webpack --progress",
     "build:watch": "npm run build -- --watch",
 
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test": "jest --detectOpenHandles",
+    "test:watch": "npm run test -- --watch",
 
     "dev": "npm run build -- --watch --mode development",
-    "dist": "npm run type-check && npm run test && npm run build"
+    "dist": "npm run type-check && npm run build && npm run test"
   },
   "repository": {
     "type": "git",

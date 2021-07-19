@@ -1,11 +1,11 @@
 'use strict';
 
 import * as React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { RootState } from '../../app/store';
+import { useAppDispatch, RootState } from '../../app/store';
 import store from '../../app/store';
-import InstrumentControl from './InstrumentControl';
+import Track from './Track';
 import Loading from './Loading';
 import PlayButton from './PlayButton';
 import Slider from './Slider';
@@ -45,7 +45,7 @@ function StepSequencer() {
     const tempo = useSelector((state: RootState) => state.sequencer.tempo);
     const isPlaying = useSelector((state: RootState) => state.sequencer.isPlaying);
     const instrumentNames = useSelector(selectInstrumentNames);
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     // init audio
     React.useEffect(() => {
@@ -116,7 +116,7 @@ function StepSequencer() {
 
             <section className={'tracks'}>
                 {instrumentNames.map((instrumentName) => (
-                    <InstrumentControl
+                    <Track
                         key={instrumentName}
                         instrumentName={instrumentName}
                     />

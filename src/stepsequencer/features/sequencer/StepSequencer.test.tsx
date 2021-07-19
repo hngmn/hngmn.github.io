@@ -7,6 +7,7 @@ import {
     fireEvent,
     screen,
     waitFor,
+    waitForElementToBeRemoved,
 } from '../../util/test-utils';
 
 import * as ToneMock from 'tone';
@@ -19,29 +20,31 @@ test('Displays Loading', async () => {
     expect(screen.getByText(/Loading/i)).toBeTruthy();
 
     expect(await screen.findByRole('button', { name: /Play/i })).toBeTruthy();
-    expect(screen.queryByText(/Loading/i)).toBeFalsy();
+    expect(screen.queryByText(/Loading/i)).toBeNull();
 });
 
 test('Initializes with instruments', async () => {
     render(<StepSequencer/>);
     await screen.findByRole('button', { name: /Play/i });
 
-    expect(screen.getAllByRole('button', { name: /remove/i })).toBeTruthy();
+    expect(screen.getAllByRole('button', { name: /x/i })).toBeTruthy();
 });
 
 test('Play/pause', async() => {
     render(<StepSequencer/>);
-    expect(await screen.findByRole('button', { name: /Play/i })).toBeTruthy();
+    await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Play/i })).toBeTruthy();
+    });
 
     fireEvent.click(screen.getByRole('button', { name: /Play/i }));
-    expect(await screen.findByRole('button', { name: /Pause/i })).toBeTruthy();
-    expect(screen.queryByText(/Play/i)).toBeFalsy();
+    expect(screen.queryByRole('button', { name: /Pause/i })).toBeTruthy;
+    expect(screen.queryByRole('button', { name: /Play/i })).toBeNull;
     // TODO expect Tone.start() to have been called (?)
 
     fireEvent.click(screen.getByRole('button', { name: /Pause/i }));
-    expect(await screen.findByRole('button', { name: /Play/i })).toBeTruthy();
-    expect(screen.queryByText(/Pause/i)).toBeFalsy();
-    // TODO expect Tone.stop() to have been called (?)
+    expect(screen.queryByRole('button', { name: /Play/i })).toBeTruthy;
+    expect(screen.queryByRole('button', { name: /Pause/i })).toBeNull;
+    // TODO expect Tone.end() to have been called (?)
 });
 
 // TODO remove instrument button

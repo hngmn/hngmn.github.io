@@ -20,7 +20,7 @@ interface ISliceState {
     timerId: number,
 }
 
-const INITIAL_NBARS = 1;
+const INITIAL_NBARS = 2;
 const INITIAL_BEATS_PER_BAR = 4;
 const INITIAL_PADS_PER_BEAT = 4;
 

@@ -1,35 +1,59 @@
 .stepSequencer {
   display: block;
-  border-radius: 10px;
+  border-radius: 4px;
   background-color: #006aaa;
-  padding: 40px;
   border: 4px black;
 }
 
 .sequencerControls {
   display: block;
   border: 1px solid black;
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: 4px;
 }
 
 .tracks {
   display: block;
-  border: 1px solid black;
-  border-radius: 10px;
 }
 
 .track {
-  display: block;
+  display: grid;
+  grid-template-columns: 10% 90%;
+  grid-template-rows: auto;
   border: 1px solid black;
-  border-radius: 10px;
-  padding: 5px;
+  border-radius: 4px;
+}
+
+.controlPanel {
+  display: inline-block;
+}
+
+.pads {
+  display: grid;
+  grid-template-rows: auto;
+  column-gap: 6px;
+  justify-self: end;
+}
+
+.bar {
+  display: grid;
+  grid-template-rows: auto;
+  column-gap: 4px;
+}
+
+.beat > button:first-child {
+  border-color: orange;
+}
+
+.beat {
+  display: grid;
+  grid-template-rows: auto;
+  column-gap: 2px;
 }
 
 .pad {
   display: inline-block;
-  border-radius: 4px;
-  padding: 10px 10px;
+  border-radius: 2px;
+  padding: 15px 15px;
   cursor: pointer;
   border: 1px solid gray;
 }

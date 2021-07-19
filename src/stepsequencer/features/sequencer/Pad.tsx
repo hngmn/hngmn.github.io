@@ -31,7 +31,7 @@ export default function Pad(props: Props) {
     const isOn = useSelector((state: RootState) => selectPad(state, instrumentName, bari, beati, padi));
     const dispatch = useAppDispatch();
 
-    const className = classnames('pad', isOn ? 'on' : 'off');
+    const className = classnames('pad', isOn ? 'on' : 'off', `bar${bari}`, `beat{beati}`, `pad${padi}`);
 
     return (
         <button
