@@ -6,9 +6,32 @@
 }
 
 .sequencerControls {
-  display: block;
+  display: grid;
+  grid-template-columns: auto 10% 10%;
+  grid-template-rows: auto;
   border: 1px solid black;
   border-radius: 4px;
+  padding: 15px;
+}
+
+.playButton {
+  display: inline-block;
+  justify-self: end;
+  border-radius: 28px;
+  color: #ffffff;
+  background: #d9ad34;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+}
+
+.clearAll {
+  display: inline-block;
+  justify-self: end;
+  border-radius: 28px;
+  color: #ffffff;
+  background: #d9ad34;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
 }
 
 .tracks {
@@ -64,4 +87,9 @@
 
 .pad.off {
   background-color: #829bb1;
+}
+
+.slider {
+  display: inline-block;
+  border: 1px solid black;
 }

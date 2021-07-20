@@ -1,5 +1,6 @@
 'use strict';
 
+import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -96,23 +97,22 @@ function StepSequencer() {
     return (
         <section className={'stepSequencer'}>
             <section className={'sequencerControls'}>
-                <span>
-                    <Slider
-                        {...{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
-                        onInput={(newTempoValue) => dispatch(setTempo(newTempoValue))}
-                    />
+                <Slider
+                    {...{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
+                    onInput={(newTempoValue) => dispatch(setTempo(newTempoValue))}
+                />
 
-                    <PlayButton
-                        isPlaying={isPlaying}
-                        onClick={playpause}
-                    />
+                <PlayButton
+                    isPlaying={isPlaying}
+                    onClick={playpause}
+                />
 
-                    <button
-                        onClick={() => dispatch(clearAllPads())}
-                    >
-                        Clear All
-                    </button>
-                </span>
+                <button
+                    className={classnames('clearAll')}
+                    onClick={() => dispatch(clearAllPads())}
+                >
+                    Clear All
+                </button>
             </section>
 
             <section className={'tracks'}>

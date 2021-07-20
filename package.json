@@ -12,8 +12,8 @@
     "build": "npx webpack --progress",
     "build:watch": "npm run build -- --watch",
 
-    "test": "jest --detectOpenHandles",
-    "test:watch": "npm run test -- --watch",
+    "test": "jest --maxWorkers=50%",
+    "test:watch": "jest --watch --maxWorkers=25%",
 
     "dev": "npm run build -- --watch --mode development",
     "dist": "npm run type-check && npm run build && npm run test"

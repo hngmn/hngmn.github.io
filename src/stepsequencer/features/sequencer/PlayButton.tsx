@@ -1,5 +1,6 @@
 'use strict';
 
+import classnames from 'classnames';
 import * as React from 'react';
 
 interface Props {
@@ -13,8 +14,10 @@ export default function PlayButton(props: Props) {
         onClick
     } = props;
 
+    const className = classnames('playButton');
+
     return (
-        <button onClick={onClick}>
+        <button className={className} onClick={onClick}>
             <span>{isPlaying ? 'Pause' : 'Play'}</span>
         </button>
     );
