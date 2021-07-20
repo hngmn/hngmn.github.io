@@ -1,11 +1,8 @@
 'use strict';
 
 import * as React from 'react';
-import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../../app/store';
-import Track from './Track';
-import Loading from './Loading';
 import { addInstrument } from '../instruments/instrumentsSlice';
 import {
     FirstToneInstrument,
@@ -13,11 +10,13 @@ import {
     Conjunction,
 } from '../instruments/classes/toneInstruments';
 import instrumentPlayer from '../instruments/instrumentPlayer';
+
+import Loading from './Loading';
 import SequencerControls from './SequencerControls';
 import SequencerTracks from './SequencerTracks';
 
 function StepSequencer() {
-    // React state for loading
+    // Display <Loading/> until tonejs is done loading/initializing
     const [isLoading, setLoading] = React.useState(true);
 
     const dispatch = useAppDispatch();

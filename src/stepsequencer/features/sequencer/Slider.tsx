@@ -14,7 +14,7 @@ interface SliderProps extends IInstrumentParameterConfig {
 /**
  * Slider component
  */
-export function Slider(props: SliderProps) {
+export default function Slider(props: SliderProps) {
     const {
         name,
         min = 0, // defaults

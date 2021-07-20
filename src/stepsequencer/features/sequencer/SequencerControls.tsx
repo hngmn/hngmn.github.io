@@ -4,12 +4,9 @@ import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
-import { useAppDispatch, RootState } from '../../app/store';
-import store from '../../app/store';
-import Track from './Track';
-import Loading from './Loading';
-import PlayButton from './PlayButton';
-import { Slider } from './Slider';
+import store, { useAppDispatch, RootState } from '../../app/store';
+import { useKeyboardShortcut } from '../../util/useKeyboardShortcut';
+import instrumentPlayer from '../instruments/instrumentPlayer';
 import {
     // actions
     playThunk,
@@ -22,8 +19,9 @@ import {
     selectPadsPerBeat,
     selectInstrumentsEnabledForPad,
 } from './sequencerSlice';
-import { useKeyboardShortcut } from '../../util/useKeyboardShortcut';
-import instrumentPlayer from '../instruments/instrumentPlayer';
+
+import PlayButton from './PlayButton';
+import Slider from './Slider';
 
 export default function SequencerControls() {
     // Custom React Hooks for Redux state (?)
