@@ -1,17 +1,12 @@
 'use strict';
 
-import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../../app/store';
 import Track from './Track';
 import Loading from './Loading';
-import {
-    addInstrument,
-
-    selectInstrumentNames,
-} from '../instruments/instrumentsSlice';
+import { addInstrument } from '../instruments/instrumentsSlice';
 import {
     FirstToneInstrument,
     TonePlayer,
@@ -19,12 +14,12 @@ import {
 } from '../instruments/classes/toneInstruments';
 import instrumentPlayer from '../instruments/instrumentPlayer';
 import SequencerControls from './SequencerControls';
+import SequencerTracks from './SequencerTracks';
 
 function StepSequencer() {
     // React state for loading
     const [isLoading, setLoading] = React.useState(true);
 
-    const instrumentNames = useSelector(selectInstrumentNames);
     const dispatch = useAppDispatch();
 
     // init audio and instruments
@@ -63,14 +58,7 @@ function StepSequencer() {
         <section className={'stepSequencer'}>
             <SequencerControls/>
 
-            <section className={'tracks'}>
-                {instrumentNames.map((instrumentName) => (
-                    <Track
-                        key={instrumentName}
-                        instrumentName={instrumentName}
-                    />
-                ))}
-            </section>
+            <SequencerTracks/>
         </section>
     );
 
