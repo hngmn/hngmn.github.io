@@ -16,9 +16,9 @@ let instruments: Record<string, IInstrument> = {};
  */
 let loops: Array<Array<Array<Tone.Loop>>>;
 
-async function init(bpm: number) {
+async function init() {
     await Tone.start();
-    Tone.Transport.bpm.value = bpm;
+    Tone.Transport.bpm.value = 99;
 }
 
 function getCurrentTime(): number {
