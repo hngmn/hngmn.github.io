@@ -21,11 +21,14 @@ export default function InstrumentControlPanel(props: Props) {
     const panelClassname = classnames('track', instrumentName, 'controlPanel');
     return (
         <section className={panelClassname}>
-            <button onClick={(e => dispatch(removeInstrument(instrumentName)))}>
+            <button
+                className={classnames('removeInstrumentButton')}
+                onClick={(e => dispatch(removeInstrument(instrumentName)))}
+            >
                 x
             </button>
 
-            <span>{instrumentName}</span>
+            <span className={classnames('instrumentLabel')}>{instrumentName}</span>
 
             <InstrumentParameters instrumentName={instrumentName}/>
         </section>
