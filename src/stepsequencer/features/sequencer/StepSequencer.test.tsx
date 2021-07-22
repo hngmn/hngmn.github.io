@@ -33,7 +33,7 @@ test('Initializes with instruments', async () => {
 test('Play/pause button', async() => {
     render(<StepSequencer/>);
     await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Play/i })).toBeTruthy();
+        expect(screen.queryByRole('button', { name: /Play/i })).toBeTruthy();
     });
 
     fireEvent.click(screen.getByRole('button', { name: /Play/i }));
@@ -50,7 +50,7 @@ test('Play/pause button', async() => {
 test('Play/pause key', async() => {
     render(<StepSequencer/>);
     await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Play/i })).toBeTruthy();
+        expect(screen.queryByRole('button', { name: /Play/i })).toBeTruthy();
     });
 
     const space = { key: ' ', code: 'Space' };

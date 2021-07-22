@@ -58,6 +58,10 @@ export const sequencerSlice = createSlice({
             state.tempo = action.payload;
         },
 
+        setNBars: (state, action) => {
+            state.nBars = action.payload;
+        },
+
         padClick: {
             reducer(state, action: PayloadAction<{ instrumentName: string, bari: number, beati: number, padi: number }>) {
                 const {
@@ -190,6 +194,7 @@ export const selectInstrumentsEnabledForPad = (state: RootState, bari: number, b
 // Auto-generated Actions //
 
 export const {
+    setNBars,
     padClick,
     clearAllPads,
 } = sequencerSlice.actions;

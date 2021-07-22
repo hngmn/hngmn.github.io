@@ -65,8 +65,12 @@ function setTempo(tempo: number) {
  * Setup a Tone.Loop per pad. Each loop will will fetch all instruments enabled for its corresponding pad (via the
  * getInstrumentsForNote callback) and schedule each one.
  */
-function setUpLoops(nBars: number, beatsPerBar: number, padsPerBeat: number,
-                    getInstrumentsForNote: (bari: number, beati: number, padi: number) => Array<string>) {
+function setUpLoops(
+    nBars: number,
+    beatsPerBar: number,
+    padsPerBeat: number,
+    getInstrumentsForNote: (bari: number, beati: number, padi: number) => Array<string>
+) {
     loops = (new Array(nBars)).fill(
         (new Array(beatsPerBar)).fill(
             (new Array(padsPerBeat)).fill(false)));

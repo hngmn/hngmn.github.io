@@ -4,17 +4,13 @@
   "description": "My personal website",
   "scripts": {
     "serve": "cd docs/ && bundle exec jekyll serve",
-
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
     "tcw": "npm run type-check:watch",
-
     "build": "npx webpack --progress",
     "build:watch": "npm run build -- --watch",
-
     "test": "jest --maxWorkers=50%",
     "test:watch": "jest --watch --maxWorkers=25%",
-
     "dev": "npm run build -- --watch --mode development",
     "dist": "npm run type-check && npm run build && npm run test"
   },
@@ -53,6 +49,7 @@
     "react-addons-update": "^15.6.3",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.4",
+    "react-switch": "^6.0.0",
     "style-loader": "^3.0.0",
     "tone": "^14.7.77",
     "ts-jest": "^27.0.3",
