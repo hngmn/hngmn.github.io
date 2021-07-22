@@ -29,8 +29,8 @@ export default function Pad(props: Props) {
     const isOn = useSelector((state: RootState) => selectPad(state, instrumentName, note));
     const currentNote = useSelector(selectCurrentNote);
     const isActive =
-        currentNote[0] === note[2] &&
-        currentNote[1] === note[2] &&
+        currentNote[0] === note[0] &&
+        currentNote[1] === note[1] &&
         currentNote[2] === note[2];
     const dispatch = useAppDispatch();
 

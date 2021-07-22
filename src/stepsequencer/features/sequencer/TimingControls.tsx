@@ -38,7 +38,7 @@ export default function TimingControl() {
             nBars,
             beatsPerBar,
             padsPerBeat,
-            ([bari, beati, padi]) => selectInstrumentsEnabledForPad(store.getState(), [bari, beati, padi]),
+            (note: NoteTime) => selectInstrumentsEnabledForPad(store.getState(), note),
             (note: NoteTime) => dispatch(setCurrentNote(note)));
     }, [])
 
