@@ -7,6 +7,7 @@ import type {
     IInstrumentParameter,
     IInstrumentParameterConfig,
 } from './types';
+import type { NoteTime } from '../sequencer/types';
 
 // instruments
 let instruments: Record<string, IInstrument> = {};
@@ -75,7 +76,8 @@ function setUpLoops(
     nBars: number,
     beatsPerBar: number,
     padsPerBeat: number,
-    getInstrumentsForNote: (bari: number, beati: number, padi: number) => Array<string>
+    getInstrumentsForNote: (note: NoteTime) => Array<string>,
+    setNoteCallback: (note: NoteTime) => void,
 ) {
     loopIds = (new Array(nBars)).fill(
         (new Array(beatsPerBar)).fill(
@@ -86,9 +88,12 @@ function setUpLoops(
             for (let padi = 0; padi < padsPerBeat; padi++) {
                 loopIds[bari][beati][padi] = Tone.Transport.schedule(
                     time => {
-                        console.log(`tone scheduled event ${bari}:${beati}:${padi}`);
-                        getInstrumentsForNote(bari, beati, padi).forEach(
+                        const note: NoteTime = [bari, beati, padi];
+                        getInstrumentsForNote(note).forEach(
                             (instrumentName) => instruments[instrumentName].schedule(time));
+                            Tone.Draw.schedule(() => {
+                                setNoteCallback(note);
+                            }, time);
                     },
                     `${bari}:${beati}:${padi}`
                 );

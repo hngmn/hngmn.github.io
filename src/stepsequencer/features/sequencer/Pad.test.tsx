@@ -7,9 +7,7 @@ test('Pad should display on', () => {
     render(
         <Pad
             instrumentName="asdf"
-            bari={0}
-            beati={0}
-            padi={0}
+            note={[0, 0, 0]}
         />
     );
 });

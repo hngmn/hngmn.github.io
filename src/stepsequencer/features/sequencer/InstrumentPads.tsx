@@ -39,9 +39,7 @@ export default function InstrumentPads(props: Props) {
                                 <Pad
                                     key={`${padi}`}
                                     instrumentName={instrumentName}
-                                    bari={bari}
-                                    beati={beati}
-                                    padi={padi}
+                                    note={[bari, beati, padi]}
                                 />
                             ))}
                         </span>

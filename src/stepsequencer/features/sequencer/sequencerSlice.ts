@@ -3,21 +3,23 @@
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
 import * as Tone from 'tone';
 
+import { NoteTime } from './types';
 import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
 import { instrumentAdded, instrumentRemoved } from '../instruments/instrumentsSlice';
 import instrumentPlayer from '../instruments/instrumentPlayer';
 
 interface ISliceState {
+    isPlaying: boolean,
+
     nBars: number,
     beatsPerBar: number,
     padsPerBeat: number,
+    tempo: number,
+    currentNote: NoteTime,
 
     pads: Array<Array<Array<Record<string, boolean>>>>,
 
-    isPlaying: boolean,
-    tempo: number,
-    timerId: number,
 }
 
 const INITIAL_NBARS = 2;
@@ -28,21 +30,22 @@ export const sequencerSlice = createSlice({
     name: 'sequencer',
 
     initialState: {
+        isPlaying: false,
 
         // currently fixed, will be configurable state eventually
         nBars: INITIAL_NBARS,
         beatsPerBar: INITIAL_BEATS_PER_BAR,
         padsPerBeat: INITIAL_PADS_PER_BEAT,
 
+        // timekeeping state
+        tempo: 60, // bpm (beats/bars per min)
+        currentNote: [0, 0, 0],
+
         // sequencer pad state
         pads: (new Array(INITIAL_NBARS).fill(
             (new Array(INITIAL_BEATS_PER_BAR).fill(
                 (new Array(INITIAL_PADS_PER_BEAT).fill({})))))),
 
-        // timekeeping state
-        isPlaying: false,
-        tempo: 60, // bpm (beats/bars per min)
-        timerId: 0,
     } as ISliceState,
 
     reducers: {
@@ -62,21 +65,24 @@ export const sequencerSlice = createSlice({
             state.nBars = action.payload;
         },
 
+        setCurrentNote: (state, action) => {
+            state.currentNote = action.payload;
+        },
+
         padClick: {
-            reducer(state, action: PayloadAction<{ instrumentName: string, bari: number, beati: number, padi: number }>) {
+            reducer(state, action: PayloadAction<{ instrumentName: string, note: NoteTime }>) {
                 const {
                     instrumentName,
-                    bari,
-                    beati,
-                    padi,
+                    note,
                 } = action.payload;
+                const [bari, beati, padi] = note;
 
                 state.pads[bari][beati][padi][instrumentName] = !state.pads[bari][beati][padi][instrumentName];
             },
 
-            prepare(instrumentName: string, bari: number, beati: number, padi: number) {
+            prepare(instrumentName: string, note: NoteTime) {
                 return {
-                    payload: { instrumentName, bari, beati, padi }
+                    payload: { instrumentName, note }
                 };
             },
         },
@@ -179,28 +185,32 @@ export function setNBars(nBars: number) {
 // Selectors //
 ///////////////
 
-// # pads per instrument
+// Timing state
+export const selectNBars = (state: RootState) => state.sequencer.nBars;
+export const selectBeatsPerBar = (state: RootState) => state.sequencer.beatsPerBar;
+export const selectPadsPerBeat = (state: RootState) => state.sequencer.padsPerBeat;
+export const selectCurrentNote = (state: RootState) => state.sequencer.currentNote;
+
+// # of pads per instrument
 function calculateTotalPads(nBars: number, beatsPerBar: number, padsPerBeat: number) {
     return nBars * beatsPerBar * padsPerBeat;
 }
 export const selectNumberOfPads = (state: RootState) => calculateTotalPads(state.sequencer.nBars, state.sequencer.beatsPerBar, state.sequencer.padsPerBeat);
 
-export const selectNBars = (state: RootState) => state.sequencer.nBars;
-export const selectBeatsPerBar = (state: RootState) => state.sequencer.beatsPerBar;
-export const selectPadsPerBeat = (state: RootState) => state.sequencer.padsPerBeat;
-
 // pad names (instrument ids)
 export const selectPadNames = (state: RootState) => Object.keys(state.sequencer.pads[0][0][0]);
 
-export const selectPad = (state: RootState, instrumentName: string, bari: number, beati: number, padi: number) => state.sequencer.pads[bari][beati][padi][instrumentName];
+export const selectPad = (state: RootState, instrumentName: string, [bari, beati, padi]: NoteTime) => state.sequencer.pads[bari][beati][padi][instrumentName];
 
-export const selectInstrumentsEnabledForPad = (state: RootState, bari: number, beati: number, padi: number) =>
-    selectPadNames(state).filter((instrumentName) => selectPad(state, instrumentName, bari, beati, padi));
+export const selectInstrumentsEnabledForPad = (state: RootState, note: NoteTime) =>
+    selectPadNames(state).filter((instrumentName) => selectPad(state, instrumentName, note));
 
 
 // Auto-generated Actions //
 
 export const {
+    setCurrentNote,
+
     padClick,
     clearAllPads,
 } = sequencerSlice.actions;

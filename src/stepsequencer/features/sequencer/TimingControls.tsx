@@ -4,10 +4,12 @@ import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
+import type { NoteTime } from './types';
 import store, { useAppDispatch, RootState } from '../../app/store';
 import instrumentPlayer from '../instruments/instrumentPlayer';
 import {
     setTempo,
+    setCurrentNote,
 
     selectNBars,
     selectBeatsPerBar,
@@ -36,7 +38,8 @@ export default function TimingControl() {
             nBars,
             beatsPerBar,
             padsPerBeat,
-            (bari, beati, padi) => selectInstrumentsEnabledForPad(store.getState(), bari, beati, padi));
+            ([bari, beati, padi]) => selectInstrumentsEnabledForPad(store.getState(), [bari, beati, padi]),
+            (note: NoteTime) => dispatch(setCurrentNote(note)));
     }, [])
 
     return (

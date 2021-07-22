@@ -114,6 +114,10 @@
   background-color: #829bb1;
 }
 
+.pad.active {
+  border: 2px solid yellow;
+}
+
 .slider {
   display: inline-block;
   border: 1px solid black;

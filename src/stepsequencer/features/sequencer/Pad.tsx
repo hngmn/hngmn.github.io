@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
+import type { NoteTime } from './types';
 import { useAppDispatch, RootState } from '../../app/store';
 import {
     // actions
@@ -11,32 +12,38 @@ import {
 
     // selectors
     selectPad,
+    selectCurrentNote,
 } from './sequencerSlice';
 
 interface Props {
     instrumentName: string,
-    bari: number,
-    beati: number,
-    padi: number
+    note: NoteTime,
 }
 
 export default function Pad(props: Props) {
     const {
         instrumentName,
-        bari,
-        beati,
-        padi,
+        note,
     } = props;
 
-    const isOn = useSelector((state: RootState) => selectPad(state, instrumentName, bari, beati, padi));
+    const isOn = useSelector((state: RootState) => selectPad(state, instrumentName, note));
+    const currentNote = useSelector(selectCurrentNote);
+    const isActive =
+        currentNote[0] === note[2] &&
+        currentNote[1] === note[2] &&
+        currentNote[2] === note[2];
     const dispatch = useAppDispatch();
 
-    const className = classnames('pad', isOn ? 'on' : 'off', `bar${bari}`, `beat{beati}`, `pad${padi}`);
+    const className = classnames(
+        'pad',
+        isOn ? 'on' : 'off',
+        isActive ? 'active': 'inactive'
+    );
 
     return (
         <button
             className={className}
-            onClick={() => dispatch(padClick(instrumentName, bari, beati, padi))}
+            onClick={() => dispatch(padClick(instrumentName, note))}
         />
     );
 }
