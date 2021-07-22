@@ -36,6 +36,12 @@ class TransportC {
 
     stop() {
     }
+
+    setLoopPoints(start: number, end: string) {
+    }
+
+    schedule(callback: any, when: any) {
+    }
 }
 
 export const Transport = new TransportC();

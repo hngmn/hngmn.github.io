@@ -167,6 +167,13 @@ export function setTempo(tempo: number) {
     };
 }
 
+export function setNBars(nBars: number) {
+    return function setNBarsThunk(dispatch: AppDispatch, getSTate: () => RootState) {
+        dispatch(sequencerSlice.actions.setNBars(nBars));
+        instrumentPlayer.setLoopBars(nBars);
+    }
+}
+
 
 ///////////////
 // Selectors //
@@ -194,7 +201,6 @@ export const selectInstrumentsEnabledForPad = (state: RootState, bari: number, b
 // Auto-generated Actions //
 
 export const {
-    setNBars,
     padClick,
     clearAllPads,
 } = sequencerSlice.actions;

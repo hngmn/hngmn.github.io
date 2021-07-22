@@ -32,13 +32,12 @@ export default function TimingControl() {
 
     // Set up Tone.Loops for given time signature
     React.useEffect(() => {
-        console.log('setting up loops');
         instrumentPlayer.setUpLoops(
             nBars,
             beatsPerBar,
             padsPerBeat,
             (bari, beati, padi) => selectInstrumentsEnabledForPad(store.getState(), bari, beati, padi));
-    }, [nBars, beatsPerBar, padsPerBeat])
+    }, [])
 
     return (
         <div>
