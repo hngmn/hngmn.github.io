@@ -12,6 +12,7 @@ import instrumentPlayer from '../instruments/instrumentPlayer';
 interface ISliceState {
     isPlaying: boolean,
 
+    // Timing
     nBars: number,
     beatsPerBar: number,
     padsPerBeat: number,
@@ -38,7 +39,7 @@ export const sequencerSlice = createSlice({
         padsPerBeat: INITIAL_PADS_PER_BEAT,
 
         // timekeeping state
-        tempo: 60, // bpm (beats/bars per min)
+        tempo: 99, // bpm (beats/bars per min)
         currentNote: [0, 0, 0],
 
         // sequencer pad state

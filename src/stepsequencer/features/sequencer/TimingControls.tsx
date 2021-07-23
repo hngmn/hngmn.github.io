@@ -20,17 +20,13 @@ import {
 import BarSwitch from './BarSwitch';
 import Slider from './Slider';
 
-export default function TimingControl() {
+export default function TimingControls() {
     const nBars = useSelector(selectNBars);
     const beatsPerBar = useSelector(selectBeatsPerBar);
     const padsPerBeat = useSelector(selectPadsPerBeat);
     const tempo = useSelector((state: RootState) => state.sequencer.tempo);
 
     const dispatch = useAppDispatch();
-
-    React.useEffect(() => {
-        dispatch(setTempo(99));
-    }, []); // empty array so this hook only runs once, on mount
 
     // Set up Tone.Loops for given time signature
     React.useEffect(() => {
