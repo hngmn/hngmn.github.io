@@ -9,6 +9,7 @@ import { IInstrumentParameterConfig } from '../instruments/types';
 
 interface SliderProps extends IInstrumentParameterConfig {
     onInput: (value: number) => void;
+    classNames?: Array<String>;
 }
 
 /**
@@ -22,9 +23,10 @@ export default function Slider(props: SliderProps) {
         value = 0.5,
         step = 0.1,
         onInput,
+        classNames = [],
     } = props;
 
-    const className = classnames('slider', name);
+    const className = classnames('slider', name, ...classNames);
 
     return (
         <div className={className}>
@@ -54,5 +56,5 @@ interface PropsFromSelector {
  * Compose Slider. Pass in a Selector function to fill the IInstrumentParameterConfig values
  */
 export function SelectorSlider(props: PropsFromSelector) {
-    return (<Slider onInput={props.onInput} {...useSelector(props.selector)}/>);
+    return (<Slider classNames={['instrumentParameter']} onInput={props.onInput} {...useSelector(props.selector)}/>);
 }

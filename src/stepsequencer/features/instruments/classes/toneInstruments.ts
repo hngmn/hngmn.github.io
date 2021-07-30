@@ -38,11 +38,21 @@ export class FirstToneInstrument extends ToneInstrument {
 
 export class TonePlayer extends ToneInstrument {
     player: Tone.Player;
+    distortion: Tone.Distortion;
 
     constructor(sampleFilepath: string) {
-        super([]);
+        super([
+            {
+                name: 'distortion',
+                min: 0.0,
+                max: 1.0,
+                value: 0.0,
+                step: 0.1,
+            }
+        ]);
 
-        this.player = new Tone.Player(sampleFilepath).toDestination();
+        this.distortion = new Tone.Distortion(0.0).toDestination();
+        this.player = new Tone.Player(sampleFilepath).connect(this.distortion);
     }
 
     schedule(time: Tone.Unit.Time) {
@@ -51,6 +61,9 @@ export class TonePlayer extends ToneInstrument {
 
     setParameterValue(parameterName: string, value: number) {
         super.setParameterValue(parameterName, value);
+        this.distortion.set({
+            distortion: value,
+        });
     }
 
     reverse() {
