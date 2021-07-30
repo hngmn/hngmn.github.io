@@ -45,7 +45,7 @@ html, body {
 
 .track {
   display: grid;
-  grid-template-columns: 20% 80%;
+  grid-template-columns: [icp-start] minmax(0, 1fr) [icp-end] 25px [pads-start] minmax(0, 3fr) [pads-end];
   grid-template-rows: auto;
 }
 
@@ -55,6 +55,9 @@ html, body {
 }
 
 .controlPanel {
+  grid-column-start: icp-start;
+  grid-column-end: icp-end;
+
   display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto;
@@ -93,10 +96,13 @@ html, body {
 }
 
 .pads {
+  grid-column-start: pads-start;
+  grid-column-end: pads-end;
+
   display: grid;
   grid-template-rows: auto;
   column-gap: 6px;
-  justify-self: end;
+  justify-self: start;
 }
 
 .bar {
