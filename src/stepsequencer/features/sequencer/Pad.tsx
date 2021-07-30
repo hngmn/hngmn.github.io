@@ -42,6 +42,7 @@ export default function Pad(props: Props) {
 
     return (
         <button
+            aria-label={`${instrumentName} pad${note.join('')}`}
             className={className}
             onClick={() => dispatch(padClick(instrumentName, note))}
         />

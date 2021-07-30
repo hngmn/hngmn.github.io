@@ -68,4 +68,28 @@ test('Play/pause key', async() => {
     // TODO expect Tone.end() to have been called (?)
 });
 
+test('Clear All button', async() => {
+    render(<StepSequencer/>);
+    await waitFor(() => {
+        expect(screen.queryByRole('button', { name: /Play/i })).toBeTruthy();
+    });
+
+    const buttonsToClick = [0, 4, 8];
+    const buttons = await screen.getAllByRole('button', { name: /hat pad/i });
+    expect(buttons).toHaveLength(32);
+    buttonsToClick.forEach(buttoni => {
+        expect(buttons[buttoni]).toHaveClass('off');
+    });
+
+    buttonsToClick.forEach(buttoni => fireEvent.click(buttons[buttoni]));
+    buttonsToClick.forEach(buttoni => {
+        expect(buttons[buttoni]).toHaveClass('on');
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /Clear/i }));
+    buttonsToClick.forEach(buttoni => {
+        expect(buttons[buttoni]).toHaveClass('off');
+    });
+});
+
 // TODO remove instrument button
