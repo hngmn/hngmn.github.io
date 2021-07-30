@@ -55,12 +55,11 @@ html, body {
 }
 
 .controlPanel {
-  grid-column-start: icp-start;
-  grid-column-end: icp-end;
+  grid-column: icp-start / icp-end;
 
   display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto;
+  grid-template-columns: [rm-start] 15px [rm-end label-start] minmax(0, 1fr) [label-end];
+  grid-template-rows: [header-start] 1fr [header-end parameters-start] 1fr [parameters-end];
   justify-items: center;
   align-items: center;
   border: 1px solid black;
@@ -68,8 +67,11 @@ html, body {
 }
 
 .removeInstrumentButton {
+  grid-column: rm-start / rm-end;
+  grid-row: header-start / header-end;
+
   display: inline;
-  padding: 1px;
+  padding: 5px;
   background-color: transparent;
   border: none;
   border-radius: 2px;
@@ -79,12 +81,19 @@ html, body {
   border: 1px solid yellow;
 }
 
+.instrumentLabel {
+  grid-column: label-start / label-end;
+  grid-row: header-start / header-end;
+
+}
+
 .instrumentLabel:hover {
   border: 1px solid black;
 }
 
 .slider {
   display: inline-block;
+  maxwidth: 100%;
 }
 
 .slider:hover {
@@ -93,11 +102,12 @@ html, body {
 }
 
 .slider.instrumentParameter {
+  grid-column: rm-start / label-end;
+  grid-row: parameters-start / parameters-end;
 }
 
 .pads {
-  grid-column-start: pads-start;
-  grid-column-end: pads-end;
+  grid-column: pads-start / pads-end;
 
   display: grid;
   grid-template-rows: auto;
