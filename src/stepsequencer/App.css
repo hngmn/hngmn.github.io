@@ -1,8 +1,13 @@
+html, body {
+  margin: 0px;
+  height: 100vh;
+}
+
 .stepSequencer {
   display: block;
-  border-radius: 4px;
-  background-color: #006aaa;
+  background-color: #3b60a9;
   border: 4px black;
+  height: 100vh;
 }
 
 .sequencerControls {
