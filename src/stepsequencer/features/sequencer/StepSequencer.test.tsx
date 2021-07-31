@@ -14,7 +14,7 @@ import * as ToneMock from 'tone';
 
 import StepSequencer from './StepSequencer';
 
-test('Displays Loading', async () => {
+test('Page initially displays Loading, then the sequencer', async () => {
     render(<StepSequencer/>);
 
     expect(screen.getByText(/Loading/i)).toBeTruthy();
@@ -23,14 +23,14 @@ test('Displays Loading', async () => {
     expect(screen.queryByText(/Loading/i)).toBeNull();
 });
 
-test('Initializes with instruments', async () => {
+test('Sequencer successfully initializes with instruments', async () => {
     render(<StepSequencer/>);
     await screen.findByRole('button', { name: /Play/i });
 
     expect(screen.getAllByRole('button', { name: /x/i })).toBeTruthy();
 });
 
-test('Play/pause button', async() => {
+test('"Play/pause" button toggles', async() => {
     render(<StepSequencer/>);
     await waitFor(() => {
         expect(screen.queryByRole('button', { name: /Play/i })).toBeTruthy();
@@ -47,7 +47,7 @@ test('Play/pause button', async() => {
     // TODO expect Tone.end() to have been called (?)
 });
 
-test('Play/pause key', async() => {
+test('Space key toggles play/pause', async() => {
     render(<StepSequencer/>);
     await waitFor(() => {
         expect(screen.queryByRole('button', { name: /Play/i })).toBeTruthy();
@@ -68,27 +68,41 @@ test('Play/pause key', async() => {
     // TODO expect Tone.end() to have been called (?)
 });
 
-test('Clear All button', async() => {
+test('Pad click should toggle on/off', async() => {
     render(<StepSequencer/>);
     await waitFor(() => {
         expect(screen.queryByRole('button', { name: /Play/i })).toBeTruthy();
     });
 
-    const buttonsToClick = [0, 4, 8];
-    const buttons = await screen.getAllByRole('button', { name: /hat pad/i });
-    expect(buttons).toHaveLength(32);
-    buttonsToClick.forEach(buttoni => {
-        expect(buttons[buttoni]).toHaveClass('off');
+    const pad = await screen.getByRole('button', { name: /hat pad000/i });
+    expect(pad).toHaveClass('off');
+    expect(pad).not.toHaveClass('on');
+
+    fireEvent.click(pad);
+    expect(pad).toHaveClass('on');
+    expect(pad).not.toHaveClass('off');
+
+    fireEvent.click(pad);
+    expect(pad).toHaveClass('off');
+    expect(pad).not.toHaveClass('on');
+});
+
+test('"Clear All"" button should clear all on pads', async() => {
+    render(<StepSequencer/>);
+    await waitFor(() => {
+        expect(screen.queryByRole('button', { name: /Play/i })).toBeTruthy();
     });
 
-    buttonsToClick.forEach(buttoni => fireEvent.click(buttons[buttoni]));
-    buttonsToClick.forEach(buttoni => {
-        expect(buttons[buttoni]).toHaveClass('on');
+    const padsToClick = [0, 4, 8];
+    const pads = await screen.getAllByRole('button', { name: /hat pad/i });
+    padsToClick.forEach(padi => fireEvent.click(pads[padi]));
+    padsToClick.forEach(padi => {
+        expect(pads[padi]).toHaveClass('on');
     });
 
     fireEvent.click(screen.getByRole('button', { name: /Clear/i }));
-    buttonsToClick.forEach(buttoni => {
-        expect(buttons[buttoni]).toHaveClass('off');
+    padsToClick.forEach(padi => {
+        expect(pads[padi]).toHaveClass('off');
     });
 });
 

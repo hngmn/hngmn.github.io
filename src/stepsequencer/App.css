@@ -45,7 +45,7 @@ html, body {
 
 .track {
   display: grid;
-  grid-template-columns: [icp-start] minmax(0, 1fr) [icp-end] 25px [pads-start] minmax(0, 3fr) [pads-end];
+  grid-template-columns: [icp-start] minmax(0, 1fr) [icp-end] 25px [pads-start] minmax(0, 5fr) [pads-end];
   grid-template-rows: auto;
 }
 
@@ -93,7 +93,6 @@ html, body {
 
 .slider {
   display: inline-block;
-  maxwidth: 100%;
 }
 
 .slider:hover {
