@@ -14,6 +14,7 @@ import instrumentPlayer from '../instruments/instrumentPlayer';
 import Loading from './Loading';
 import SequencerControls from './SequencerControls';
 import SequencerTracks from './SequencerTracks';
+import SampleUploader from './SampleUploader';
 
 function StepSequencer() {
     // Display <Loading/> until tonejs is done loading/initializing
@@ -58,6 +59,8 @@ function StepSequencer() {
             <SequencerControls/>
 
             <SequencerTracks/>
+
+            <SampleUploader/>
         </section>
     );
 

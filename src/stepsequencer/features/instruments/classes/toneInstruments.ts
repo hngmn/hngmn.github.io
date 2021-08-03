@@ -40,7 +40,7 @@ export class TonePlayer extends ToneInstrument {
     player: Tone.Player;
     distortion: Tone.Distortion;
 
-    constructor(sampleFilepath: string) {
+    constructor(sampleFilepath: string | Tone.ToneAudioBuffer) {
         super([
             {
                 name: 'distortion',
