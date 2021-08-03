@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 
 import type { NoteTime } from './types';
 import { useAppDispatch, RootState } from '../../app/store';
+import { selectInstrumentScreenName } from '../instruments/instrumentsSlice';
 import {
     // actions
     padClick,
@@ -16,17 +17,18 @@ import {
 } from './sequencerSlice';
 
 interface Props {
-    instrumentName: string,
+    instrumentId: string,
     note: NoteTime,
 }
 
 export default function Pad(props: Props) {
     const {
-        instrumentName,
+        instrumentId,
         note,
     } = props;
 
-    const isOn = useSelector((state: RootState) => selectPad(state, instrumentName, note));
+    const screenName = useSelector((state: RootState) => selectInstrumentScreenName(state, instrumentId));
+    const isOn = useSelector((state: RootState) => selectPad(state, instrumentId, note));
     const currentNote = useSelector(selectCurrentNote);
     const isActive =
         currentNote[0] === note[0] &&
@@ -42,9 +44,9 @@ export default function Pad(props: Props) {
 
     return (
         <button
-            aria-label={`${instrumentName} pad${note.join('')}`}
+            aria-label={`${screenName} pad${note.join('')}`}
             className={className}
-            onClick={() => dispatch(padClick(instrumentName, note))}
+            onClick={() => dispatch(padClick(instrumentId, note))}
         />
     );
 }

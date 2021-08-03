@@ -20,10 +20,12 @@ export interface IInstrumentParameterConfig {
 }
 
 export interface IInstrument {
-    schedule: (time: Unit.Time) => void;
+    getUuid: () => string;
     getAllParameterNames: () => Array<string>;
     getParameterConfig: (parameterName: string) => IInstrumentParameterConfig;
     getParameterValue: (parameterName: string) => number;
     setParameterValue: (parameterName: string, value: number) => void;
+
+    schedule: (time: Unit.Time) => void;
 }
 

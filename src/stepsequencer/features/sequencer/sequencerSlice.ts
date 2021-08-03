@@ -117,13 +117,13 @@ export const sequencerSlice = createSlice({
             } = state;
 
             const {
-                name,
+                id,
             } = action.payload;
 
             for (let bari = 0; bari < nBars; bari++) {
                 for (let beati = 0; beati < beatsPerBar; beati++) {
                     for (let padi = 0; padi < padsPerBeat; padi++) {
-                        state.pads[bari][beati][padi][name] = false;
+                        state.pads[bari][beati][padi][id] = false;
                     }
                 }
             }
@@ -136,12 +136,12 @@ export const sequencerSlice = createSlice({
                 padsPerBeat,
             } = state;
 
-            const name = action.payload;
+            const id = action.payload;
 
             for (let bari = 0; bari < nBars; bari++) {
                 for (let beati = 0; beati < beatsPerBar; beati++) {
                     for (let padi = 0; padi < padsPerBeat; padi++) {
-                        delete state.pads[bari][beati][padi][name];
+                        delete state.pads[bari][beati][padi][id];
                     }
                 }
             }

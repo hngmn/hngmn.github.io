@@ -6,21 +6,21 @@ import InstrumentControlPanel from './InstrumentControlPanel';
 import InstrumentPads from './InstrumentPads';
 
 interface Props {
-    instrumentName: string,
+    instrumentId: string,
 }
 
 export default function Track(props: Props) {
     const {
-        instrumentName,
+        instrumentId,
     } = props;
 
-    const trackClassname = classnames('track', instrumentName);
+    const trackClassname = classnames('track');
 
     return (
         <section className={trackClassname}>
-            <InstrumentControlPanel instrumentName={instrumentName}/>
+            <InstrumentControlPanel instrumentId={instrumentId}/>
 
-            <InstrumentPads instrumentName={instrumentName}/>
+            <InstrumentPads instrumentId={instrumentId}/>
         </section>
     );
 }

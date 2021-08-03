@@ -2,35 +2,38 @@
 
 import classnames from 'classnames';
 import * as React from 'react';
+import { useSelector } from 'react-redux';
 
-import { useAppDispatch } from '../../app/store';
-import { removeInstrument } from '../instruments/instrumentsSlice';
+import { useAppDispatch, RootState } from '../../app/store';
+import { removeInstrument, selectInstrumentScreenName } from '../instruments/instrumentsSlice';
 import InstrumentParameters from './InstrumentParameters';
 
 interface Props {
-    instrumentName: string,
+    instrumentId: string,
 }
 
 export default function InstrumentControlPanel(props: Props) {
     const {
-        instrumentName,
+        instrumentId,
     } = props;
+
+    const screenName = useSelector((state: RootState) => selectInstrumentScreenName(state, instrumentId));
 
     const dispatch = useAppDispatch();
 
-    const panelClassname = classnames('track', instrumentName, 'controlPanel');
+    const panelClassname = classnames('track', 'controlPanel');
     return (
         <section className={panelClassname}>
             <button
                 className={classnames('removeInstrumentButton')}
-                onClick={(e => dispatch(removeInstrument(instrumentName)))}
+                onClick={(e => dispatch(removeInstrument(instrumentId)))}
             >
                 x
             </button>
 
-            <span className={classnames('instrumentLabel')}>{instrumentName}</span>
+            <span className={classnames('instrumentLabel')}>{screenName}</span>
 
-            <InstrumentParameters instrumentName={instrumentName}/>
+            <InstrumentParameters instrumentId={instrumentId}/>
         </section>
     );
 }

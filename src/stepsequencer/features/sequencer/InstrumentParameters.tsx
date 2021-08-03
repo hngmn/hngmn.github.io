@@ -15,15 +15,15 @@ import {
 } from '../instruments/instrumentsSlice';
 
 interface Props {
-    instrumentName: string,
+    instrumentId: string,
 }
 
 export default function InstrumentParameters(props: Props) {
     const {
-        instrumentName,
+        instrumentId,
     } = props;
 
-    const parameterNames = useSelector((state: RootState) => selectParameterNamesForInstrument(state, instrumentName));
+    const parameterNames = useSelector((state: RootState) => selectParameterNamesForInstrument(state, instrumentId));
     const dispatch = useAppDispatch();
 
     return (
@@ -32,8 +32,8 @@ export default function InstrumentParameters(props: Props) {
                 return (
                     <SelectorSlider
                         key={parameterName}
-                        selector={(state: RootState) => selectInstrumentParameter(state, instrumentName, parameterName)}
-                        onInput={(value: number) => dispatch(updateInstrumentParameter(instrumentName, parameterName, value))}
+                        selector={(state: RootState) => selectInstrumentParameter(state, instrumentId, parameterName)}
+                        onInput={(value: number) => dispatch(updateInstrumentParameter(instrumentId, parameterName, value))}
                     />
                 );
             })}

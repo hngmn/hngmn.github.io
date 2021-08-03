@@ -15,19 +15,19 @@ import {
 } from './sequencerSlice';
 
 interface Props {
-    instrumentName: string,
+    instrumentId: string,
 }
 
 export default function InstrumentPads(props: Props) {
     const {
-        instrumentName,
+        instrumentId,
     } = props;
 
     const nBars = useSelector(selectNBars);
     const beatsPerBar = useSelector(selectBeatsPerBar);
     const padsPerBeat = useSelector(selectPadsPerBeat);
 
-    const padsClassname = classnames('track', instrumentName, 'pads');
+    const padsClassname = classnames('track', 'pads');
 
     return (
         <section className={padsClassname} style={{ gridTemplateColumns: `repeat(${nBars}, 1fr)` }}>
@@ -38,7 +38,7 @@ export default function InstrumentPads(props: Props) {
                             {range(padsPerBeat).map(padi => (
                                 <Pad
                                     key={`${padi}`}
-                                    instrumentName={instrumentName}
+                                    instrumentId={instrumentId}
                                     note={[bari, beati, padi]}
                                 />
                             ))}

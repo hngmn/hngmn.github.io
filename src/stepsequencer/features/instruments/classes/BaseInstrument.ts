@@ -3,6 +3,7 @@
 import type {
     Unit,
 } from 'tone';
+import { v4 as uuid } from 'uuid';
 
 import type { INormalizedObject } from '../../../global'
 import type {
@@ -13,9 +14,12 @@ import type {
 import InstrumentParameter from './InstrumentParameter';
 
 export default abstract class BaseInstrument implements IInstrument {
+    uuid: string;
     params: INormalizedObject<InstrumentParameter>;
 
     constructor(params: Array<IInstrumentParameterConfig>) {
+        this.uuid = uuid();
+
         this.params = {
             byId: {},
             allIds: params.map(p => p.name)
@@ -23,6 +27,10 @@ export default abstract class BaseInstrument implements IInstrument {
         for (let p of params) {
             this.params.byId[p.name] = new InstrumentParameter(p);
         }
+    }
+
+    getUuid() {
+        return this.uuid;
     }
 
     getAllParameterNames() {

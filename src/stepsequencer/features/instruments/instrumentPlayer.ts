@@ -35,8 +35,8 @@ function getTone() {
 
 // instruments store //
 
-function addInstrumentToScheduler(name: string, instrument: IInstrument) {
-    instruments[name] = instrument;
+function addInstrumentToScheduler(instrument: IInstrument) {
+    instruments[instrument.getUuid()] = instrument;
 }
 
 function removeInstrumentFromScheduler(name: string) {
@@ -45,8 +45,8 @@ function removeInstrumentFromScheduler(name: string) {
     return i;
 }
 
-function getInstrument(instrumentName: string) {
-    return instruments[instrumentName];
+function getInstrument(instrumentId: string) {
+    return instruments[instrumentId];
 }
 
 
@@ -90,7 +90,7 @@ function setUpLoops(
                     time => {
                         const note: NoteTime = [bari, beati, padi];
                         getInstrumentsForNote(note).forEach(
-                            (instrumentName) => instruments[instrumentName].schedule(time));
+                            (instrumentId) => instruments[instrumentId].schedule(time));
                             Tone.Draw.schedule(() => {
                                 setNoteCallback(note);
                             }, time);
