@@ -59,7 +59,7 @@ html, body {
 
   display: grid;
   grid-template-columns: [panel-start rm-start] 15px [rm-end label-start] minmax(0, 1fr) [label-end play-start] auto [play-end panel-end];
-  grid-template-rows: [header-start] minmax(auto, 1fr) [header-end parameters-start] minmax(0px, 1fr) [parameters-end];
+  grid-template-rows: [header-start] minmax(10px, auto) [header-end parameters-start] minmax(0px, 1fr) [parameters-end];
   justify-items: center;
   align-items: center;
   border: 1px solid black;
@@ -95,7 +95,7 @@ html, body {
   display: inline;
   grid-column: play-start / play-end;
   grid-row: header-start / header-end;
-  margin: 10px;
+  margin: 3px 10px;
 }
 
 .slider {
