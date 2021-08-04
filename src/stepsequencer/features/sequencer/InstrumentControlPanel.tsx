@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { useAppDispatch, RootState } from '../../app/store';
 import { removeInstrument, selectInstrumentScreenName } from '../instruments/instrumentsSlice';
 import InstrumentParameters from './InstrumentParameters';
+import InstrumentLabel from './InstrumentLabel';
 
 interface Props {
     instrumentId: string,
@@ -16,8 +17,6 @@ export default function InstrumentControlPanel(props: Props) {
     const {
         instrumentId,
     } = props;
-
-    const screenName = useSelector((state: RootState) => selectInstrumentScreenName(state, instrumentId));
 
     const dispatch = useAppDispatch();
 
@@ -31,7 +30,7 @@ export default function InstrumentControlPanel(props: Props) {
                 x
             </button>
 
-            <span className={classnames('instrumentLabel')}>{screenName}</span>
+            <InstrumentLabel instrumentId={instrumentId}/>
 
             <InstrumentParameters instrumentId={instrumentId}/>
         </section>

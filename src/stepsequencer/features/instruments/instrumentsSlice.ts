@@ -84,6 +84,23 @@ export const instrumentsSlice = createSlice({
             }
         },
 
+        renameInstrument: {
+            reducer(state, action: PayloadAction<{ instrumentId: string, newScreenName: string }>) {
+                const {
+                    instrumentId,
+                    newScreenName,
+                } = action.payload;
+
+                state.instruments.byId[instrumentId].screenName = newScreenName;
+            },
+
+            prepare(instrumentId: string, newScreenName: string) {
+                return {
+                    payload: { instrumentId, newScreenName }
+                };
+            }
+        }
+
     }
 });
 
@@ -146,6 +163,7 @@ export const selectInstrumentParameter = (state: RootState, instrumentId: string
 export const {
     instrumentAdded,
     instrumentRemoved,
+    renameInstrument,
 } = instrumentsSlice.actions;
 
 export default instrumentsSlice.reducer;
