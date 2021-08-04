@@ -53,11 +53,11 @@ function getInstrument(instrumentId: string) {
 // Player controls //
 
 function play() {
-    Tone.Transport.start();
+    Tone.Transport.start('+0.05');
 }
 
 function pause() {
-    Tone.Transport.stop();
+    Tone.Transport.stop('+0.05');
 }
 
 function setTempo(tempo: number) {
@@ -102,6 +102,10 @@ function setUpLoops(
     }
 }
 
+function playInstrument(instrumentId: string) {
+    instruments[instrumentId].schedule('+0.05');
+}
+
 export default {
     init: init,
     getCurrentTime: getCurrentTime,
@@ -111,6 +115,7 @@ export default {
     getInstrument: getInstrument,
     setUpLoops: setUpLoops,
     setLoopBars: setLoopBars,
+    playInstrument: playInstrument,
     play: play,
     pause: pause,
     setTempo: setTempo,

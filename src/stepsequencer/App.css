@@ -58,7 +58,7 @@ html, body {
   grid-column: icp-start / icp-end;
 
   display: grid;
-  grid-template-columns: [rm-start] 15px [rm-end label-start] minmax(0, 1fr) [label-end];
+  grid-template-columns: [panel-start rm-start] 15px [rm-end label-start] minmax(0, 1fr) [label-end play-start] minmax(0, 1fr) [play-end panel-end];
   grid-template-rows: [header-start] 1fr [header-end parameters-start] 1fr [parameters-end];
   justify-items: center;
   align-items: center;
@@ -91,6 +91,12 @@ html, body {
   border: 1px solid black;
 }
 
+.instrumentPlayButton {
+  display: inline;
+  grid-column: play-start / play-end;
+  grid-row: header-start / header-end;
+}
+
 .slider {
   display: inline-block;
 }
@@ -101,7 +107,7 @@ html, body {
 }
 
 .slider.instrumentParameter {
-  grid-column: rm-start / label-end;
+  grid-column: panel-start / panel-end;
   grid-row: parameters-start / parameters-end;
 }
 

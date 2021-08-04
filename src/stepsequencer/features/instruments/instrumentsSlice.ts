@@ -1,6 +1,11 @@
 'use strict';
 
-import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
+import {
+    createSlice,
+    createSelector,
+    createAsyncThunk,
+    PayloadAction,
+} from '@reduxjs/toolkit'
 
 import { INormalizedObject } from '../../global';
 import { normalizedObjectFromTuples } from '../../util/util';
@@ -104,7 +109,6 @@ export const instrumentsSlice = createSlice({
     }
 });
 
-
 // thunk for adding instrument to instrumentPlayer
 export function addInstrument(screenName: string, instrument: IInstrument) {
     return function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
@@ -126,6 +130,10 @@ export function updateInstrumentParameter(instrumentId: string, parameterName: s
         dispatch(instrumentsSlice.actions.instrumentParameterUpdated(instrumentId, parameterName, value));
     };
 }
+
+export const playInstrument = createAsyncThunk('instruments/playInstrument', async (instrumentId: string) => {
+    instrumentPlayer.playInstrument(instrumentId)
+});
 
 
 // Selectors //

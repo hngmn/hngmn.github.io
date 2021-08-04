@@ -8,6 +8,7 @@ import { useAppDispatch, RootState } from '../../app/store';
 import { removeInstrument, selectInstrumentScreenName } from '../instruments/instrumentsSlice';
 import InstrumentParameters from './InstrumentParameters';
 import InstrumentLabel from './InstrumentLabel';
+import InstrumentPlayButton from './InstrumentPlayButton';
 
 interface Props {
     instrumentId: string,
@@ -31,6 +32,8 @@ export default function InstrumentControlPanel(props: Props) {
             </button>
 
             <InstrumentLabel instrumentId={instrumentId}/>
+
+            <InstrumentPlayButton instrumentId={instrumentId}/>
 
             <InstrumentParameters instrumentId={instrumentId}/>
         </section>
