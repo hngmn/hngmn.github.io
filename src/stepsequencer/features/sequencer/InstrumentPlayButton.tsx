@@ -25,7 +25,7 @@ export default function InstrumentPlayButton(props: Props) {
             className={className}
             onClick={ () => dispatch(playInstrument(instrumentId)) }
         >
-            play
+            sample
         </button>
    )
 }
