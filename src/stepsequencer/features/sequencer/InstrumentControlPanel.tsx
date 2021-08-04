@@ -34,8 +34,6 @@ export default function InstrumentControlPanel(props: Props) {
             <InstrumentLabel instrumentId={instrumentId}/>
 
             <InstrumentPlayButton instrumentId={instrumentId}/>
-
-            <InstrumentParameters instrumentId={instrumentId}/>
         </section>
     );
 }

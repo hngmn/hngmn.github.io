@@ -49,11 +49,6 @@ html, body {
   grid-template-rows: auto;
 }
 
-.track:hover {
-  border: 1px solid black;
-  border-radius: 4px;
-}
-
 .controlPanel {
   grid-column: icp-start / icp-end;
 
@@ -77,18 +72,10 @@ html, body {
   border-radius: 2px;
 }
 
-.removeInstrumentButton:hover {
-  border: 1px solid yellow;
-}
-
 .instrumentLabel {
   grid-column: label-start / label-end;
   grid-row: header-start / header-end;
 
-}
-
-.instrumentLabel:hover {
-  border: 1px solid black;
 }
 
 .instrumentPlayButton {
@@ -100,11 +87,6 @@ html, body {
 
 .slider {
   display: inline-block;
-}
-
-.slider:hover {
-  border: 1px solid black;
-  border-radius: 2px;
 }
 
 .slider.instrumentParameter {
@@ -141,6 +123,7 @@ html, body {
   display: inline-block;
   border-radius: 2px;
   padding: 15px 15px;
+  margin: 0px;
   cursor: pointer;
   border: 1px solid gray;
 }
