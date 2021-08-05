@@ -10,11 +10,13 @@ import { selectInstrumentScreenName, renameInstrument } from '../instruments/ins
 
 interface Props {
     instrumentId: string,
+    editable?: boolean,
 }
 
 export default function InstrumentLabel(props: Props) {
     const {
         instrumentId,
+        editable = true,
     } = props;
 
     const [edit, setEdit] = React.useState(false);

@@ -49,7 +49,7 @@ html, body {
   grid-template-rows: auto;
 }
 
-.controlPanel {
+.quickControlPanel {
   grid-column: icp-start / icp-end;
 
   display: grid;

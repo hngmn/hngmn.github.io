@@ -5,7 +5,6 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import range from '../../util/range';
-import InstrumentControlPanel from './InstrumentControlPanel';
 import Pad from './Pad';
 import {
     // selectors

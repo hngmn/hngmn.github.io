@@ -2,7 +2,7 @@
 
 import classnames from 'classnames';
 import * as React from 'react';
-import InstrumentControlPanel from './InstrumentControlPanel';
+import InstrumentQuickControlPanel from './InstrumentQuickControlPanel';
 import InstrumentPads from './InstrumentPads';
 
 interface Props {
@@ -18,7 +18,7 @@ export default function Track(props: Props) {
 
     return (
         <section className={trackClassname}>
-            <InstrumentControlPanel instrumentId={instrumentId}/>
+            <InstrumentQuickControlPanel instrumentId={instrumentId}/>
 
             <InstrumentPads instrumentId={instrumentId}/>
         </section>

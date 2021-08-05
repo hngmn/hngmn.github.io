@@ -10,19 +10,23 @@ import InstrumentParameters from './InstrumentParameters';
 import InstrumentLabel from './InstrumentLabel';
 import InstrumentPlayButton from './InstrumentPlayButton';
 import InstrumentQuickControls from './InstrumentQuickControls';
+import Popout from './Popout';
 
 interface Props {
     instrumentId: string,
 }
 
-export default function InstrumentControlPanel(props: Props) {
+export default function InstrumentQuickControlPanel(props: Props) {
     const {
         instrumentId,
     } = props;
 
+    const [edit, setEdit] = React.useState(false);
+
     const dispatch = useAppDispatch();
 
-    const panelClassname = classnames('track', 'controlPanel');
+    const panelClassname = classnames('track', 'quickControlPanel', 'small');
+
     return (
         <section className={panelClassname}>
             <button
@@ -36,7 +40,16 @@ export default function InstrumentControlPanel(props: Props) {
 
             <InstrumentPlayButton instrumentId={instrumentId}/>
 
-            <InstrumentQuickControls instrumentId={instrumentId}/>
+            <InstrumentQuickControls instrumentId={instrumentId} onEdit={() => setEdit(true)}/>
+
+            {
+                edit ?
+                (
+                    <Popout>
+                        lol
+                    </Popout>
+                ) : null
+            }
         </section>
     );
 }

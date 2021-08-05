@@ -11,11 +11,13 @@ import {
 
 interface Props {
     instrumentId: string,
+    onEdit: () => void,
 }
 
 export default function InstrumentQuickControls(props: Props) {
     const {
         instrumentId,
+        onEdit,
     } = props;
 
     const instrumentName = useSelector((state: RootState) => selectInstrumentScreenName(state, instrumentId));
@@ -39,7 +41,7 @@ export default function InstrumentQuickControls(props: Props) {
 
             <button
                 className={classnames('quickControlButton', 'edit')}
-                onClick={ () => console.log(`${instrumentName} edit`) }
+                onClick={onEdit}
             >
                 edit
             </button>
