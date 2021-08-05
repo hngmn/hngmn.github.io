@@ -9,6 +9,7 @@ import { removeInstrument, selectInstrumentScreenName } from '../instruments/ins
 import InstrumentParameters from './InstrumentParameters';
 import InstrumentLabel from './InstrumentLabel';
 import InstrumentPlayButton from './InstrumentPlayButton';
+import InstrumentQuickControls from './InstrumentQuickControls';
 
 interface Props {
     instrumentId: string,
@@ -34,6 +35,8 @@ export default function InstrumentControlPanel(props: Props) {
             <InstrumentLabel instrumentId={instrumentId}/>
 
             <InstrumentPlayButton instrumentId={instrumentId}/>
+
+            <InstrumentQuickControls instrumentId={instrumentId}/>
         </section>
     );
 }

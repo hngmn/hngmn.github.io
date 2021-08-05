@@ -53,8 +53,11 @@ html, body {
   grid-column: icp-start / icp-end;
 
   display: grid;
-  grid-template-columns: [panel-start rm-start] 15px [rm-end label-start] minmax(0, 1fr) [label-end play-start] auto [play-end panel-end];
-  grid-template-rows: [header-start] minmax(10px, auto) [header-end parameters-start] minmax(0px, 1fr) [parameters-end];
+  grid-template-columns: 15px minmax(0, 1fr) auto;
+  grid-template-rows: minmax(10px, auto) minmax(0px, 1fr);
+  grid-template-areas:
+    "rm label play"
+    "qc qc    qc";
   justify-items: center;
   align-items: center;
   border: 1px solid black;
@@ -62,8 +65,7 @@ html, body {
 }
 
 .removeInstrumentButton {
-  grid-column: rm-start / rm-end;
-  grid-row: header-start / header-end;
+  grid-area: rm;
 
   display: inline;
   padding: 5px;
@@ -73,16 +75,23 @@ html, body {
 }
 
 .instrumentLabel {
-  grid-column: label-start / label-end;
-  grid-row: header-start / header-end;
-
+  grid-area: label;
 }
 
 .instrumentPlayButton {
   display: inline;
-  grid-column: play-start / play-end;
-  grid-row: header-start / header-end;
+  grid-area: play;
   margin: 3px 10px;
+}
+
+.quickControls {
+  display: inline;
+  grid-area: qc;
+}
+
+.quickControlButton {
+  display: inline;
+  margin: 3px 5px;
 }
 
 .slider {
@@ -90,8 +99,6 @@ html, body {
 }
 
 .slider.instrumentParameter {
-  grid-column: panel-start / panel-end;
-  grid-row: parameters-start / parameters-end;
 }
 
 .pads {
