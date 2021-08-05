@@ -6,10 +6,10 @@ import { useSelector } from 'react-redux';
 
 import { useAppDispatch, RootState } from '../../app/store';
 import { removeInstrument, selectInstrumentScreenName } from '../instruments/instrumentsSlice';
-import InstrumentParameters from './InstrumentParameters';
 import InstrumentLabel from './InstrumentLabel';
 import InstrumentPlayButton from './InstrumentPlayButton';
 import InstrumentQuickControls from './InstrumentQuickControls';
+import InstrumentFullControlPanel from './InstrumentFullControlPanel';
 import Popout from './Popout';
 
 interface Props {
@@ -25,7 +25,7 @@ export default function InstrumentQuickControlPanel(props: Props) {
 
     const dispatch = useAppDispatch();
 
-    const panelClassname = classnames('track', 'quickControlPanel', 'small');
+    const panelClassname = classnames('track', 'quickControlPanel');
 
     return (
         <section className={panelClassname}>
@@ -36,7 +36,7 @@ export default function InstrumentQuickControlPanel(props: Props) {
                 x
             </button>
 
-            <InstrumentLabel instrumentId={instrumentId}/>
+            <InstrumentLabel instrumentId={instrumentId} editable={false}/>
 
             <InstrumentPlayButton instrumentId={instrumentId}/>
 
@@ -46,7 +46,7 @@ export default function InstrumentQuickControlPanel(props: Props) {
                 edit ?
                 (
                     <Popout>
-                        lol
+                        <InstrumentFullControlPanel instrumentId={instrumentId} closePanel={() => setEdit(false)}/>
                     </Popout>
                 ) : null
             }

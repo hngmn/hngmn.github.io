@@ -1,5 +1,6 @@
 'use strict';
 
+import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
@@ -27,7 +28,7 @@ export default function InstrumentParameters(props: Props) {
     const dispatch = useAppDispatch();
 
     return (
-        <>
+        <section className={classnames('instrumentParameters')}>
             {parameterNames.map((parameterName) => {
                 return (
                     <SelectorSlider
@@ -37,6 +38,6 @@ export default function InstrumentParameters(props: Props) {
                     />
                 );
             })}
-        </>
+        </section>
     );
 }

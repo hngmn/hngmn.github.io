@@ -5,9 +5,11 @@ html, body {
 
 .stepSequencer {
   display: block;
+  position: absolute;
   background-color: #3b60a9;
   border: 4px black;
   height: 100vh;
+  width: 100vw;
 }
 
 .sequencerControls {
@@ -47,6 +49,25 @@ html, body {
   display: grid;
   grid-template-columns: [icp-start] minmax(0, 1fr) [icp-end] 25px [pads-start] minmax(0, 5fr) [pads-end];
   grid-template-rows: auto;
+}
+
+.fullControlPanel {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(10px, auto) minmax(10px, 1fr);
+  grid-template-areas:
+    "label"
+    "parameters";
+
+  z-index: 42;
+  position: relative;
+  top: 20vh;
+  left: 20vw;
+  width: 40vw;
+  height: 40vh;
+  background-color: orange;
+  border: 1px solid black;
+  border-radius: 4px;
 }
 
 .quickControlPanel {
