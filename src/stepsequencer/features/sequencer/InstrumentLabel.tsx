@@ -36,7 +36,7 @@ export default function InstrumentLabel(props: Props) {
     if (edit) {
         return (
             <input
-                className={classnames('instrumentLabel')}
+                className={classnames('instrumentLabel', 'edit')}
                 type={'text'}
                 autoFocus
                 ref={inputRef}
@@ -53,7 +53,7 @@ export default function InstrumentLabel(props: Props) {
         return (
             <span
                 className={classnames('instrumentLabel')}
-                onDoubleClick={() => setEdit(true)}
+                onDoubleClick={() => {if (editable) setEdit(true); }}
             >
                 {screenName}
             </span>
