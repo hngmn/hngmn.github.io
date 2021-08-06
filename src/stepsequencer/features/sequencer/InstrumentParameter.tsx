@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 
 import { useAppDispatch, RootState } from '../../app/store';
 import type { ISliderParameterConfig } from '../instruments/types';
-import { SelectorSlider } from './Slider';
 import {
     // actions
     updateInstrumentParameter,
@@ -15,6 +14,8 @@ import {
     selectParameterNamesForInstrument,
     selectInstrumentParameter
 } from '../instruments/instrumentsSlice';
+import { SelectorSlider } from './Slider';
+import SwitchParameter from './SwitchParameter';
 
 interface Props {
     instrumentId: string,
@@ -38,6 +39,9 @@ export default function InstrumentParameter(props: Props) {
                 selectInstrumentParameter(state, instrumentId, parameterName) as ISliderParameterConfig}
             onInput={(value: number) => dispatch(updateInstrumentParameter(instrumentId, parameterName, value))}
         />);
+        break;
+    case 'switch':
+        return (<SwitchParameter instrumentId={instrumentId} parameterName={param.name}/>);
         break;
     default:
         throw new Error('unexpected param kind');

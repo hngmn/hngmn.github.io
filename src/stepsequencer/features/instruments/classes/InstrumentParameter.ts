@@ -62,3 +62,21 @@ export class SliderParameter extends BaseInstrumentParameter {
         };
     }
 }
+
+export class SwitchParameter extends BaseInstrumentParameter {
+    kind: 'switch';
+
+    constructor(config: ISwitchParameterConfig, updateCallback: (v: boolean) => void) {
+        super(config, (v: boolean | number) => updateCallback(v as boolean));
+
+        this.kind = 'switch';
+    }
+
+    toConfigObject() {
+        return {
+            kind: this.kind,
+            name: this.name,
+            value: this.value as boolean,
+        };
+    }
+}

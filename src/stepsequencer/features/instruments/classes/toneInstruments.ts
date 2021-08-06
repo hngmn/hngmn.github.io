@@ -4,7 +4,7 @@ import * as Tone from 'tone';
 
 import instrumentPlayer from '../instrumentPlayer';
 import { IInstrument } from '../types';
-import { SliderParameter } from './InstrumentParameter';
+import { SliderParameter, SwitchParameter } from './InstrumentParameter';
 import ToneInstrument from './ToneInstrument';
 import BaseInstrument from './BaseInstrument';
 
@@ -62,6 +62,14 @@ export class TonePlayer extends ToneInstrument {
                     step: 0.1,
                 },
                 (v: number) => { this.player.playbackRate = v; }
+            ),
+            new SwitchParameter(
+                {
+                    kind: 'switch',
+                    name: 'reverse',
+                    value: false,
+                },
+                (v: boolean) => { this.player.reverse = v },
             )
         ]);
 
@@ -71,11 +79,6 @@ export class TonePlayer extends ToneInstrument {
 
     schedule(time: Tone.Unit.Time) {
         this.player.start(time);
-    }
-
-    reverse() {
-        this.player.reverse = true;
-        return this;
     }
 }
 

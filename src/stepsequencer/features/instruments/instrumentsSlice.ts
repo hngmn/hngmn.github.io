@@ -72,7 +72,7 @@ export const instrumentsSlice = createSlice({
         },
 
         instrumentParameterUpdated: {
-            reducer(state, action: PayloadAction<{ instrumentId: string, parameterName: string, value: number }>) {
+            reducer(state, action: PayloadAction<{ instrumentId: string, parameterName: string, value: boolean | number }>) {
                 const {
                     instrumentId,
                     parameterName,
@@ -82,7 +82,7 @@ export const instrumentsSlice = createSlice({
                 state.instruments.byId[instrumentId].params.byId[parameterName].value = value;
             },
 
-            prepare(instrumentId: string, parameterName: string, value: number) {
+            prepare(instrumentId: string, parameterName: string, value: boolean | number) {
                 return {
                     payload: { instrumentId, parameterName, value }
                 };
@@ -124,7 +124,7 @@ export function removeInstrument(id: string) {
     }
 }
 
-export function updateInstrumentParameter(instrumentId: string, parameterName: string, value: number) {
+export function updateInstrumentParameter(instrumentId: string, parameterName: string, value: boolean | number) {
     return function updateInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
         instrumentPlayer.getInstrument(instrumentId).setParameterValue(parameterName, value);
         dispatch(instrumentsSlice.actions.instrumentParameterUpdated(instrumentId, parameterName, value));

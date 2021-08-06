@@ -38,7 +38,7 @@ function StepSequencer() {
                 new TonePlayer('/assets/audio/kick.wav'),
                 new FirstToneInstrument()
             )));
-            dispatch(addInstrument('kickreverse', new TonePlayer('/assets/audio/kick.wav').reverse()));
+            dispatch(addInstrument('kickreverse', new TonePlayer('/assets/audio/kick.wav')));
 
             await instrumentPlayer.getTone().loaded();
 
