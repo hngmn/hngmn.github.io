@@ -5,9 +5,9 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { RootState } from '../../app/store';
-import { IInstrumentParameterConfig } from '../instruments/types';
+import { ISliderParameterConfig } from '../instruments/types';
 
-interface SliderProps extends IInstrumentParameterConfig {
+interface SliderProps extends Omit<ISliderParameterConfig, 'kind'> {
     onInput: (value: number) => void;
     classNames?: Array<String>;
 }
@@ -49,7 +49,7 @@ export default function Slider(props: SliderProps) {
 
 interface PropsFromSelector {
     onInput: (value: number) => void;
-    selector: (state: RootState) => IInstrumentParameterConfig;
+    selector: (state: RootState) => ISliderParameterConfig;
 }
 
 /**

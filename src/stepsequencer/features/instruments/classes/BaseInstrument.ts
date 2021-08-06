@@ -11,21 +11,21 @@ import type {
     IInstrumentParameter,
     IInstrumentParameterConfig,
 } from '../types';
-import InstrumentParameter from './InstrumentParameter';
+import { SliderParameter } from './InstrumentParameter';
 
 export default abstract class BaseInstrument implements IInstrument {
     uuid: string;
-    params: INormalizedObject<InstrumentParameter>;
+    params: INormalizedObject<IInstrumentParameter>;
 
-    constructor(params: Array<IInstrumentParameterConfig>) {
+    constructor(params: Array<IInstrumentParameter>) {
         this.uuid = uuid();
 
         this.params = {
             byId: {},
-            allIds: params.map(p => p.name)
+            allIds: params.map(p => p.getName())
         };
         for (let p of params) {
-            this.params.byId[p.name] = new InstrumentParameter(p);
+            this.params.byId[p.getName()] = p;
         }
     }
 
@@ -38,21 +38,15 @@ export default abstract class BaseInstrument implements IInstrument {
     }
 
     getParameterConfig(parameterName: string) {
-        return {
-            name: this.params.byId[parameterName].name,
-            min: this.params.byId[parameterName].min,
-            max: this.params.byId[parameterName].max,
-            value: this.params.byId[parameterName].value,
-            step: this.params.byId[parameterName].step,
-        }
+        return this.params.byId[parameterName].toConfigObject();
     }
 
     getParameterValue(parameterName: string) {
-        return this.params.byId[parameterName].value;
+        return this.params.byId[parameterName].getValue();
     }
 
-    setParameterValue(parameterName: string, value: number) {
-        this.params.byId[parameterName].value = value;
+    setParameterValue(parameterName: string, value: boolean | number) {
+        this.params.byId[parameterName].setValue(value);
     }
 
     abstract schedule(time: Unit.Time): void;

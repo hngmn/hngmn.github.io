@@ -4,6 +4,7 @@ import * as Tone from 'tone';
 
 import instrumentPlayer from '../instrumentPlayer';
 import { IInstrument } from '../types';
+import { SliderParameter } from './InstrumentParameter';
 import ToneInstrument from './ToneInstrument';
 import BaseInstrument from './BaseInstrument';
 
@@ -12,27 +13,25 @@ export class FirstToneInstrument extends ToneInstrument {
     distortion: Tone.Distortion;
 
     constructor() {
-        super([{
-            name: 'distortion',
-            min: 0.0,
-            max: 1.0,
-            value: 0.0,
-            step: 0.1,
-        }]);
-
+        super([
+            new SliderParameter(
+                {
+                    kind: 'slider',
+                    name: 'distortion',
+                    min: 0.0,
+                    max: 1.0,
+                    value: 0.0,
+                    step: 0.1,
+                },
+                (v: number) => this.distortion.set({ distortion: v })
+            ),
+        ]);
         this.distortion = new Tone.Distortion(0.0).toDestination();
         this.synth = new Tone.Synth().connect(this.distortion);
     }
 
     schedule(time: Tone.Unit.Time) {
         this.synth.triggerAttackRelease('C2', '8n', time);
-    }
-
-    setParameterValue(parameterName: string, value: number) {
-        this.params.byId[parameterName].value = value;
-        this.distortion.set({
-            distortion: value,
-        });
     }
 }
 
@@ -42,13 +41,28 @@ export class TonePlayer extends ToneInstrument {
 
     constructor(sampleFilepath: string | Tone.ToneAudioBuffer) {
         super([
-            {
-                name: 'distortion',
-                min: 0.0,
-                max: 1.0,
-                value: 0.0,
-                step: 0.1,
-            }
+            new SliderParameter(
+                {
+                    kind: 'slider',
+                    name: 'distortion',
+                    min: 0.0,
+                    max: 1.0,
+                    value: 0.0,
+                    step: 0.1,
+                },
+                (v: number) => this.distortion.set({ distortion: v })
+            ),
+            new SliderParameter(
+                {
+                    kind: 'slider',
+                    name: 'playbackRate',
+                    min: 0.1,
+                    max: 3.0,
+                    value: 1.0,
+                    step: 0.1,
+                },
+                (v: number) => { this.player.playbackRate = v; }
+            )
         ]);
 
         this.distortion = new Tone.Distortion(0.0).toDestination();
@@ -57,13 +71,6 @@ export class TonePlayer extends ToneInstrument {
 
     schedule(time: Tone.Unit.Time) {
         this.player.start(time);
-    }
-
-    setParameterValue(parameterName: string, value: number) {
-        super.setParameterValue(parameterName, value);
-        this.distortion.set({
-            distortion: value,
-        });
     }
 
     reverse() {

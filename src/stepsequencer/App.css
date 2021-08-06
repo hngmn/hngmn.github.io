@@ -60,6 +60,7 @@ html, body {
     "parameters";
 
   z-index: 42;
+  box-shadow: 5px 5px gray;
   position: relative;
   top: 20vh;
   left: 20vw;
@@ -120,6 +121,7 @@ html, body {
 }
 
 .slider.instrumentParameter {
+  display: block;
 }
 
 .pads {
