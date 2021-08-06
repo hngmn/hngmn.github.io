@@ -38,9 +38,21 @@ export class FirstToneInstrument extends ToneInstrument {
 export class TonePlayer extends ToneInstrument {
     player: Tone.Player;
     distortion: Tone.Distortion;
+    lowpass: Tone.Filter;
 
     constructor(sampleFilepath: string | Tone.ToneAudioBuffer, name?: string) {
         super([
+            new SliderParameter(
+                {
+                    kind: 'slider',
+                    name: 'lowpassHz',
+                    min: 40,
+                    max: 22000,
+                    value: 15000,
+                    step: 10,
+                },
+                (v: number) => this.lowpass.set({frequency: v})
+            ),
             new SliderParameter(
                 {
                     kind: 'slider',
@@ -73,7 +85,8 @@ export class TonePlayer extends ToneInstrument {
             )
         ], name);
 
-        this.distortion = new Tone.Distortion(0.0).toDestination();
+        this.lowpass = new Tone.Filter(15000, 'lowpass').toDestination();
+        this.distortion = new Tone.Distortion(0.0).connect(this.lowpass);
         this.player = new Tone.Player(sampleFilepath).connect(this.distortion);
     }
 
