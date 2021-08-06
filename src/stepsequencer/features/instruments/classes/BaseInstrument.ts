@@ -15,10 +15,12 @@ import { SliderParameter } from './InstrumentParameter';
 
 export default abstract class BaseInstrument implements IInstrument {
     uuid: string;
+    name: string;
     params: INormalizedObject<IInstrumentParameter>;
 
-    constructor(params: Array<IInstrumentParameter>) {
+    constructor(params: Array<IInstrumentParameter>, name?: string) {
         this.uuid = uuid();
+        this.name = name ? name : this.uuid;
 
         this.params = {
             byId: {},
@@ -33,8 +35,16 @@ export default abstract class BaseInstrument implements IInstrument {
         return this.uuid;
     }
 
+    getName() {
+        return this.name;
+    }
+
     getAllParameterNames() {
         return this.params.allIds;
+    }
+
+    getParameter(parameterName: string) {
+        return this.params.byId[parameterName];
     }
 
     getParameterConfig(parameterName: string) {

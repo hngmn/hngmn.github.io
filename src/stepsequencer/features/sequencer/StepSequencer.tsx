@@ -35,10 +35,9 @@ function StepSequencer() {
             dispatch(addInstrument('electrotom', new TonePlayer('/assets/audio/electrotom.wav')));
             dispatch(addInstrument('snare', new TonePlayer('/assets/audio/snare.wav')));
             dispatch(addInstrument('kicksynth', new Conjunction(
-                new TonePlayer('/assets/audio/kick.wav'),
-                new FirstToneInstrument()
+                new TonePlayer('/assets/audio/kick.wav', 'kick'),
+                new FirstToneInstrument('synth')
             )));
-            dispatch(addInstrument('kickreverse', new TonePlayer('/assets/audio/kick.wav')));
 
             await instrumentPlayer.getTone().loaded();
 

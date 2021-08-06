@@ -12,7 +12,7 @@ export class FirstToneInstrument extends ToneInstrument {
     synth: Tone.Synth;
     distortion: Tone.Distortion;
 
-    constructor() {
+    constructor(name?: string) {
         super([
             new SliderParameter(
                 {
@@ -25,7 +25,7 @@ export class FirstToneInstrument extends ToneInstrument {
                 },
                 (v: number) => this.distortion.set({ distortion: v })
             ),
-        ]);
+        ], name);
         this.distortion = new Tone.Distortion(0.0).toDestination();
         this.synth = new Tone.Synth().connect(this.distortion);
     }
@@ -39,7 +39,7 @@ export class TonePlayer extends ToneInstrument {
     player: Tone.Player;
     distortion: Tone.Distortion;
 
-    constructor(sampleFilepath: string | Tone.ToneAudioBuffer) {
+    constructor(sampleFilepath: string | Tone.ToneAudioBuffer, name?: string) {
         super([
             new SliderParameter(
                 {
@@ -71,7 +71,7 @@ export class TonePlayer extends ToneInstrument {
                 },
                 (v: boolean) => { this.player.reverse = v },
             )
-        ]);
+        ], name);
 
         this.distortion = new Tone.Distortion(0.0).toDestination();
         this.player = new Tone.Player(sampleFilepath).connect(this.distortion);
@@ -83,10 +83,21 @@ export class TonePlayer extends ToneInstrument {
 }
 
 export class Conjunction extends BaseInstrument {
-    instrument1: BaseInstrument;
-    instrument2: BaseInstrument;
-    constructor(instrument1: BaseInstrument, instrument2: BaseInstrument) {
-        super([]);
+    instrument1: IInstrument;
+    instrument2: IInstrument;
+    constructor(instrument1: IInstrument, instrument2: IInstrument) {
+        // return list of InstrumentParameters for passing to parent
+        function getInstrumentParameters(ins: IInstrument) {
+            return ins.getAllParameterNames().map(pname => {
+                ins.getParameter(pname).setName(`${ins.getName()}-${pname}`)
+                return ins.getParameter(pname)
+            });
+        }
+
+        super([
+            ...getInstrumentParameters(instrument1),
+            ...getInstrumentParameters(instrument2),
+        ]);
 
         this.instrument1 = instrument1;
         this.instrument2 = instrument2;
@@ -96,4 +107,6 @@ export class Conjunction extends BaseInstrument {
         this.instrument1.schedule(time);
         this.instrument2.schedule(time);
     }
+
+    // static helper
 }

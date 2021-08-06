@@ -22,6 +22,10 @@ abstract class BaseInstrumentParameter implements IInstrumentParameter {
         return this.name;
     }
 
+    setName(name: string) {
+        this.name = name;
+    }
+
     getValue() {
         return this.value;
     }

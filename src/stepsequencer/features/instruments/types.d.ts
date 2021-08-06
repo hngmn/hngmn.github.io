@@ -8,6 +8,7 @@ import { NormalizedObject } from '../../global'
 
 export interface IInstrumentParameter {
     getName: () => string;
+    setName: (name: string) => void;
     getValue: () => boolean | number;
     setValue: (value: boolean | number) => void;
     toConfigObject: () => IInstrumentParameterConfig;
@@ -32,7 +33,9 @@ export interface ISliderParameterConfig {
 
 export interface IInstrument {
     getUuid: () => string;
+    getName: () => string;
     getAllParameterNames: () => Array<string>;
+    getParameter: (parameterName: string) => IInstrumentParameter,
     getParameterConfig: (parameterName: string) => IInstrumentParameterConfig;
     getParameterValue: (parameterName: string) => boolean | number;
     setParameterValue: (parameterName: string, value: boolean | number) => void;
