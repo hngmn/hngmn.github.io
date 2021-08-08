@@ -8,6 +8,7 @@ import { useAppDispatch, RootState } from '../../app/store';
 import useDetectOutsideClick from '../../util/useDetectOutsideClick';
 import { removeInstrument, selectInstrumentScreenName } from '../instruments/instrumentsSlice';
 import InstrumentLabel from './InstrumentLabel';
+import InstrumentPlayButton from './InstrumentPlayButton';
 import InstrumentParameters from './InstrumentParameters';
 
 interface Props {
@@ -28,7 +29,11 @@ export default function InstrumentFullControlPanel(props: Props) {
 
     return (
         <section ref={panelRef} className={classname}>
-            <InstrumentLabel instrumentId={instrumentId} editable={true}/>
+            <span>
+                <InstrumentLabel instrumentId={instrumentId} editable={true}/>
+
+                <InstrumentPlayButton instrumentId={instrumentId}/>
+            </span>
 
             <InstrumentParameters instrumentId={instrumentId}/>
         </section>
