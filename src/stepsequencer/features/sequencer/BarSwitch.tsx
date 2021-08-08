@@ -1,5 +1,6 @@
 'use strict';
 
+import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import Switch from 'react-switch';
@@ -13,7 +14,7 @@ export default function BarSwitch() {
     const dispatch = useAppDispatch();
 
     return (
-        <label>
+        <label className={classnames('switch', 'nBars')}>
             <span>nBars={nBars}</span>
             <Switch
                 checked={isChecked}

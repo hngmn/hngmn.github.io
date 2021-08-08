@@ -39,13 +39,14 @@ export default function TimingControls() {
     }, [])
 
     return (
-        <div>
+        <>
             <Slider
+                classNames={['bpm']}
                 {...{name: "bpm", min: 10, max: 200, value: tempo, step: 1}}
                 onInput={(newTempoValue) => dispatch(setTempo(newTempoValue))}
             />
 
             <BarSwitch/>
-        </div>
+        </>
     );
 }
