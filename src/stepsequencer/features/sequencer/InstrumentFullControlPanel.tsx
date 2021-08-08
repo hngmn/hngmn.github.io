@@ -32,7 +32,7 @@ export default function InstrumentFullControlPanel(props: Props) {
             <span>
                 <InstrumentLabel instrumentId={instrumentId} editable={true}/>
 
-                <InstrumentPlayButton instrumentId={instrumentId}/>
+                <InstrumentPlayButton instrumentId={instrumentId} keyboardShortcut={'s'}/>
             </span>
 
             <InstrumentParameters instrumentId={instrumentId}/>
