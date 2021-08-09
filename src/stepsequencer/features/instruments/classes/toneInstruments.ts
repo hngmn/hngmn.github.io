@@ -41,6 +41,11 @@ export class TonePlayer extends ToneInstrument {
     lowpass: Tone.Filter;
 
     constructor(sampleFilepath: string | Tone.ToneAudioBuffer, name?: string) {
+        if (!name && typeof sampleFilepath === 'string') {
+            console.log('TonePlayer: filepath provided');
+            name = sampleFilepath;
+        }
+
         super([
             new SliderParameter(
                 {

@@ -3,11 +3,14 @@
 import classnames from 'classnames';
 import * as React from 'react';
 
+import InstrumentSelect from './InstrumentSelect';
 import SampleUploader from './SampleUploader';
 
 export default function InstrumentBuilder() {
     return (
-        <SampleUploader/>
+        <section className={classnames()}>
+            <InstrumentSelect/>
+        </section>
     );
 }
 
