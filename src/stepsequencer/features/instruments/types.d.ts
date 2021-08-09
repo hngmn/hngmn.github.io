@@ -31,7 +31,10 @@ export interface ISliderParameterConfig {
     step: number;
 }
 
+type IInstrumentKind = 'ToneSynth' | 'TonePlayer' | 'Conjunction';
+
 export interface IInstrument {
+    getKind: () => IInstrumentKind;
     getUuid: () => string;
     getName: () => string;
     getAllParameterNames: () => Array<string>;
@@ -41,5 +44,32 @@ export interface IInstrument {
     setParameterValue: (parameterName: string, value: boolean | number) => void;
 
     schedule: (time: Unit.Time) => void;
+
+    // for idb storage
+    toDBObject: () => IInstrumentDBObject;
 }
 
+export type IInstrumentDBObject = ITonePlayerDBObject | IToneSynthDBObject | IConjunctionDBObject;
+
+export interface IBaseInstrumentDBObject {
+    kind: IInstrumentKind
+    uuid: string;
+    name: string;
+    screenName: string;
+    parameters: Array<IInstrumentParameterConfig>;
+}
+
+export interface ITonePlayerDBObject extends IBaseInstrumentDBObject {
+    kind: 'TonePlayer';
+    buf: Blob,
+}
+
+export interface IToneSynthDBObject extends IBaseInstrumentDBObject {
+    kind: 'ToneSynth';
+}
+
+export interface IConjunctionDBObject {
+    kind: 'Conjunction';
+    i1: IInstrumentDBObject;
+    i2: IInstrumentDBObject;
+}

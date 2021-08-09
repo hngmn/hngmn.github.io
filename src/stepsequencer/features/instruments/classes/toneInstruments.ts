@@ -8,7 +8,8 @@ import { SliderParameter, SwitchParameter } from './InstrumentParameter';
 import ToneInstrument from './ToneInstrument';
 import BaseInstrument from './BaseInstrument';
 
-export class FirstToneInstrument extends ToneInstrument {
+export class ToneSynth extends ToneInstrument {
+    kind: 'ToneSynth';
     synth: Tone.Synth;
     distortion: Tone.Distortion;
 
@@ -28,14 +29,26 @@ export class FirstToneInstrument extends ToneInstrument {
         ], name);
         this.distortion = new Tone.Distortion(0.0).toDestination();
         this.synth = new Tone.Synth().connect(this.distortion);
+        this.kind = 'ToneSynth';
     }
 
     schedule(time: Tone.Unit.Time) {
         this.synth.triggerAttackRelease('C2', '8n', time);
     }
+
+    toDBObject() {
+        return {
+            kind: this.kind,
+            uuid: this.getUuid(),
+            name: this.getName(),
+            screenName: 'TODO',
+            parameters: this.getAllParameterConfigs(),
+        };
+    }
 }
 
 export class TonePlayer extends ToneInstrument {
+    kind: 'TonePlayer';
     player: Tone.Player;
     distortion: Tone.Distortion;
     lowpass: Tone.Filter;
@@ -90,6 +103,7 @@ export class TonePlayer extends ToneInstrument {
             )
         ], name);
 
+        this.kind = 'TonePlayer';
         this.lowpass = new Tone.Filter(15000, 'lowpass').toDestination();
         this.distortion = new Tone.Distortion(0.0).connect(this.lowpass);
         this.player = new Tone.Player(sampleFilepath).connect(this.distortion);
@@ -98,11 +112,24 @@ export class TonePlayer extends ToneInstrument {
     schedule(time: Tone.Unit.Time) {
         this.player.start(time);
     }
+
+    toDBObject() {
+        return {
+            kind: this.kind,
+            uuid: this.getUuid(),
+            name: this.getName(),
+            screenName: 'TODO',
+            parameters: this.getAllParameterConfigs(),
+            buf: new Blob(),
+        };
+    }
 }
 
 export class Conjunction extends BaseInstrument {
+    kind: 'Conjunction';
     instrument1: IInstrument;
     instrument2: IInstrument;
+
     constructor(instrument1: IInstrument, instrument2: IInstrument) {
         // return list of InstrumentParameters for passing to parent
         function getInstrumentParameters(ins: IInstrument) {
@@ -117,6 +144,7 @@ export class Conjunction extends BaseInstrument {
             ...getInstrumentParameters(instrument2),
         ]);
 
+        this.kind = 'Conjunction';
         this.instrument1 = instrument1;
         this.instrument2 = instrument2;
     }
@@ -126,5 +154,11 @@ export class Conjunction extends BaseInstrument {
         this.instrument2.schedule(time);
     }
 
-    // static helper
+    toDBObject() {
+        return {
+            kind: this.kind,
+            i1: this.instrument1.toDBObject(),
+            i2: this.instrument2.toDBObject(),
+        };
+    }
 }

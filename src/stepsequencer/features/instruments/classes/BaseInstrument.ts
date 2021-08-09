@@ -8,12 +8,15 @@ import { v4 as uuid } from 'uuid';
 import type { INormalizedObject } from '../../../global'
 import type {
     IInstrument,
+    IInstrumentKind,
     IInstrumentParameter,
     IInstrumentParameterConfig,
+    IInstrumentDBObject,
 } from '../types';
 import { SliderParameter } from './InstrumentParameter';
 
 export default abstract class BaseInstrument implements IInstrument {
+    abstract kind: IInstrumentKind;
     uuid: string;
     name: string;
     params: INormalizedObject<IInstrumentParameter>;
@@ -29,6 +32,10 @@ export default abstract class BaseInstrument implements IInstrument {
         for (let p of params) {
             this.params.byId[p.getName()] = p;
         }
+    }
+
+    getKind() {
+        return this.kind;
     }
 
     getUuid() {
@@ -59,6 +66,11 @@ export default abstract class BaseInstrument implements IInstrument {
         this.params.byId[parameterName].setValue(value);
     }
 
+    getAllParameterConfigs() {
+        return this.params.allIds.map(id => this.params.byId[id].toConfigObject());
+    }
+
     abstract schedule(time: Unit.Time): void;
+    abstract toDBObject(): IInstrumentDBObject;
 }
 

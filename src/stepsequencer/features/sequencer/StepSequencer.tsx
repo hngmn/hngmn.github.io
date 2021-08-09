@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useAppDispatch } from '../../app/store';
 import { addInstrument } from '../instruments/instrumentsSlice';
 import {
-    FirstToneInstrument,
+    ToneSynth,
     TonePlayer,
     Conjunction,
 } from '../instruments/classes/toneInstruments';
@@ -35,7 +35,7 @@ function StepSequencer() {
             dispatch(addInstrument('snare', new TonePlayer('/assets/audio/snare.wav')));
             dispatch(addInstrument('kicksynth', new Conjunction(
                 new TonePlayer('/assets/audio/kick.wav', 'kick'),
-                new FirstToneInstrument('synth')
+                new ToneSynth('synth')
             )));
 
             await instrumentPlayer.getTone().loaded();
