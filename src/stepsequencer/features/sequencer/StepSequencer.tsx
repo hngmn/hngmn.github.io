@@ -10,7 +10,7 @@ import {
     Conjunction,
 } from '../instruments/classes/toneInstruments';
 import instrumentPlayer from '../instruments/instrumentPlayer';
-import { db } from '../../util/db/db';
+import { addInitialItems } from '../../util/db/db';
 
 import Loading from './Loading';
 import SequencerControls from './SequencerControls';
@@ -51,7 +51,7 @@ function StepSequencer() {
     }, []); // empty array so this hook only runs once, on mount
 
     React.useEffect(() => {
-        db();
+        addInitialItems();
     }, []);
 
     if (isLoading) {

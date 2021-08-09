@@ -11,12 +11,24 @@ const instruments = [
     { uuid: '2', buf: 'placeholder for arraybuf', params: ['p3', 'p4'] },
 ]
 
-export async function db() {
-    const db = await idb.openDB(DB, VERSION, {
-        upgrade(db, oldVersion, newVersion, transaction) {
-            const store = db.createObjectStore(STORE, { keyPath: 'uuid' });
+interface Schema extends idb.DBSchema {
+    instruments: {
+        key: string
+        value: {
+            uuid: string
+            buf: string
+            params: Array<string>
+        }
+    }
+}
 
-            instruments.forEach(ins => db.add('STORE', ins));
+let db: idb.IDBPDatabase<Schema>;
+
+async function init() {
+    const db = await idb.openDB<Schema>(DB, VERSION, {
+        upgrade(db) {
+            console.log('upgrade');
+            db.createObjectStore(STORE, { keyPath: 'uuid' });
         },
 
         blocked() {
@@ -35,7 +47,17 @@ export async function db() {
         },
     });
 
-    const ins = await db.get(STORE, '1');
-    console.log(`got instrument uuid=1.`);
-    console.log(ins);
+    return db;
+}
+
+export async function addInitialItems() {
+    db = db ? db : await init();
+
+    instruments.forEach(async (ins) => {
+        if (!db.get(STORE, ins.uuid)) {
+            await db.add(STORE, ins);
+        }
+    });
+
+    console.log(await db.get(STORE, '1'));
 }
