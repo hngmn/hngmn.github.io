@@ -10,7 +10,7 @@ import {
     Conjunction,
 } from '../instruments/classes/toneInstruments';
 import instrumentPlayer from '../instruments/instrumentPlayer';
-import { addInitialItems } from '../../util/db/db';
+import { addInitialItems, print } from '../../util/db/db';
 
 import Loading from './Loading';
 import SequencerControls from './SequencerControls';
@@ -52,6 +52,7 @@ function StepSequencer() {
 
     React.useEffect(() => {
         addInitialItems();
+        print();
     }, []);
 
     if (isLoading) {
