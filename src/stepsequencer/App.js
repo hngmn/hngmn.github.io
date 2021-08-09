@@ -4,9 +4,10 @@ import React from 'react';
 
 import './App.css';
 import StepSequencer from './features/sequencer/StepSequencer';
+import InstrumentBuilder from './features/instruments/InstrumentBuilder';
 
 function App() {
-  return (<StepSequencer/>);
+  return (<InstrumentBuilder/>);
 }
 
 export default App;

@@ -10,12 +10,10 @@ import {
     Conjunction,
 } from '../instruments/classes/toneInstruments';
 import instrumentPlayer from '../instruments/instrumentPlayer';
-import { addInitialItems, print } from '../../util/db/db';
 
 import Loading from './Loading';
 import SequencerControls from './SequencerControls';
 import SequencerTracks from './SequencerTracks';
-import SampleUploader from './SampleUploader';
 
 function StepSequencer() {
     // Display <Loading/> until tonejs is done loading/initializing
@@ -50,11 +48,6 @@ function StepSequencer() {
          return () => { isMounted = false; }
     }, []); // empty array so this hook only runs once, on mount
 
-    React.useEffect(() => {
-        addInitialItems();
-        print();
-    }, []);
-
     if (isLoading) {
         return (<Loading/>);
     }
@@ -64,8 +57,6 @@ function StepSequencer() {
             <SequencerControls/>
 
             <SequencerTracks/>
-
-            <SampleUploader/>
         </section>
     );
 
