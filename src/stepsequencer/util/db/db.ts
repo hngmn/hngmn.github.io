@@ -1,6 +1,9 @@
 'use strict';
 
+import * as idb from 'idb';
+
 const DB = 'MyDB';
+const VERSION = 1;
 const STORE = 'instruments';
 
 const instruments = [
@@ -8,35 +11,31 @@ const instruments = [
     { uuid: '2', buf: 'placeholder for arraybuf', params: ['p3', 'p4'] },
 ]
 
-export function db() {
-    let db: IDBDatabase, store: IDBObjectStore;
-    const request = window.indexedDB.open(DB);
+export async function db() {
+    const db = await idb.openDB(DB, VERSION, {
+        upgrade(db, oldVersion, newVersion, transaction) {
+            const store = db.createObjectStore(STORE, { keyPath: 'uuid' });
 
-    request.onerror = (e) => {
-        console.error('error');
-    };
+            instruments.forEach(ins => db.add('STORE', ins));
+        },
 
-    request.onupgradeneeded = (e: IDBVersionChangeEvent) => {
-        console.log('onupgradedneeded. Creating store');
-        db = (e.target as IDBOpenDBRequest).result;
-        store = db.createObjectStore(STORE, { keyPath: 'uuid' });
+        blocked() {
+            // TODO
+            console.log('blocked');
+        },
 
-        store.transaction.oncomplete = (e: any) => {
-            console.log('adding instruments to store');
-            const istore = db.transaction(STORE, 'readwrite').objectStore(STORE);
+        blocking() {
+            // TODO
+            console.log('blocking');
+        },
 
-            instruments.forEach(ins => istore.add(ins));
-        };
-    }
+        terminated() {
+            // TODO
+            console.log('terminated');
+        },
+    });
 
-    request.onsuccess = (e: Event) => {
-        console.log(e);
-        db = (e.target as IDBOpenDBRequest).result;
-        store = db.transaction(STORE, 'readonly').objectStore(STORE);
-        const req = store.get('1');
-        req.onsuccess = (e) => {
-            console.log(`got instrument uuid=1.`);
-            console.log(req.result);
-        };
-    };
+    const ins = await db.get(STORE, '1');
+    console.log(`got instrument uuid=1.`);
+    console.log(ins);
 }
