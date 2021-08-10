@@ -14,6 +14,7 @@ import {
     putLocalInstrument,
 
     selectAvailableInstruments,
+    selectSequencerInstruments,
 } from './instrumentsSlice';
 import type { IInstrument } from './types';
 import { TonePlayer } from './classes/toneInstruments';
@@ -27,8 +28,8 @@ interface Option {
 
 export default function InstrumentSelect() {
     const availableInstruments = useSelector(selectAvailableInstruments).map(toOption);
-    const sequencerInstruments: Array<[string, string]> = [];
-    const [selectedInstruments, setSelectedInstruments] = React.useState<Array<Option>>(sequencerInstruments.map(toOption));
+    const sequencerInstruments = useSelector(selectSequencerInstruments).map(toOption);
+    const [selectedInstruments, setSelectedInstruments] = React.useState<Array<Option>>(sequencerInstruments);
 
     const dispatch = useAppDispatch();
 

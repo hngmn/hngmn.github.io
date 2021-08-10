@@ -10,6 +10,8 @@ export default function InstrumentBuilder() {
     return (
         <section className={classnames()}>
             <InstrumentSelect/>
+
+            <SampleUploader/>
         </section>
     );
 }

@@ -230,6 +230,11 @@ export const selectAvailableInstruments = (state: RootState): Array<[string, str
         state.instruments.availableInstruments.byId[id].screenName,
 ]);
 
+export const selectSequencerInstruments = (state: RootState): Array<[string, string]> => 
+    state.instruments.instruments.allIds.map(id => [
+        state.instruments.instruments.byId[id].id,
+        state.instruments.instruments.byId[id].screenName,
+]);
 
 // Actions //
 export const {
