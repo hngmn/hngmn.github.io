@@ -9,9 +9,17 @@ import {
 
 import { INormalizedObject } from '../../global';
 import { normalizedObjectFromTuples } from '../../util/util';
+import db from '../../util/db/db';
 import { AppDispatch, RootState } from '../../app/store';
 import instrumentPlayer from './instrumentPlayer';
-import { IInstrument, IInstrumentParameter, IInstrumentParameterConfig } from './types';
+import {
+    IInstrument,
+    IInstrumentParameter,
+    IInstrumentParameterConfig,
+    IInstrumentDBObject,
+    ITonePlayerDBObject,
+} from './types';
+import { TonePlayer } from './classes/toneInstruments';
 
 interface IInstrumentConfig {
     id: string,
@@ -21,7 +29,34 @@ interface IInstrumentConfig {
 
 interface ISliceState {
     instruments: INormalizedObject<IInstrumentConfig>;
+    availableInstruments: INormalizedObject<IInstrumentConfig>;
+    dbLoaded: boolean;
 }
+
+function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
+    return {
+        id: dbo.uuid,
+        screenName: dbo.name,
+        params: normalizedObjectFromTuples(
+            dbo.parameters.map(
+                (param: IInstrumentParameterConfig) => [param.name, param])),
+    }
+}
+
+export const fetchLocalInstruments = createAsyncThunk('instruments/fetchLocalInstruments', async () => {
+    const dbos = await db.getAllInstruments();
+    const instruments = dbos.map(insDBObject => TonePlayer.from(insDBObject as ITonePlayerDBObject));
+    const instrumentConfigs = dbos.map(dboToInsConfig);
+
+    return instrumentConfigs;
+});
+
+export const putLocalInstrument = createAsyncThunk('instruments/putLocalInstrument', async (ins: IInstrument) => {
+    const dbo = ins.toDBObject();
+    await db.putInstrument(ins.toDBObject());
+
+    return dboToInsConfig(dbo);
+});
 
 export const instrumentsSlice = createSlice({
     name: 'instruments',
@@ -31,6 +66,13 @@ export const instrumentsSlice = createSlice({
             byId: {},
             allIds: [],
         },
+
+        availableInstruments: {
+            byId: {},
+            allIds: [],
+        },
+
+        dbLoaded: false,
     } as ISliceState,
 
     reducers: {
@@ -106,7 +148,23 @@ export const instrumentsSlice = createSlice({
             }
         }
 
-    }
+    },
+
+    extraReducers: builder => {
+        builder
+            .addCase(fetchLocalInstruments.fulfilled, (state, action) => {
+                state.availableInstruments.allIds = action.payload.map(insConfig => insConfig.id);
+                action.payload.forEach(insConfig => {
+                    state.availableInstruments.byId[insConfig.id] = insConfig;
+                });
+            })
+
+            .addCase(putLocalInstrument.fulfilled, (state, action) => {
+                state.availableInstruments.allIds.push(action.payload.id);
+                state.availableInstruments.byId[action.payload.id] = action.payload;
+            })
+        ;
+    },
 });
 
 // thunk for adding instrument to instrumentPlayer
@@ -165,6 +223,12 @@ export const selectParameterNamesForInstrument = (state: RootState, instrumentId
 // given instrument, parameter
 export const selectInstrumentParameter = (state: RootState, instrumentId: string, parameterName: string) =>
     state.instruments.instruments.byId[instrumentId].params.byId[parameterName];
+
+export const selectAvailableInstruments = (state: RootState): Array<[string, string]> => 
+    state.instruments.availableInstruments.allIds.map(id => [
+        state.instruments.availableInstruments.byId[id].id,
+        state.instruments.availableInstruments.byId[id].screenName,
+]);
 
 
 // Actions //

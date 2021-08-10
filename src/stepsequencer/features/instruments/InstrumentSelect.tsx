@@ -4,10 +4,16 @@ import classnames from 'classnames';
 import * as React from 'react';
 import DualListBox from 'react-dual-listbox';
 import 'react-dual-listbox/lib/react-dual-listbox.css';
+import { useSelector } from 'react-redux';
 
 import { RootState, useAppDispatch } from '../../app/store';
 import {
     addInstrument,
+
+    fetchLocalInstruments,
+    putLocalInstrument,
+
+    selectAvailableInstruments,
 } from './instrumentsSlice';
 import type { IInstrument } from './types';
 import { TonePlayer } from './classes/toneInstruments';
@@ -20,18 +26,14 @@ interface Option {
 }
 
 export default function InstrumentSelect() {
-    const instruments: Record<string, IInstrument> = {};
-    const [availableInstruments, setAvailableInstruments] = React.useState(Object.values(instruments).map(toOption));
-    const sequencerInstruments: Array<IInstrument> = [];
-    const [selectedInstruments, setSelectedInstruments] = React.useState(sequencerInstruments.map(toOption));
+    const availableInstruments = useSelector(selectAvailableInstruments).map(toOption);
+    const sequencerInstruments: Array<[string, string]> = [];
+    const [selectedInstruments, setSelectedInstruments] = React.useState<Array<Option>>(sequencerInstruments.map(toOption));
 
     const dispatch = useAppDispatch();
 
     React.useEffect(() => {
-        const hat = new TonePlayer('/assets/audio/hat.wav');
-
-        instruments[hat.getUuid()] = hat;
-        setAvailableInstruments([toOption(hat)]);
+        dispatch(fetchLocalInstruments());
     }, []);
 
     return (
@@ -44,21 +46,18 @@ export default function InstrumentSelect() {
             />
 
             <button onClick={() => {
-                selectedInstruments.forEach(insOption => {
-                    // check not in sequencer already
-                    const ins = instruments[insOption.value];
-                    dispatch(addInstrument(ins.getName(), ins));
-                });
+                console.log(availableInstruments);
             }}>
-                Commit to Sequencer
+                Print availableInstruments
             </button>
         </section>
     );
 }
 
-function toOption(ins: IInstrument): Option {
+// helper
+function toOption(ins: [string, string]): Option {
     return {
-        label: ins.getName(),
-        value: ins.getUuid(),
+        label: ins[1],
+        value: ins[0],
     };
 }

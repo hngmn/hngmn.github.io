@@ -68,7 +68,7 @@ export interface IToneSynthDBObject extends IBaseInstrumentDBObject {
     kind: 'ToneSynth';
 }
 
-export interface IConjunctionDBObject {
+export interface IConjunctionDBObject extends IBaseInstrumentDBObject {
     kind: 'Conjunction';
     i1: IInstrumentDBObject;
     i2: IInstrumentDBObject;

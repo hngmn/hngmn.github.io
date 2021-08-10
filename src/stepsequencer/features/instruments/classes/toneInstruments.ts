@@ -3,7 +3,10 @@
 import * as Tone from 'tone';
 
 import instrumentPlayer from '../instrumentPlayer';
-import { IInstrument } from '../types';
+import {
+    IInstrument,
+    ITonePlayerDBObject,
+} from '../types';
 import { SliderParameter, SwitchParameter } from './InstrumentParameter';
 import ToneInstrument from './ToneInstrument';
 import BaseInstrument from './BaseInstrument';
@@ -123,6 +126,10 @@ export class TonePlayer extends ToneInstrument {
             buf: new Blob(),
         };
     }
+
+    static from(dbo: ITonePlayerDBObject) {
+        return new TonePlayer('/assets/audio/lazertom.wav');
+    }
 }
 
 export class Conjunction extends BaseInstrument {
@@ -157,6 +164,10 @@ export class Conjunction extends BaseInstrument {
     toDBObject() {
         return {
             kind: this.kind,
+            uuid: this.getUuid(),
+            name: this.getName(),
+            screenName: 'TODO',
+            parameters: this.getAllParameterConfigs(),
             i1: this.instrument1.toDBObject(),
             i2: this.instrument2.toDBObject(),
         };
