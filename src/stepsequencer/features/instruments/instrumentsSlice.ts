@@ -49,15 +49,22 @@ export const fetchLocalInstruments = createAsyncThunk('instruments/fetchLocalIns
     // add the actual instrument to instrumentPlayer to enable playback
     const instruments = dbos.map(insDBObject => TonePlayer.from(insDBObject as ITonePlayerDBObject));
     instruments.forEach(instrumentPlayer.addInstrumentToScheduler);
+    await instrumentPlayer.getTone().loaded();
 
     // return IInstrumentConfigs to be added to redux state
     return dbos.map(dboToInsConfig);
 });
 
 export const putLocalInstrument = createAsyncThunk('instruments/putLocalInstrument', async (ins: IInstrument) => {
-    const dbo = ins.toDBObject();
-    await db.putInstrument(ins.toDBObject());
+    // store in instrumentPlayer for playback
+    instrumentPlayer.addInstrumentToScheduler(ins);
+    await instrumentPlayer.getTone().loaded();
 
+    // write to db for persistence
+    const dbo = ins.toDBObject();
+    await db.putInstrument(dbo);
+
+    // return InstrumentConfig for redux state
     return dboToInsConfig(dbo);
 });
 

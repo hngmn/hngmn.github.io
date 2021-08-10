@@ -43,7 +43,6 @@ export default function InstrumentSelect() {
                 options={availableInstruments}
                 selected={selectedInstruments}
                 onChange={(selected: Array<Option>) => {
-                    console.log(selected);
                     setSelectedInstruments(selected);
                 }}
                 simpleValue={false}
@@ -51,7 +50,6 @@ export default function InstrumentSelect() {
             />
 
             <button onClick={() => {
-                console.log(selectedInstruments);
                 selectedInstruments.forEach((insOption: Option) =>
                     dispatch(addInstrumentToSequencer(insOption.label, insOption.value)));
             }}>

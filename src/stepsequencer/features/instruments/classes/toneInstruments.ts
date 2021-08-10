@@ -124,13 +124,21 @@ export class TonePlayer extends BaseInstrument {
     }
 
     toDBObject() {
+        let buf;
+        if (this.player.channelCount === 2) {
+            const arrays = this.player.buffer.toArray() as Float32Array[];
+            buf = new Blob([arrays[0].buffer, arrays[1].buffer], {type: 'audio/wav'});
+        } else {
+            throw new Error('got channelCount != 2');
+        }
+
         return {
             kind: this.kind,
             uuid: this.getUuid(),
             name: this.getName(),
             screenName: 'TODO',
             parameters: this.getAllParameterConfigs(),
-            buf: new Blob(),
+            buf: buf,
         };
     }
 
