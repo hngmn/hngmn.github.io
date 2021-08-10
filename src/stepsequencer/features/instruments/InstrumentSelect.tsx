@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 
 import { RootState, useAppDispatch } from '../../app/store';
 import {
-    addInstrument,
+    addInstrumentToSequencer,
 
     fetchLocalInstruments,
     putLocalInstrument,
@@ -42,14 +42,20 @@ export default function InstrumentSelect() {
             <DualListBox
                 options={availableInstruments}
                 selected={selectedInstruments}
-                onChange={(selected: Array<Option>) => setSelectedInstruments(selected)}
+                onChange={(selected: Array<Option>) => {
+                    console.log(selected);
+                    setSelectedInstruments(selected);
+                }}
+                simpleValue={false}
                 preserveSelectOrder
             />
 
             <button onClick={() => {
-                console.log(availableInstruments);
+                console.log(selectedInstruments);
+                selectedInstruments.forEach((insOption: Option) =>
+                    dispatch(addInstrumentToSequencer(insOption.label, insOption.value)));
             }}>
-                Print availableInstruments
+                Add to Sequencer
             </button>
         </section>
     );

@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 
 import { useAppDispatch, RootState } from '../../app/store';
 import useDetectOutsideClick from '../../util/useDetectOutsideClick';
-import { removeInstrument, selectInstrumentScreenName } from '../instruments/instrumentsSlice';
+import { selectInstrumentScreenName } from '../instruments/instrumentsSlice';
 import InstrumentLabel from './InstrumentLabel';
 import InstrumentPlayButton from './InstrumentPlayButton';
 import InstrumentParameters from './InstrumentParameters';

@@ -89,11 +89,15 @@ function setUpLoops(
                 loopIds[bari][beati][padi] = Tone.Transport.schedule(
                     time => {
                         const note: NoteTime = [bari, beati, padi];
+
+                        // schedule instruments that have the current pad on
                         getInstrumentsForNote(note).forEach(
                             (instrumentId) => instruments[instrumentId].schedule(time));
-                            Tone.Draw.schedule(() => {
-                                setNoteCallback(note);
-                            }, time);
+
+                        // schedule setNote to update UI
+                        Tone.Draw.schedule(() => {
+                            setNoteCallback(note);
+                        }, time);
                     },
                     `${bari}:${beati}:${padi}`
                 );

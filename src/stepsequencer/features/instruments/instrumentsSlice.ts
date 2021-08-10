@@ -45,10 +45,13 @@ function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
 
 export const fetchLocalInstruments = createAsyncThunk('instruments/fetchLocalInstruments', async () => {
     const dbos = await db.getAllInstruments();
-    const instruments = dbos.map(insDBObject => TonePlayer.from(insDBObject as ITonePlayerDBObject));
-    const instrumentConfigs = dbos.map(dboToInsConfig);
 
-    return instrumentConfigs;
+    // add the actual instrument to instrumentPlayer to enable playback
+    const instruments = dbos.map(insDBObject => TonePlayer.from(insDBObject as ITonePlayerDBObject));
+    instruments.forEach(instrumentPlayer.addInstrumentToScheduler);
+
+    // return IInstrumentConfigs to be added to redux state
+    return dbos.map(dboToInsConfig);
 });
 
 export const putLocalInstrument = createAsyncThunk('instruments/putLocalInstrument', async (ins: IInstrument) => {
@@ -167,15 +170,17 @@ export const instrumentsSlice = createSlice({
     },
 });
 
-// thunk for adding instrument to instrumentPlayer
-export function addInstrument(screenName: string, instrument: IInstrument) {
+export function addInstrumentToSequencer(screenName: string, iid: string) {
+    console.log(`addInstrumentToSequencer: sname=${screenName}, iid=${iid}`);
+    const instrument = instrumentPlayer.getInstrument(iid);
+    console.log(instrument);
+
     return function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
-        instrumentPlayer.addInstrumentToScheduler(instrument);
         dispatch(instrumentsSlice.actions.instrumentAdded(screenName, instrument));
     };
 }
 
-export function removeInstrument(id: string) {
+export function removeInstrumentFromSequencer(id: string) {
     return function removeInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
         instrumentPlayer.removeInstrumentFromScheduler(id);
         return dispatch(instrumentsSlice.actions.instrumentRemoved(id));

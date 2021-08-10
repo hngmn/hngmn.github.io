@@ -26,12 +26,12 @@ export default function SampleUploader() {
 
             <button disabled={samples.length === 0} onClick={() => {
                 samples.forEach((file) => {
-                    dispatch(putLocalInstrument(new TonePlayer(URL.createObjectURL(file))))
+                    dispatch(putLocalInstrument(TonePlayer.fromFile(file)));
                 });
 
                 setSamples([]);
             }}>
-                Add to scheduler
+                Upload
             </button>
         </section>
     )

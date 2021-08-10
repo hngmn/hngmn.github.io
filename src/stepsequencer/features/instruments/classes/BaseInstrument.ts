@@ -15,15 +15,20 @@ import type {
 } from '../types';
 import { SliderParameter } from './InstrumentParameter';
 
+export interface BaseInstrumentOptions {
+    uuid?: string
+    name?: string
+}
+
 export default abstract class BaseInstrument implements IInstrument {
     abstract kind: IInstrumentKind;
     uuid: string;
     name: string;
     params: INormalizedObject<IInstrumentParameter>;
 
-    constructor(params: Array<IInstrumentParameter>, name?: string) {
-        this.uuid = uuid();
-        this.name = name ? name : this.uuid;
+    constructor(params: Array<IInstrumentParameter>, options: BaseInstrumentOptions = {}) {
+        this.uuid = options.uuid ? options.uuid : uuid();
+        this.name = options.name ? options.name : this.uuid;
 
         this.params = {
             byId: {},

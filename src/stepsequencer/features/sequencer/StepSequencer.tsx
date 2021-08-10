@@ -3,7 +3,6 @@
 import * as React from 'react';
 
 import { useAppDispatch } from '../../app/store';
-import { addInstrument } from '../instruments/instrumentsSlice';
 import {
     ToneSynth,
     TonePlayer,
@@ -29,6 +28,7 @@ function StepSequencer() {
         (async () => {
             await instrumentPlayer.init();
 
+            /* TODO this should load from db rather than init new instruments
             dispatch(addInstrument('hat', new TonePlayer('/assets/audio/hat.wav')));
             dispatch(addInstrument('lazertom', new TonePlayer('/assets/audio/lazertom.wav')));
             dispatch(addInstrument('electrotom', new TonePlayer('/assets/audio/electrotom.wav')));
@@ -39,6 +39,7 @@ function StepSequencer() {
             )));
 
             await instrumentPlayer.getTone().loaded();
+            */
 
             if (isMounted) {
                 setLoading(false);
