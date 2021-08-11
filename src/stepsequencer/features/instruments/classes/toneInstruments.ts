@@ -62,7 +62,15 @@ export class TonePlayer extends BaseInstrument {
     distortion: Tone.Distortion;
     lowpass: Tone.Filter;
 
-    constructor(url: string, options: BaseInstrumentOptions = {}) {
+    constructor(url: string | AudioBuffer, options: BaseInstrumentOptions = {}) {
+        if (!options.name) {
+            if (typeof url === 'string') {
+                options.name = url;
+            } else {
+                options.name = 'buffer';
+            }
+        }
+
         super(
             [
                 new SliderParameter(
@@ -107,10 +115,7 @@ export class TonePlayer extends BaseInstrument {
                     (v: boolean) => { this.player.reverse = v },
                 )
             ],
-            {
-                ...options,
-                name: options.name ? options.name : url,
-            }
+            options
         );
 
         this.kind = 'TonePlayer';
@@ -124,13 +129,10 @@ export class TonePlayer extends BaseInstrument {
     }
 
     toDBObject() {
+        console.log('converting to dbo');
         let buf;
-        if (this.player.channelCount === 2) {
-            const arrays = this.player.buffer.toArray() as Float32Array[];
-            buf = new Blob([arrays[0].buffer, arrays[1].buffer], {type: 'audio/wav'});
-        } else {
-            throw new Error('got channelCount != 2');
-        }
+        const farray = this.player.buffer.toArray() as Float32Array;
+        buf = new Blob([farray.buffer], {type: 'audio/wav'});
 
         return {
             kind: this.kind,
@@ -142,14 +144,24 @@ export class TonePlayer extends BaseInstrument {
         };
     }
 
-    static from(dbo: ITonePlayerDBObject) {
-        return new TonePlayer(
-            URL.createObjectURL(dbo.buf),
-            {
-                uuid: dbo.uuid,
-                name: dbo.name,
-            }
-        );
+    static async from(dbo: ITonePlayerDBObject) {
+        console.log('from');
+        const arrBuf: ArrayBuffer = await dbo.buf.arrayBuffer();
+        const floatBuf: Float32Array = new Float32Array(arrBuf);
+        console.log(`blob.size=${dbo.buf.size} arrBuf.byteLength=${arrBuf.byteLength} floatBuf.byteLength=${floatBuf.byteLength} floatBuf.length=${floatBuf.length}`);
+        try {
+            const audioBuf: AudioBuffer = await Tone.context.decodeAudioData(arrBuf);
+            return new TonePlayer(
+                audioBuf,
+                {
+                    uuid: dbo.uuid,
+                    name: dbo.name,
+                }
+            );
+        } catch(e) {
+            console.error('error occurred during decodeAudioData', e);
+            throw e;
+        }
     }
 
     static fromFile(file: File) {

@@ -4,7 +4,11 @@ import * as React from 'react';
 
 const TIMEOUT = 500; // ms
 
-export default function Loading() {
+interface Props {
+    status?: string,
+}
+
+export default function Loading(props: Props) {
     const [dots, setDots] = React.useState(0);
 
     function incrDots() {
@@ -18,7 +22,9 @@ export default function Loading() {
 
     return (
         <div className={'loading'}>
-            {`Loading${'.'.repeat(dots + 1)}`}
+            <p>{`Loading${'.'.repeat(dots + 1)}`}</p>
+
+            <p>{props.status ? `Status=${props.status}` : ''}</p>
         </div>
     )
 }

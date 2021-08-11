@@ -30,7 +30,7 @@ interface IInstrumentConfig {
 interface ISliceState {
     instruments: INormalizedObject<IInstrumentConfig>;
     availableInstruments: INormalizedObject<IInstrumentConfig>;
-    dbLoaded: boolean;
+    dbFetchStatus: 'notStarted' | 'pending' | 'fulfilled' | 'rejected';
 }
 
 function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
@@ -44,13 +44,28 @@ function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
 }
 
 export const fetchLocalInstruments = createAsyncThunk('instruments/fetchLocalInstruments', async () => {
+    console.log('fetching');
     const dbos = await db.getAllInstruments();
 
+    if (dbos.length > 0) {
+        console.log('got nonzero dbos. creating TonePlayer(s)');
+    }
     // add the actual instrument to instrumentPlayer to enable playback
-    const instruments = dbos.map(insDBObject => TonePlayer.from(insDBObject as ITonePlayerDBObject));
-    instruments.forEach(instrumentPlayer.addInstrumentToScheduler);
+    const instruments = await Promise.all(dbos.map(async (insDBObject) => {
+        console.log(insDBObject);
+        return await TonePlayer.from(insDBObject as ITonePlayerDBObject);
+    }));
     await instrumentPlayer.getTone().loaded();
 
+    if (dbos.length > 0) {
+        console.log('adding to player');
+    }
+    instruments.forEach(ins => {
+        console.log(ins);
+        instrumentPlayer.addInstrumentToScheduler(ins);
+    });
+
+    console.log('fetch done');
     // return IInstrumentConfigs to be added to redux state
     return dbos.map(dboToInsConfig);
 });
@@ -82,7 +97,7 @@ export const instrumentsSlice = createSlice({
             allIds: [],
         },
 
-        dbLoaded: false,
+        dbFetchStatus: 'notStarted',
     } as ISliceState,
 
     reducers: {
@@ -162,7 +177,16 @@ export const instrumentsSlice = createSlice({
 
     extraReducers: builder => {
         builder
+            .addCase(fetchLocalInstruments.rejected, (state, action) => {
+                state.dbFetchStatus = 'rejected';
+            })
+
+            .addCase(fetchLocalInstruments.pending, (state, action) => {
+                state.dbFetchStatus = 'pending';
+            })
+
             .addCase(fetchLocalInstruments.fulfilled, (state, action) => {
+                state.dbFetchStatus = 'fulfilled';
                 state.availableInstruments.allIds = action.payload.map(insConfig => insConfig.id);
                 action.payload.forEach(insConfig => {
                     state.availableInstruments.byId[insConfig.id] = insConfig;
@@ -247,6 +271,8 @@ export const selectSequencerInstruments = (state: RootState): Array<[string, str
         state.instruments.instruments.byId[id].id,
         state.instruments.instruments.byId[id].screenName,
 ]);
+
+export const selectDbFetchStatus = (state: RootState) => state.instruments.dbFetchStatus;
 
 // Actions //
 export const {

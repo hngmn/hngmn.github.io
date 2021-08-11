@@ -7,6 +7,7 @@ import 'react-dual-listbox/lib/react-dual-listbox.css';
 import { useSelector } from 'react-redux';
 
 import { RootState, useAppDispatch } from '../../app/store';
+import Loading from '../sequencer/Loading';
 import {
     addInstrumentToSequencer,
 
@@ -15,6 +16,7 @@ import {
 
     selectAvailableInstruments,
     selectSequencerInstruments,
+    selectDbFetchStatus,
 } from './instrumentsSlice';
 import type { IInstrument } from './types';
 import { TonePlayer } from './classes/toneInstruments';
@@ -27,6 +29,7 @@ interface Option {
 }
 
 export default function InstrumentSelect() {
+    const dbFetchStatus = useSelector(selectDbFetchStatus);
     const availableInstruments = useSelector(selectAvailableInstruments).map(toOption);
     const sequencerInstruments = useSelector(selectSequencerInstruments).map(toOption);
     const [selectedInstruments, setSelectedInstruments] = React.useState<Array<Option>>(sequencerInstruments);
@@ -36,6 +39,10 @@ export default function InstrumentSelect() {
     React.useEffect(() => {
         dispatch(fetchLocalInstruments());
     }, []);
+
+    if (dbFetchStatus !== 'fulfilled') {
+        return (<Loading status={dbFetchStatus}/>);
+    }
 
     return (
         <section className={classnames('instrumentSelect')}>
