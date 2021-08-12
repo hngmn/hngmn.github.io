@@ -19,7 +19,7 @@ import {
     IInstrumentDBObject,
     ITonePlayerDBObject,
 } from './types';
-import { TonePlayer } from './classes/toneInstruments';
+import { TonePlayer, defaultInstruments } from './classes/toneInstruments';
 
 interface IInstrumentConfig {
     id: string,
@@ -42,6 +42,7 @@ function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
                 (param: IInstrumentParameterConfig) => [param.name, param])),
     }
 }
+
 
 export const fetchLocalInstruments = createAsyncThunk('instruments/fetchLocalInstruments', async () => {
     const dbos = await db.getAllInstruments();
@@ -192,6 +193,7 @@ export const instrumentsSlice = createSlice({
 });
 
 export function addInstrumentToSequencer(screenName: string, iid: string) {
+    console.log('addInstrumentToSequencer');
     const instrument = instrumentPlayer.getInstrument(iid);
 
     return function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
@@ -216,6 +218,26 @@ export function updateInstrumentParameter(instrumentId: string, parameterName: s
 export const playInstrument = createAsyncThunk('instruments/playInstrument', async (instrumentId: string) => {
     instrumentPlayer.playInstrument(instrumentId)
 });
+
+export function initializeDefaultInstruments() {
+    return async function initThunk(dispatch: AppDispatch, getState: () => RootState) {
+        await instrumentPlayer.init();
+
+        const availableInstrumentIds = await db.getAllInstrumentIds();
+        if (availableInstrumentIds.length > 0) {
+            console.log('found instruments in db. exiting for now');
+            return;
+        }
+
+        console.log('initializing default instruments');
+        defaultInstruments().forEach(ins => {
+            dispatch(putLocalInstrument(ins));
+            dispatch(addInstrumentToSequencer(ins.getName(), ins.getUuid()));
+        })
+
+        await instrumentPlayer.getTone().loaded();
+    }
+}
 
 
 // Selectors //

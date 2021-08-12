@@ -57,8 +57,11 @@ export default function InstrumentSelect() {
             />
 
             <button onClick={() => {
-                selectedInstruments.forEach((insOption: Option) =>
-                    dispatch(addInstrumentToSequencer(insOption.label, insOption.value)));
+                const sequencerInstrumentIds = sequencerInstruments.map(insOption => insOption.value);
+                selectedInstruments
+                    .filter((insOption: Option) => !sequencerInstrumentIds.includes(insOption.value))
+                    .forEach((insOption: Option) =>
+                        dispatch(addInstrumentToSequencer(insOption.label, insOption.value)));
             }}>
                 Add to Sequencer
             </button>

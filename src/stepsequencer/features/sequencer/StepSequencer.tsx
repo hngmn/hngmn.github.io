@@ -9,6 +9,7 @@ import {
     Conjunction,
 } from '../instruments/classes/toneInstruments';
 import instrumentPlayer from '../instruments/instrumentPlayer';
+import { initializeDefaultInstruments } from '../instruments/instrumentsSlice';
 
 import Loading from './Loading';
 import SequencerControls from './SequencerControls';
@@ -24,22 +25,11 @@ function StepSequencer() {
     React.useEffect(() => {
         let isMounted = true;
 
+        dispatch(initializeDefaultInstruments());
+
         // initialize instrumentPlayer with instruments
         (async () => {
-            await instrumentPlayer.init();
-
-            /* TODO this should load from db rather than init new instruments
-            dispatch(addInstrument('hat', new TonePlayer('/assets/audio/hat.wav')));
-            dispatch(addInstrument('lazertom', new TonePlayer('/assets/audio/lazertom.wav')));
-            dispatch(addInstrument('electrotom', new TonePlayer('/assets/audio/electrotom.wav')));
-            dispatch(addInstrument('snare', new TonePlayer('/assets/audio/snare.wav')));
-            dispatch(addInstrument('kicksynth', new Conjunction(
-                new TonePlayer('/assets/audio/kick.wav', 'kick'),
-                new ToneSynth('synth')
-            )));
-
             await instrumentPlayer.getTone().loaded();
-            */
 
             if (isMounted) {
                 setLoading(false);

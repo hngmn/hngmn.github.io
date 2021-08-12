@@ -52,13 +52,21 @@ async function init() {
 async function getInstrument(uuid: string) {
     db = db ? db : await init();
 
-    return await db.get(STORE, uuid);
+    try {
+        return await db.get(STORE, uuid);
+    } catch (e) {
+        console.error('db.get error:', e);
+    }
 }
 
 async function putInstrument(ins: IInstrumentDBObject) {
     db = db ? db : await init();
 
-    return await db.put(STORE, ins);
+    try {
+        return await db.put(STORE, ins);
+    } catch (e) {
+        console.error('db.put error:', e);
+    }
 }
 
 async function getAllInstruments() {

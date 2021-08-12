@@ -227,3 +227,17 @@ export class Conjunction extends BaseInstrument {
         };
     }
 }
+
+
+export function defaultInstruments() {
+    return [
+        new TonePlayer('/assets/audio/hat.wav'),
+        new TonePlayer('/assets/audio/lazertom.wav'),
+        new TonePlayer('/assets/audio/electrotom.wav'),
+        new TonePlayer('/assets/audio/snare.wav'),
+        // new Conjunction(
+            // new TonePlayer('/assets/audio/kick.wav'),
+            // new ToneSynth({ name: 'synth' })
+        // ),
+    ];
+}
