@@ -8,3 +8,10 @@ Typescript
 React-Redux (with React Hooks API)
 Tonejs (wrapper for Web Audio APIs)
 Jest and React-Testing-Library
+
+# Todo
+* Local persistence
+  * [x] save instruments
+  * [ ] handle instrument ids, names, screennames
+  * [ ] save sequencer state
+

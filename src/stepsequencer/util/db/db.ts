@@ -72,13 +72,13 @@ async function putInstrument(ins: IInstrumentDBObject) {
 async function getAllInstruments() {
     db = db ? db : await init();
 
-    return await db.getAll(STORE);
+    return await db.getAllFromIndex(STORE, INDEX_NAMES);
 }
 
 async function getAllInstrumentIds() {
     db = db ? db : await init();
 
-    return await db.getAllKeys(STORE);
+    return await db.getAllKeysFromIndex(STORE, INDEX_NAMES);
 }
 
 async function getAllInstrumentNames() {
