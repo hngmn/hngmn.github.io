@@ -44,28 +44,18 @@ function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
 }
 
 export const fetchLocalInstruments = createAsyncThunk('instruments/fetchLocalInstruments', async () => {
-    console.log('fetching');
     const dbos = await db.getAllInstruments();
 
-    if (dbos.length > 0) {
-        console.log('got nonzero dbos. creating TonePlayer(s)');
-    }
     // add the actual instrument to instrumentPlayer to enable playback
     const instruments = await Promise.all(dbos.map(async (insDBObject) => {
-        console.log(insDBObject);
         return await TonePlayer.from(insDBObject as ITonePlayerDBObject);
     }));
     await instrumentPlayer.getTone().loaded();
 
-    if (dbos.length > 0) {
-        console.log('adding to player');
-    }
     instruments.forEach(ins => {
-        console.log(ins);
         instrumentPlayer.addInstrumentToScheduler(ins);
     });
 
-    console.log('fetch done');
     // return IInstrumentConfigs to be added to redux state
     return dbos.map(dboToInsConfig);
 });
@@ -202,9 +192,7 @@ export const instrumentsSlice = createSlice({
 });
 
 export function addInstrumentToSequencer(screenName: string, iid: string) {
-    console.log(`addInstrumentToSequencer: sname=${screenName}, iid=${iid}`);
     const instrument = instrumentPlayer.getInstrument(iid);
-    console.log(instrument);
 
     return function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
         dispatch(instrumentsSlice.actions.instrumentAdded(screenName, instrument));

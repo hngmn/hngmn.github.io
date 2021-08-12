@@ -52,7 +52,7 @@ export interface IInstrument {
 export type IInstrumentDBObject = ITonePlayerDBObject | IToneSynthDBObject | IConjunctionDBObject;
 
 export interface IBaseInstrumentDBObject {
-    kind: IInstrumentKind
+    kind: IInstrumentKind;
     uuid: string;
     name: string;
     screenName: string;
@@ -61,7 +61,10 @@ export interface IBaseInstrumentDBObject {
 
 export interface ITonePlayerDBObject extends IBaseInstrumentDBObject {
     kind: 'TonePlayer';
-    buf: Blob,
+    buf: ArrayBuffer;
+    nChannels: number;
+    length: number;
+    sampleRate: number;
 }
 
 export interface IToneSynthDBObject extends IBaseInstrumentDBObject {

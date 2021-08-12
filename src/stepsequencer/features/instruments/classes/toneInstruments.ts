@@ -129,10 +129,14 @@ export class TonePlayer extends BaseInstrument {
     }
 
     toDBObject() {
-        console.log('converting to dbo');
-        let buf;
+        const audioBuffer = this.player.buffer.get();
+        if (!audioBuffer) {
+            console.error('audioBuffer undefined');
+            throw Error('audioBuffer undefined');
+        }
+
         const farray = this.player.buffer.toArray() as Float32Array;
-        buf = new Blob([farray.buffer], {type: 'audio/wav'});
+        const buf = farray.buffer;
 
         return {
             kind: this.kind,
@@ -141,27 +145,26 @@ export class TonePlayer extends BaseInstrument {
             screenName: 'TODO',
             parameters: this.getAllParameterConfigs(),
             buf: buf,
+            nChannels: audioBuffer.numberOfChannels,
+            length: audioBuffer.length,
+            sampleRate: audioBuffer.sampleRate,
         };
     }
 
     static async from(dbo: ITonePlayerDBObject) {
-        console.log('from');
-        const arrBuf: ArrayBuffer = await dbo.buf.arrayBuffer();
-        const floatBuf: Float32Array = new Float32Array(arrBuf);
-        console.log(`blob.size=${dbo.buf.size} arrBuf.byteLength=${arrBuf.byteLength} floatBuf.byteLength=${floatBuf.byteLength} floatBuf.length=${floatBuf.length}`);
-        try {
-            const audioBuf: AudioBuffer = await Tone.context.decodeAudioData(arrBuf);
-            return new TonePlayer(
-                audioBuf,
-                {
-                    uuid: dbo.uuid,
-                    name: dbo.name,
-                }
-            );
-        } catch(e) {
-            console.error('error occurred during decodeAudioData', e);
-            throw e;
+        const floatArray: Float32Array = new Float32Array(dbo.buf);
+        const audioBuf: AudioBuffer = Tone.context.createBuffer(dbo.nChannels, dbo.length, dbo.sampleRate);
+        for (let i = 0; i < dbo.nChannels; i++) {
+            audioBuf.copyToChannel(floatArray, i);
         }
+
+        return new TonePlayer(
+            audioBuf,
+            {
+                uuid: dbo.uuid,
+                name: dbo.name,
+            }
+        );
     }
 
     static fromFile(file: File) {

@@ -58,8 +58,6 @@ async function getInstrument(uuid: string) {
 async function putInstrument(ins: IInstrumentDBObject) {
     db = db ? db : await init();
 
-    console.log('db.putIns');
-    console.log(ins);
     return await db.put(STORE, ins);
 }
 
