@@ -2,6 +2,7 @@
 
 import * as Tone from 'tone';
 
+import { createEmpty3DArray } from '../../util/util';
 import type {
     IInstrument,
     IInstrumentParameter,
@@ -68,6 +69,17 @@ function setLoopBars(nBars: number) {
     Tone.Transport.setLoopPoints(0, `${nBars}m`);
 }
 
+function clearLoops() {
+    for (let bari = 0; bari < loopIds.length; bari++) {
+        for (let beati = 0; beati < loopIds[0].length; beati++) {
+            for (let padi = 0; padi < loopIds[0][0].length; padi++) {
+                Tone.Transport.clear(loopIds[bari][beati][padi]);
+            }
+        }
+    }
+}
+
+
 /**
  * Setup a Tone.Loop per pad. Each loop will will fetch all instruments enabled for its corresponding pad (via the
  * getInstrumentsForNote callback) and schedule each one.
@@ -79,9 +91,11 @@ function setUpLoops(
     getInstrumentsForNote: (note: NoteTime) => Array<string>,
     setNoteCallback: (note: NoteTime) => void,
 ) {
-    loopIds = (new Array(nBars)).fill(
-        (new Array(beatsPerBar)).fill(
-            (new Array(padsPerBeat)).fill(undefined)));
+    if (loopIds) {
+        clearLoops();
+    }
+
+    loopIds = createEmpty3DArray<number>(nBars, beatsPerBar, padsPerBeat, -1);
 
     for (let bari = 0; bari < nBars; bari++) {
         for (let beati = 0; beati < beatsPerBar; beati++) {

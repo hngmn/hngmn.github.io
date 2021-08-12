@@ -193,7 +193,6 @@ export const instrumentsSlice = createSlice({
 });
 
 export function addInstrumentToSequencer(screenName: string, iid: string) {
-    console.log('addInstrumentToSequencer');
     const instrument = instrumentPlayer.getInstrument(iid);
 
     return function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
