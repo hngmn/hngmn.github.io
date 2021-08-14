@@ -1,6 +1,7 @@
 'use strict';
 
 import * as idb from 'idb';
+import { Ok, Err, Result } from 'ts-results';
 
 import type { IInstrumentDBObject } from '../../features/instruments/types';
 
@@ -8,6 +9,8 @@ const DB = 'MyDB';
 const VERSION = 1;
 const STORE = 'instruments';
 const INDEX_NAMES = 'instrumentNames';
+
+type StoreName = typeof STORE;
 
 interface Schema extends idb.DBSchema {
     instruments: {
@@ -49,14 +52,31 @@ async function init() {
     return db;
 }
 
-async function getInstrument(uuid: string) {
+async function tryDbOp<RT>(op: (db: idb.IDBPDatabase<Schema>) => Promise<RT | undefined>): Promise<Result<RT, Error>> {
     db = db ? db : await init();
 
+    let result;
     try {
-        return await db.get(STORE, uuid);
+        result = await op(db);
     } catch (e) {
-        console.error('db.get error:', e);
+        return Err(e);
     }
+
+    if (result === undefined) {
+        return Err(new Error('got undefined'));
+    }
+
+    return Ok(result);
+}
+
+async function get(storeName: StoreName, key: string): Promise<Result<IInstrumentDBObject, Error>> {
+    return await tryDbOp<IInstrumentDBObject>(async (db) => {
+        return await db.get(storeName, key);
+    });
+}
+
+async function getInstrument(uuid: string) {
+    return await get(STORE, uuid);
 }
 
 async function putInstrument(ins: IInstrumentDBObject) {
