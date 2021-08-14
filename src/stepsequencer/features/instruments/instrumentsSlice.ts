@@ -45,7 +45,12 @@ function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
 
 
 export const fetchLocalInstruments = createAsyncThunk('instruments/fetchLocalInstruments', async () => {
-    const dbos = await db.getAllInstruments();
+    const result = await db.getAllInstruments();
+    if (result.err) {
+        return [];
+    }
+
+    const dbos = result.unwrap();
 
     // add the actual instrument to instrumentPlayer to enable playback
     const instruments = await Promise.all(dbos.map(async (insDBObject) => {
@@ -222,7 +227,14 @@ export function initializeDefaultInstruments() {
     return async function initThunk(dispatch: AppDispatch, getState: () => RootState) {
         await instrumentPlayer.init();
 
-        const availableInstrumentIds = await db.getAllInstrumentIds();
+        const result = await db.getAllInstrumentIds();
+        if (result.err) {
+            console.error('error getting instrumentIds from db', result.val);
+            return;
+        }
+
+        const availableInstrumentIds = result.unwrap();
+
         if (availableInstrumentIds.length > 0) {
             console.log('found instruments in db. exiting for now');
             return;

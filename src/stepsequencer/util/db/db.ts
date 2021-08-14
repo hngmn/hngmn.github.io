@@ -10,8 +10,6 @@ const VERSION = 1;
 const STORE = 'instruments';
 const INDEX_NAMES = 'instrumentNames';
 
-type StoreName = typeof STORE;
-
 interface Schema extends idb.DBSchema {
     instruments: {
         key: string
@@ -21,6 +19,11 @@ interface Schema extends idb.DBSchema {
         }
     }
 }
+
+type StoreName = idb.StoreNames<Schema>;
+type KeyType = idb.StoreKey<Schema, StoreName> | IDBKeyRange
+type ItemType = idb.StoreValue<Schema, StoreName>;
+type IndexName = idb.IndexNames<Schema, StoreName>;
 
 let db: idb.IDBPDatabase<Schema>;
 
@@ -52,7 +55,12 @@ async function init() {
     return db;
 }
 
-async function tryDbOp<RT>(op: (db: idb.IDBPDatabase<Schema>) => Promise<RT | undefined>): Promise<Result<RT, Error>> {
+type DbFunctionType = (...args: any[]) => any;
+
+// content-agnostic db access helpers
+async function tryDbOp<RT>(
+    op: (db: idb.IDBPDatabase<Schema>) => Promise<RT | undefined>
+): Promise<Result<RT, Error>> {
     db = db ? db : await init();
 
     let result;
@@ -69,42 +77,47 @@ async function tryDbOp<RT>(op: (db: idb.IDBPDatabase<Schema>) => Promise<RT | un
     return Ok(result);
 }
 
-async function get(storeName: StoreName, key: string): Promise<Result<IInstrumentDBObject, Error>> {
-    return await tryDbOp<IInstrumentDBObject>(async (db) => {
-        return await db.get(storeName, key);
+async function wrappedGet(store: StoreName, key: string) {
+    return await tryDbOp(async (db) => {
+        return await db.get(store, key);
     });
 }
 
+async function wrappedPut(store: StoreName, item: ItemType) {
+    return await tryDbOp(async (db) => {
+        return await db.put(store, item);
+    });
+}
+
+async function wrappedGetAllKeysFromIndex(store: StoreName, index: IndexName) {
+    return await tryDbOp(async (db) => {
+        return await db.getAllKeysFromIndex(store, index);
+    });
+}
+
+async function wrappedGetAllFromIndex(store: StoreName, index: IndexName) {
+    return await tryDbOp(async (db) => {
+        return await db.getAllFromIndex(store, index);
+    });
+}
+
+
+// instrument/sequencer-specific interface
+
 async function getInstrument(uuid: string) {
-    return await get(STORE, uuid);
+    return await wrappedGet(STORE, uuid);
 }
 
 async function putInstrument(ins: IInstrumentDBObject) {
-    db = db ? db : await init();
-
-    try {
-        return await db.put(STORE, ins);
-    } catch (e) {
-        console.error('db.put error:', e);
-    }
+    return await wrappedPut(STORE, ins);
 }
 
 async function getAllInstruments() {
-    db = db ? db : await init();
-
-    return await db.getAllFromIndex(STORE, INDEX_NAMES);
+    return await wrappedGetAllFromIndex(STORE, INDEX_NAMES);
 }
 
 async function getAllInstrumentIds() {
-    db = db ? db : await init();
-
-    return await db.getAllKeysFromIndex(STORE, INDEX_NAMES);
-}
-
-async function getAllInstrumentNames() {
-    db = db ? db : await init();
-
-    return await db.getAllKeysFromIndex(STORE, INDEX_NAMES);
+    return await wrappedGetAllKeysFromIndex(STORE, INDEX_NAMES);
 }
 
 export default {
@@ -112,5 +125,4 @@ export default {
     putInstrument,
     getAllInstruments,
     getAllInstrumentIds,
-    getAllInstrumentNames,
 };
