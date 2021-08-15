@@ -30,6 +30,7 @@ interface IInstrumentConfig {
 interface ISliceState {
     instruments: INormalizedObject<IInstrumentConfig>;
     availableInstruments: Array<string>;
+    sequencerInstrumentIds: Array<string>;
     dbFetchStatus: 'notStarted' | 'pending' | 'fulfilled' | 'rejected';
 }
 
@@ -97,22 +98,34 @@ export const putLocalInstrument = createAsyncThunk('instruments/putLocalInstrume
     return dboToInsConfig(dbo);
 });
 
-export const fetchSequencerInstruments = createAsyncThunk('instruments/fetchSequencerInstruments', async () => {
+export const fetchSequencerInstruments = createAsyncThunk<
+    Array<string>,
+    undefined,
+    {
+        dispatch: AppDispatch
+        state: RootState
+    }
+>(
+    'instruments/fetchSequencerInstruments',
+    async (
+        arg,
+        {
+            dispatch,
+            getState,
+        }
+    ) => {
     const result = await db.getSequencerInstruments();
     if (result.err) {
         console.error('err getting sequencer instruments', result.val);
-        return;
+        throw result.val;
     }
 
     const sequencerInstrumentIds = result.unwrap();
 
-    // add to instrumentPlayer if not already loaded
-    sequencerInstrumentIds.forEach(loadInstrument);
+    sequencerInstrumentIds.forEach(id => dispatch(addInstrumentToSequencer(id)));
 
     // return ins configs for updating redux state
-    return sequencerInstrumentIds.map(instrumentPlayer.getInstrument).map(insToInsConfig);
-
-    // TODO: new action to update redux sequencer ins state on BOTH fetch and put
+    return sequencerInstrumentIds;
 });
 
 export const putSequencerInstruments = createAsyncThunk(
@@ -135,6 +148,7 @@ export const instrumentsSlice = createSlice({
         },
 
         availableInstruments: [],
+        sequencerInstrumentIds: [],
 
         dbFetchStatus: 'notStarted',
     } as ISliceState,
@@ -175,6 +189,7 @@ export const instrumentsSlice = createSlice({
 
             delete state.instruments.byId[id];
             state.instruments.allIds.splice(state.instruments.allIds.indexOf(id), 1);
+            state.sequencerInstrumentIds.splice(state.sequencerInstrumentIds.indexOf(id), 1);
         },
 
         instrumentParameterUpdated: {
@@ -232,10 +247,15 @@ export const instrumentsSlice = createSlice({
             .addCase(putLocalInstrument.fulfilled, (state, action) => {
                 state.availableInstruments.push(action.payload.id);
             })
+
+            .addCase(fetchSequencerInstruments.fulfilled, (state, action) => {
+                state.sequencerInstrumentIds = action.payload;
+            })
     },
 });
 
 export function addInstrumentToSequencer(iid: string) {
+    console.log('addInstrumentToSequencer', iid);
     return async function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
         const instrument = await loadInstrument(iid);
         dispatch(instrumentsSlice.actions.instrumentAdded(instrument.getName(), instrument));
@@ -318,6 +338,8 @@ export const selectInstrumentParameter = (state: RootState, instrumentId: string
     state.instruments.instruments.byId[instrumentId].params.byId[parameterName];
 
 export const selectAvailableInstruments = (state: RootState): Array<string> =>  state.instruments.availableInstruments;
+
+export const selectSequencerInstrumentIds = (state: RootState): Array<string> =>  state.instruments.sequencerInstrumentIds;
 
 export const selectSequencerInstruments = (state: RootState): Array<[string, string]> => 
     state.instruments.instruments.allIds.map(id => [

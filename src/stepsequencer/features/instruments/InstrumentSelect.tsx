@@ -11,7 +11,7 @@ import Loading from '../sequencer/Loading';
 import {
     addInstrumentToSequencer,
 
-    putLocalInstrument,
+    putSequencerInstruments,
 
     selectAvailableInstruments,
     selectSequencerInstruments,
@@ -46,11 +46,15 @@ export default function InstrumentSelect() {
             />
 
             <button onClick={() => {
-                const sequencerInstrumentIds = sequencerInstruments.map(insOption => insOption.value);
-                selectedInstruments
-                    .filter((insOption: Option) => !sequencerInstrumentIds.includes(insOption.value))
-                    .forEach((insOption: Option) =>
-                        dispatch(addInstrumentToSequencer(insOption.value)));
+                const sequencerInstrumentIds = sequencerInstruments.map(opt => opt.value);
+                const selectedInstrumentIds = selectedInstruments.map(opt => opt.value);
+                // write to db
+                dispatch(putSequencerInstruments(selectedInstrumentIds));
+                // add to sequencer
+                selectedInstrumentIds
+                    .filter(id => !sequencerInstrumentIds.includes(id))
+                    .forEach(id =>
+                        dispatch(addInstrumentToSequencer(id)));
             }}>
                 Add to Sequencer
             </button>
