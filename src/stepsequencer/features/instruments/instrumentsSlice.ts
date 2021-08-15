@@ -245,11 +245,11 @@ export const instrumentsSlice = createSlice({
     },
 });
 
-export function addInstrumentToSequencer(screenName: string, iid: string) {
+export function addInstrumentToSequencer(iid: string) {
     const instrument = instrumentPlayer.getInstrument(iid);
 
     return function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
-        dispatch(instrumentsSlice.actions.instrumentAdded(screenName, instrument));
+        dispatch(instrumentsSlice.actions.instrumentAdded(instrument.getName(), instrument));
     };
 }
 
@@ -291,7 +291,7 @@ export function initializeDefaultInstruments() {
         console.log('initializing default instruments');
         defaultInstruments().forEach(ins => {
             dispatch(putLocalInstrument(ins));
-            dispatch(addInstrumentToSequencer(ins.getName(), ins.getUuid()));
+            dispatch(addInstrumentToSequencer(ins.getUuid()));
         })
 
         await instrumentPlayer.getTone().loaded();

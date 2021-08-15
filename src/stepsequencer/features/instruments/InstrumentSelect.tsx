@@ -61,7 +61,7 @@ export default function InstrumentSelect() {
                 selectedInstruments
                     .filter((insOption: Option) => !sequencerInstrumentIds.includes(insOption.value))
                     .forEach((insOption: Option) =>
-                        dispatch(addInstrumentToSequencer(insOption.label, insOption.value)));
+                        dispatch(addInstrumentToSequencer(insOption.value)));
             }}>
                 Add to Sequencer
             </button>
