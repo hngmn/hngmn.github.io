@@ -46,6 +46,10 @@ function removeInstrumentFromScheduler(name: string) {
     return i;
 }
 
+function hasInstrument(instrumentId: string) {
+    return instrumentId in instruments;
+}
+
 function getInstrument(instrumentId: string) {
     return instruments[instrumentId];
 }
@@ -125,16 +129,17 @@ function playInstrument(instrumentId: string) {
 }
 
 export default {
-    init: init,
-    getCurrentTime: getCurrentTime,
-    getTone: getTone,
-    addInstrumentToScheduler: addInstrumentToScheduler,
-    removeInstrumentFromScheduler: removeInstrumentFromScheduler,
-    getInstrument: getInstrument,
-    setUpLoops: setUpLoops,
-    setLoopBars: setLoopBars,
-    playInstrument: playInstrument,
-    play: play,
-    pause: pause,
-    setTempo: setTempo,
+    init,
+    getCurrentTime,
+    getTone,
+    addInstrumentToScheduler,
+    removeInstrumentFromScheduler,
+    hasInstrument,
+    getInstrument,
+    setUpLoops,
+    setLoopBars,
+    playInstrument,
+    play,
+    pause,
+    setTempo,
 };
