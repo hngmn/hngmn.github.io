@@ -11,12 +11,10 @@ import Loading from '../sequencer/Loading';
 import {
     addInstrumentToSequencer,
 
-    fetchLocalInstruments,
     putLocalInstrument,
 
     selectAvailableInstruments,
     selectSequencerInstruments,
-    selectDbFetchStatus,
 } from './instrumentsSlice';
 import type { IInstrument } from './types';
 import { TonePlayer } from './classes/toneInstruments';
@@ -29,20 +27,11 @@ interface Option {
 }
 
 export default function InstrumentSelect() {
-    const dbFetchStatus = useSelector(selectDbFetchStatus);
-    const availableInstruments = useSelector(selectAvailableInstruments).map(toOption);
+    const availableInstruments = useSelector(selectAvailableInstruments).map(id => ({ label: id, value: id }));
     const sequencerInstruments = useSelector(selectSequencerInstruments).map(toOption);
     const [selectedInstruments, setSelectedInstruments] = React.useState<Array<Option>>(sequencerInstruments);
 
     const dispatch = useAppDispatch();
-
-    React.useEffect(() => {
-        dispatch(fetchLocalInstruments());
-    }, []);
-
-    if (dbFetchStatus !== 'fulfilled') {
-        return (<Loading status={dbFetchStatus}/>);
-    }
 
     return (
         <section className={classnames('instrumentSelect')}>
