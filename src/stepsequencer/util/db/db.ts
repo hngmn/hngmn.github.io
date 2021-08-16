@@ -157,6 +157,7 @@ async function getSequencerInstruments(): WrappedDBResult<Array<string>> {
 async function putSequencerInstruments(seqIns: Array<string>): WrappedDBResult<string> {
     return await wrappedPut(SEQUENCER_STORE, seqIns, SEQUENCER_STORE_KEY);
 }
+
 export default {
     getInstrument,
     putInstrument,

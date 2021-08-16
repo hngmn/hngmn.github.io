@@ -255,7 +255,7 @@ export const instrumentsSlice = createSlice({
 
 export function setSequencerInstruments(ids: Array<string>) {
     console.log('setSequencerInstruments', ids);
-    return async function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function setSequencerInstrumentsThunk(dispatch: AppDispatch, getState: () => RootState) {
         const currentSequencerInstrumentIds = selectSequencerInstrumentIds(getState());
 
         // remove instruments not in the new set
@@ -296,25 +296,14 @@ export function initializeDefaultInstruments() {
     return async function initThunk(dispatch: AppDispatch, getState: () => RootState) {
         await instrumentPlayer.init();
 
-        const result = await db.getAllInstrumentIds();
-        if (result.err) {
-            console.error('error getting instrumentIds from db', result.val);
-            return;
-        }
-
-        const availableInstrumentIds = result.unwrap();
-
-        if (availableInstrumentIds.length > 0) {
-            console.log('found instruments in db. exiting for now');
-            return;
-        }
-
         console.log('initializing default instruments');
-        const defaultIns = defaultInstruments();
-        dispatch(setSequencerInstruments(defaultIns.map(id => id.getUuid())));
-        defaultIns.forEach(ins => {
+        const defaultIns = await defaultInstruments();
+        await Promise.all(defaultIns.map(ins => {
             dispatch(putLocalInstrument(ins));
-        })
+        }));
+        const sequencerIds = defaultIns.map(id => id.getUuid());
+        dispatch(setSequencerInstruments(sequencerIds));
+        dispatch(putSequencerInstruments(sequencerIds));
 
         await instrumentPlayer.getTone().loaded();
     }

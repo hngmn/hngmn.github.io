@@ -25,11 +25,18 @@ function App() {
     React.useEffect(() => {
         // fetch
         (async () => {
-            await dispatch(fetchSequencerInstruments()),
-            await dispatch(initializeDefaultInstruments()),
-            await instrumentPlayer.getTone().loaded(),
+            await dispatch(fetchSequencerInstruments());
+            dispatch(fetchDbInstrumentIds())
+                .unwrap()
+                .then((result) => {
+                    if (result.length === 0) {
+                        console.log('found no instruments in db. initializing default instruments');
+                        dispatch(initializeDefaultInstruments());
+                    }
+                });
 
-            await dispatch(fetchDbInstrumentIds());
+            await instrumentPlayer.getTone().loaded();
+
 
             setLoaded(true);
          })();

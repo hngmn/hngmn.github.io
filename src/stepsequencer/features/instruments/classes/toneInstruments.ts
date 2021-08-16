@@ -229,8 +229,8 @@ export class Conjunction extends BaseInstrument {
 }
 
 
-export function defaultInstruments() {
-    return [
+export async function defaultInstruments() {
+    const instruments = [
         new TonePlayer('/assets/audio/hat.wav'),
         new TonePlayer('/assets/audio/lazertom.wav'),
         new TonePlayer('/assets/audio/electrotom.wav'),
@@ -240,4 +240,7 @@ export function defaultInstruments() {
             // new ToneSynth({ name: 'synth' })
         // ),
     ];
+    await instrumentPlayer.getTone().loaded();
+
+    return instruments;
 }
