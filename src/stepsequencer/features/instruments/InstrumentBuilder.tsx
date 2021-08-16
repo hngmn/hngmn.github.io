@@ -2,6 +2,7 @@
 
 import classnames from 'classnames';
 import * as React from 'react';
+import './InstrumentBuilder.css';
 
 import InstrumentSelect from './InstrumentSelect';
 import SampleUploader from './SampleUploader';

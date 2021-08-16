@@ -35,7 +35,11 @@ export default function InstrumentSelect() {
 
     return (
         <section className={classnames('instrumentSelect')}>
+            <p className={classnames('instrumentSelectColumnTitle', 'left')}>Available Instruments</p>
+            <p className={classnames('instrumentSelectColumnTitle', 'right')}>Sequencer Instruments</p>
+
             <DualListBox
+                className={classnames('instrumentSelectInput')}
                 options={availableInstruments}
                 selected={selectedInstruments}
                 onChange={(selected: Array<Option>) => {
@@ -45,7 +49,7 @@ export default function InstrumentSelect() {
                 preserveSelectOrder
             />
 
-            <button onClick={() => {
+            <button className={classnames('commitButton')}onClick={() => {
                 const selectedInstrumentIds = selectedInstruments.map(opt => opt.value);
                 // write to db
                 dispatch(putSequencerInstruments(selectedInstrumentIds));
