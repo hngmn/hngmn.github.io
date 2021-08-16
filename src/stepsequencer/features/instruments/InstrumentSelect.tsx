@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../../app/store';
 import Loading from '../sequencer/Loading';
 import {
-    addInstrumentToSequencer,
+    setSequencerInstruments,
 
     putSequencerInstruments,
 
@@ -46,17 +46,12 @@ export default function InstrumentSelect() {
             />
 
             <button onClick={() => {
-                const sequencerInstrumentIds = sequencerInstruments.map(opt => opt.value);
                 const selectedInstrumentIds = selectedInstruments.map(opt => opt.value);
                 // write to db
                 dispatch(putSequencerInstruments(selectedInstrumentIds));
-                // add to sequencer
-                selectedInstrumentIds
-                    .filter(id => !sequencerInstrumentIds.includes(id))
-                    .forEach(id =>
-                        dispatch(addInstrumentToSequencer(id)));
+                dispatch(setSequencerInstruments(selectedInstrumentIds));
             }}>
-                Add to Sequencer
+                Commit changes to Sequencer
             </button>
         </section>
     );

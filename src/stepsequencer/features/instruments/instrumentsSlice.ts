@@ -88,7 +88,6 @@ export const fetchDbInstrumentIds = createAsyncThunk('instruments/fetchDbInstrum
 export const putLocalInstrument = createAsyncThunk('instruments/putLocalInstrument', async (ins: IInstrument) => {
     // store in instrumentPlayer for playback
     instrumentPlayer.addInstrumentToScheduler(ins);
-    await instrumentPlayer.getTone().loaded();
 
     // write to db for persistence
     const dbo = ins.toDBObject();
@@ -122,7 +121,7 @@ export const fetchSequencerInstruments = createAsyncThunk<
 
     const sequencerInstrumentIds = result.unwrap();
 
-    sequencerInstrumentIds.forEach(id => dispatch(addInstrumentToSequencer(id)));
+    dispatch(setSequencerInstruments(sequencerInstrumentIds));
 
     // return ins configs for updating redux state
     return sequencerInstrumentIds;
@@ -254,11 +253,25 @@ export const instrumentsSlice = createSlice({
     },
 });
 
-export function addInstrumentToSequencer(iid: string) {
-    console.log('addInstrumentToSequencer', iid);
+export function setSequencerInstruments(ids: Array<string>) {
+    console.log('setSequencerInstruments', ids);
     return async function addInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
-        const instrument = await loadInstrument(iid);
-        dispatch(instrumentsSlice.actions.instrumentAdded(instrument.getName(), instrument));
+        const currentSequencerInstrumentIds = selectSequencerInstrumentIds(getState());
+
+        // remove instruments not in the new set
+        currentSequencerInstrumentIds
+            .filter(id => !ids.includes(id))
+            .forEach(async id => {
+                dispatch(instrumentsSlice.actions.instrumentRemoved(id));
+            })
+
+        // add new instruments
+        ids
+            .filter(id => !currentSequencerInstrumentIds.includes(id))
+            .forEach(async id => {
+                const instrument = await loadInstrument(id);
+                dispatch(instrumentsSlice.actions.instrumentAdded(instrument.getName(), instrument));
+            });
     };
 }
 
@@ -297,9 +310,10 @@ export function initializeDefaultInstruments() {
         }
 
         console.log('initializing default instruments');
-        defaultInstruments().forEach(ins => {
+        const defaultIns = defaultInstruments();
+        dispatch(setSequencerInstruments(defaultIns.map(id => id.getUuid())));
+        defaultIns.forEach(ins => {
             dispatch(putLocalInstrument(ins));
-            dispatch(addInstrumentToSequencer(ins.getUuid()));
         })
 
         await instrumentPlayer.getTone().loaded();
