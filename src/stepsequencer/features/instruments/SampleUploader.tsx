@@ -25,8 +25,9 @@ export default function SampleUploader() {
             />
 
             <button disabled={samples.length === 0} onClick={() => {
-                samples.forEach((file) => {
-                    dispatch(putLocalInstrument(TonePlayer.fromFile(file)));
+                samples.map(async (file) => {
+                    const player = await TonePlayer.fromFile(file);
+                    dispatch(putLocalInstrument(player));
                 });
 
                 setSamples([]);

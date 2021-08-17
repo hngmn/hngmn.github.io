@@ -158,22 +158,26 @@ export class TonePlayer extends BaseInstrument {
             audioBuf.copyToChannel(floatArray, i);
         }
 
-        return new TonePlayer(
+        const player = new TonePlayer(
             audioBuf,
             {
                 uuid: dbo.uuid,
                 name: dbo.name,
             }
         );
+        await Tone.loaded();
+        return player;
     }
 
-    static fromFile(file: File) {
-        return new TonePlayer(
+    static async fromFile(file: File) {
+        const player = new TonePlayer(
             URL.createObjectURL(file),
             {
                 name: file.name,
             }
         );
+        await Tone.loaded();
+        return player;
     }
 }
 
