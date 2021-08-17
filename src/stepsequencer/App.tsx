@@ -9,7 +9,7 @@ import './App.css';
 import { RootState, useAppDispatch } from './app/store';
 import instrumentPlayer from './features/instruments/instrumentPlayer';
 import {
-    fetchDbInstrumentIds,
+    fetchDbInstrumentNames,
     initializeDefaultInstruments,
     fetchSequencerInstruments,
 
@@ -26,7 +26,7 @@ function App() {
         // fetch
         (async () => {
             await dispatch(fetchSequencerInstruments());
-            dispatch(fetchDbInstrumentIds())
+            dispatch(fetchDbInstrumentNames())
                 .unwrap()
                 .then((result) => {
                     if (result.length === 0) {

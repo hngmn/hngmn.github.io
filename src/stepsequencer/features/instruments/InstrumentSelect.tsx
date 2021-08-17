@@ -13,7 +13,7 @@ import {
 
     putSequencerInstruments,
 
-    selectAvailableInstruments,
+    selectAvailableInstrumentNames,
     selectSequencerInstruments,
 } from './instrumentsSlice';
 import type { IInstrument } from './types';
@@ -27,7 +27,8 @@ interface Option {
 }
 
 export default function InstrumentSelect() {
-    const availableInstruments = useSelector(selectAvailableInstruments).map(id => ({ label: id, value: id }));
+    const availableInstruments = useSelector(selectAvailableInstrumentNames).map(
+        ({ uuid, name }) => ({ label: name, value: uuid }));
     const sequencerInstruments = useSelector(selectSequencerInstruments).map(toOption);
     const [selectedInstruments, setSelectedInstruments] = React.useState<Array<Option>>(sequencerInstruments);
 

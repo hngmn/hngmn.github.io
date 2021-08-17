@@ -8,6 +8,7 @@ import type { IInstrumentDBObject } from '../../features/instruments/types';
 const DB = 'MyDB';
 const VERSION = 1;
 const STORE = 'instruments';
+const NAMES_STORE = 'instrumentNames';
 const INDEX_NAMES = 'instrumentNames';
 const SEQUENCER_STORE = 'sequencerInstruments';
 const SEQUENCER_STORE_KEY = 'sequencerInstruments';
@@ -16,6 +17,17 @@ interface Schema extends idb.DBSchema {
     [STORE]: {
         key: string
         value: IInstrumentDBObject
+        indexes: {
+            [INDEX_NAMES]: string
+        }
+    },
+
+    [NAMES_STORE]: {
+        key: string
+        value: {
+            uuid: string
+            name: string
+        }
         indexes: {
             [INDEX_NAMES]: string
         }
@@ -36,8 +48,10 @@ async function init() {
         upgrade(db, ov, nv, tx) {
             console.log(`upgrade o:${ov} n:${nv}`);
             const store = db.createObjectStore(STORE, { keyPath: 'uuid' });
-
             store.createIndex(INDEX_NAMES, 'name');
+
+            const namesStore = db.createObjectStore(NAMES_STORE, { keyPath: 'uuid' });
+            namesStore.createIndex(INDEX_NAMES, 'name');
 
             db.createObjectStore(SEQUENCER_STORE);
             tx.objectStore(SEQUENCER_STORE).put([], SEQUENCER_STORE_KEY);
@@ -139,6 +153,10 @@ async function getInstrument(uuid: string): WrappedDBResult<IInstrumentDBObject>
 }
 
 async function putInstrument(ins: IInstrumentDBObject): WrappedDBResult<string> {
+    await wrappedPut(NAMES_STORE, {
+        uuid: ins.uuid,
+        name: ins.name,
+    });
     return await wrappedPut(STORE, ins);
 }
 
@@ -148,6 +166,10 @@ async function getAllInstruments(): WrappedDBResult<Array<IInstrumentDBObject>> 
 
 async function getAllInstrumentIds(): WrappedDBResult<Array<string>> {
     return await wrappedGetAllKeysFromIndex(STORE, INDEX_NAMES);
+}
+
+async function getAllInstrumentNames(): WrappedDBResult<Array<{ uuid: string, name: string }>> {
+    return await wrappedGetAllFromIndex(NAMES_STORE, INDEX_NAMES);
 }
 
 async function getSequencerInstruments(): WrappedDBResult<Array<string>> {
@@ -163,6 +185,7 @@ export default {
     putInstrument,
     getAllInstruments,
     getAllInstrumentIds,
+    getAllInstrumentNames,
 
     getSequencerInstruments,
     putSequencerInstruments,
