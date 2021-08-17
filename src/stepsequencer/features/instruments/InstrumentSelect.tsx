@@ -11,8 +11,6 @@ import Loading from '../sequencer/Loading';
 import {
     setSequencerInstruments,
 
-    putSequencerInstruments,
-
     selectAvailableInstrumentNames,
     selectSequencerInstruments,
 } from './instrumentsSlice';
@@ -52,8 +50,6 @@ export default function InstrumentSelect() {
 
             <button className={classnames('commitButton')}onClick={() => {
                 const selectedInstrumentIds = selectedInstruments.map(opt => opt.value);
-                // write to db
-                dispatch(putSequencerInstruments(selectedInstrumentIds));
                 dispatch(setSequencerInstruments(selectedInstrumentIds));
             }}>
                 Commit changes to Sequencer
