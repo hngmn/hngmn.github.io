@@ -46,7 +46,7 @@ let db: idb.IDBPDatabase<Schema>;
 async function init() {
     const db = await idb.openDB<Schema>(DB, VERSION, {
         upgrade(db, ov, nv, tx) {
-            console.log(`upgrade o:${ov} n:${nv}`);
+            console.debug(`upgrade o:${ov} n:${nv}`);
             const store = db.createObjectStore(STORE, { keyPath: 'uuid' });
             store.createIndex(INDEX_NAMES, 'name');
 
@@ -59,17 +59,17 @@ async function init() {
 
         blocked() {
             // TODO
-            console.log('blocked');
+            console.debug('blocked');
         },
 
         blocking() {
             // TODO
-            console.log('blocking');
+            console.debug('blocking');
         },
 
         terminated() {
             // TODO
-            console.log('terminated');
+            console.debug('terminated');
         },
     });
 

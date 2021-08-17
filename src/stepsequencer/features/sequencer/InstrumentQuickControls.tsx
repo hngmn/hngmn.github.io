@@ -27,14 +27,14 @@ export default function InstrumentQuickControls(props: Props) {
         <section className={className}>
             <button
                 className={classnames('quickControlButton', 'solo')}
-                onClick={ () => console.log(`${instrumentName} solo`) }
+                onClick={ () => console.debug(`${instrumentName} solo`) }
             >
                 solo
             </button>
 
             <button
                 className={classnames('quickControlButton', 'mute')}
-                onClick={ () => console.log(`${instrumentName} mute`) }
+                onClick={ () => console.debug(`${instrumentName} mute`) }
             >
                 mute
             </button>

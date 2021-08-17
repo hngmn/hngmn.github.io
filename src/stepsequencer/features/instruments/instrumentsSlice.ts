@@ -70,7 +70,7 @@ export const fetchDbInstrumentNames = createAsyncThunk('instruments/fetchDbInstr
         throw result.val;
     }
 
-    console.log('got inames from db', result.unwrap());
+    console.debug('got inames from db', result.unwrap());
 
     return result.unwrap();
 });
@@ -111,6 +111,8 @@ export const fetchSequencerInstruments = createAsyncThunk<
 
     const sequencerInstrumentIds = result.unwrap();
 
+    console.debug('got sequencer ins ids', sequencerInstrumentIds);
+
     dispatch(setSequencerInstruments(sequencerInstrumentIds));
 
     // return ins configs for updating redux state
@@ -122,7 +124,7 @@ export const putSequencerInstruments = createAsyncThunk(
     async (
         ids: Array<string>
     ) => {
-        console.log('putSequencerInstruments');
+        console.debug('putSequencerInstruments');
         await db.putSequencerInstruments(ids);
 
         return ids.map(instrumentPlayer.getInstrument).map(insToInsConfig);
@@ -271,7 +273,7 @@ export const instrumentsSlice = createSlice({
 });
 
 export function setSequencerInstruments(ids: Array<string>) {
-    console.log('setSequencerInstruments', ids);
+    console.debug('setSequencerInstruments', ids);
     return async function setSequencerInstrumentsThunk(dispatch: AppDispatch, getState: () => RootState) {
         const currentSequencerInstrumentIds = selectSequencerInstrumentIds(getState());
 
@@ -313,7 +315,7 @@ export function initializeDefaultInstruments() {
     return async function initThunk(dispatch: AppDispatch, getState: () => RootState) {
         await instrumentPlayer.init();
 
-        console.log('initializing default instruments');
+        console.debug('initializing default instruments');
         const defaultIns = await defaultInstruments();
 
         // store both instrument and the sequencer id set in db

@@ -30,7 +30,7 @@ function App() {
                 .unwrap()
                 .then((result) => {
                     if (result.length === 0) {
-                        console.log('found no instruments in db. initializing default instruments');
+                        console.debug('found no instruments in db. initializing default instruments');
                         dispatch(initializeDefaultInstruments());
                     }
                 });
