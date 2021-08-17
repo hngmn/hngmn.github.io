@@ -37,6 +37,7 @@ export interface IInstrument {
     getKind: () => IInstrumentKind;
     getUuid: () => string;
     getName: () => string;
+    setName: (newName: string) => void;
     getAllParameterNames: () => Array<string>;
     getParameter: (parameterName: string) => IInstrumentParameter,
     getParameterConfig: (parameterName: string) => IInstrumentParameterConfig;

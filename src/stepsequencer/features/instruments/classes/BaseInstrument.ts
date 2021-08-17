@@ -51,6 +51,10 @@ export default abstract class BaseInstrument implements IInstrument {
         return this.name;
     }
 
+    setName(newName: string) {
+        this.name = newName;
+    }
+
     getAllParameterNames() {
         return this.params.allIds;
     }

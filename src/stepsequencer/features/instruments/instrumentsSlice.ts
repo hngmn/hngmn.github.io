@@ -142,15 +142,9 @@ export const instrumentsSlice = createSlice({
                 };
             },
 
-            prepare(screenName: string, instrument: IInstrument) {
+            prepare(instrument: IInstrument) {
                 return {
-                    payload: {
-                        id: instrument.getUuid(),
-                        screenName,
-                        params: normalizedObjectFromTuples(
-                            instrument.getAllParameterNames().map(
-                                (pName: string) => [pName, instrument.getParameterConfig(pName)]))
-                    }
+                    payload: insToInsConfig(instrument)
                 };
             },
         },
@@ -181,7 +175,7 @@ export const instrumentsSlice = createSlice({
             }
         },
 
-        renameInstrument: {
+        instrumentRenamed: {
             reducer(state, action: PayloadAction<{ instrumentId: string, newScreenName: string }>) {
                 const {
                     instrumentId,
@@ -189,6 +183,7 @@ export const instrumentsSlice = createSlice({
                 } = action.payload;
 
                 state.instruments.byId[instrumentId].screenName = newScreenName;
+                state.availableInstrumentNames.byId[instrumentId] = newScreenName;
             },
 
             prepare(instrumentId: string, newScreenName: string) {
@@ -251,10 +246,22 @@ export function removeInstrumentFromSequencer(id: string) {
     }
 }
 
+export function renameInstrument(id: string, newScreenName: string) {
+    return async function renameInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
+        const ins = instrumentPlayer.getInstrument(id);
+        ins.setName(newScreenName);
+        await Promise.all([
+            dispatch(putInstrumentToDb(ins)),
+            dispatch(instrumentsSlice.actions.instrumentRenamed(id, newScreenName)),
+        ])
+    }
+}
+
 export function updateInstrumentParameter(instrumentId: string, parameterName: string, value: boolean | number) {
-    return function updateInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
-        instrumentPlayer.getInstrument(instrumentId).setParameterValue(parameterName, value);
-        dispatch(instrumentsSlice.actions.instrumentParameterUpdated(instrumentId, parameterName, value));
+    return async function updateInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
+        const ins = instrumentPlayer.getInstrument(instrumentId);
+        ins.setParameterValue(parameterName, value);
+        await dispatch(instrumentsSlice.actions.instrumentParameterUpdated(instrumentId, parameterName, value));
     };
 }
 
@@ -303,7 +310,7 @@ function setSequencerInstrumentsInStore(ids: Array<string>) {
             .filter(id => !currentSequencerInstrumentIds.includes(id))
             .forEach(async id => {
                 const instrument = await loadInstrument(id);
-                dispatch(instrumentsSlice.actions.instrumentAdded(instrument.getName(), instrument));
+                dispatch(instrumentsSlice.actions.instrumentAdded(instrument));
             });
     };
 }
@@ -316,10 +323,7 @@ function putInstrumentToDb(ins: IInstrument) {
 
         // write to db for persistence
         const dbo = ins.toDBObject();
-        await db.putInstrument(dbo);
-
-        // return InstrumentConfig for redux state
-        return insToInsConfig(ins);
+        return await db.putInstrument(dbo);
     }
 };
 
@@ -344,11 +348,12 @@ function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
 }
 
 function insToInsConfig(ins: IInstrument): IInstrumentConfig {
+    console.debug('insToInsConfig', ins);
     return {
         id: ins.getUuid(),
         screenName: ins.getName(),
         params: normalizedObjectFromTuples(
-            ins.getAllParameterNames().map(ins.getParameterConfig).map(
+            ins.getAllParameterNames().map(ins.getParameterConfig.bind(ins)).map(
                 (param: IInstrumentParameterConfig) => [param.name, param]))
     }
 }
@@ -426,7 +431,6 @@ export const selectDbFetchNamesStatus = (state: RootState) => state.instruments.
 export const {
     instrumentAdded,
     instrumentRemoved,
-    renameInstrument,
 } = instrumentsSlice.actions;
 
 export default instrumentsSlice.reducer;
