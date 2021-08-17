@@ -138,7 +138,8 @@ interface ISliceState {
     instruments: INormalizedObject<IInstrumentConfig>;
     availableInstrumentNames: INormalizedObject<string>;
     sequencerInstrumentIds: Array<string>;
-    dbFetchStatus: 'notStarted' | 'pending' | 'fulfilled' | 'rejected';
+
+    dbFetchNamesStatus: 'notStarted' | 'pending' | 'fulfilled' | 'rejected';
 }
 
 export const instrumentsSlice = createSlice({
@@ -157,7 +158,7 @@ export const instrumentsSlice = createSlice({
 
         sequencerInstrumentIds: [],
 
-        dbFetchStatus: 'notStarted',
+        dbFetchNamesStatus: 'notStarted',
     } as ISliceState,
 
     reducers: {
@@ -238,15 +239,15 @@ export const instrumentsSlice = createSlice({
     extraReducers: builder => {
         builder
             .addCase(fetchDbInstrumentNames.rejected, (state, action) => {
-                state.dbFetchStatus = 'rejected';
+                state.dbFetchNamesStatus = 'rejected';
             })
 
             .addCase(fetchDbInstrumentNames.pending, (state, action) => {
-                state.dbFetchStatus = 'pending';
+                state.dbFetchNamesStatus = 'pending';
             })
 
             .addCase(fetchDbInstrumentNames.fulfilled, (state, action) => {
-                state.dbFetchStatus = 'fulfilled';
+                state.dbFetchNamesStatus = 'fulfilled';
                 action.payload.forEach(idname => {
                     state.availableInstrumentNames.allIds.push(idname.uuid);
                     state.availableInstrumentNames.byId[idname.uuid] = idname.name;
@@ -374,7 +375,7 @@ export const selectSequencerInstruments = (state: RootState): Array<[string, str
         state.instruments.instruments.byId[id].screenName,
 ]);
 
-export const selectDbFetchStatus = (state: RootState) => state.instruments.dbFetchStatus;
+export const selectDbFetchNamesStatus = (state: RootState) => state.instruments.dbFetchNamesStatus;
 
 // Actions //
 export const {

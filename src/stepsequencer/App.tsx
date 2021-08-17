@@ -13,7 +13,7 @@ import {
     initializeDefaultInstruments,
     fetchSequencerInstruments,
 
-    selectDbFetchStatus,
+    selectDbFetchNamesStatus,
 } from './features/instruments/instrumentsSlice';
 import Loading from './features/sequencer/Loading';
 import StepSequencer from './features/sequencer/StepSequencer';
@@ -42,7 +42,7 @@ function App() {
          })();
     }, []);
 
-    const dbFetchStatus = useSelector(selectDbFetchStatus);
+    const dbFetchNamesStatus = useSelector(selectDbFetchNamesStatus);
 
     return (
         <Tabs>
@@ -53,7 +53,7 @@ function App() {
 
             <TabPanel>
                 <Loading
-                    status={dbFetchStatus}
+                    status={dbFetchNamesStatus}
                     ready={loaded}
                 >
                     <StepSequencer/>
@@ -62,7 +62,7 @@ function App() {
 
             <TabPanel>
                 <Loading
-                    status={dbFetchStatus}
+                    status={dbFetchNamesStatus}
                     ready={loaded}
                 >
                     <InstrumentBuilder/>
