@@ -44,6 +44,8 @@ export interface IInstrument {
     getParameterValue: (parameterName: string) => boolean | number;
     setParameterValue: (parameterName: string, value: boolean | number) => void;
 
+    setSolo: (s: boolean) => void;
+    setMute: (m: boolean) => void;
     schedule: (time: Unit.Time) => void;
 
     // for idb storage

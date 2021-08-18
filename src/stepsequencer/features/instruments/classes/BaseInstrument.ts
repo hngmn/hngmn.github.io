@@ -4,6 +4,7 @@ import type {
     Unit,
 } from 'tone';
 import { v4 as uuid } from 'uuid';
+import * as Tone from 'tone';
 
 import type { INormalizedObject } from '../../../global'
 import type {
@@ -13,6 +14,7 @@ import type {
     IInstrumentParameterConfig,
     IInstrumentDBObject,
 } from '../types';
+import { put } from '../../../util/util';
 import { SliderParameter } from './InstrumentParameter';
 
 export interface BaseInstrumentOptions {
@@ -25,6 +27,7 @@ export default abstract class BaseInstrument implements IInstrument {
     uuid: string;
     name: string;
     params: INormalizedObject<IInstrumentParameter>;
+    channel: Tone.Channel;
 
     constructor(params: Array<IInstrumentParameter>, options: BaseInstrumentOptions = {}) {
         this.uuid = options.uuid ? options.uuid : uuid();
@@ -32,10 +35,40 @@ export default abstract class BaseInstrument implements IInstrument {
 
         this.params = {
             byId: {},
-            allIds: params.map(p => p.getName())
+            allIds: [],
         };
+
+        // put channel params
+        this.channel = new Tone.Channel(0, 0);
+        this.channel.toDestination();
+        const vol = new SliderParameter(
+            {
+                kind: 'slider',
+                name: 'volume',
+                min: -36,
+                max: 12,
+                value: 0,
+                step: 0.1,
+            },
+            (v: number) => this.channel.set({ volume: v })
+        );
+        const pan = new SliderParameter(
+            {
+                kind: 'slider',
+                name: 'pan',
+                min: -1,
+                max: 1,
+                value: 0,
+                step: 0.1
+            },
+            (v: number) => this.channel.set({volume: v})
+        );
+
+        put(this.params, vol.getName(), vol);
+        put(this.params, pan.getName(), pan);
+        
         for (let p of params) {
-            this.params.byId[p.getName()] = p;
+            put(this.params, p.getName(), p);
         }
     }
 
@@ -77,6 +110,14 @@ export default abstract class BaseInstrument implements IInstrument {
 
     getAllParameterConfigs() {
         return this.params.allIds.map(id => this.params.byId[id].toConfigObject());
+    }
+
+    setSolo(s: boolean) {
+        this.channel.solo = s;
+    }
+
+    setMute(m: boolean) {
+        this.channel.mute = m;
     }
 
     abstract schedule(time: Unit.Time): void;

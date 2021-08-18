@@ -95,6 +95,8 @@ export const putLocalInstrument = createAsyncThunk<
 interface IInstrumentConfig {
     id: string,
     screenName: string,
+    muted: boolean,
+    solo: boolean,
     params: INormalizedObject<IInstrumentParameterConfig>,
 }
 
@@ -134,6 +136,8 @@ export const instrumentsSlice = createSlice({
                 state.instruments.byId[id] = {
                     id: id,
                     screenName: screenName,
+                    muted: false,
+                    solo: false,
                     params: params,
                 };
             },
@@ -187,7 +191,47 @@ export const instrumentsSlice = createSlice({
                     payload: { instrumentId, newScreenName }
                 };
             }
-        }
+        },
+
+        instrumentSolod: {
+            reducer(state, action: PayloadAction<{ id: string, value: boolean }>) {
+                const {
+                    id,
+                    value,
+                } = action.payload;
+
+                state.instruments.byId[id].solo = value;
+            },
+
+            prepare(id: string, value: boolean) {
+                return {
+                    payload: {
+                        id,
+                        value,
+                    }
+                };
+            }
+        },
+
+        instrumentMuted: {
+            reducer(state, action: PayloadAction<{ id: string, value: boolean }>) {
+                const {
+                    id,
+                    value,
+                } = action.payload;
+
+                state.instruments.byId[id].muted = value;
+            },
+
+            prepare(id: string, value: boolean) {
+                return {
+                    payload: {
+                        id,
+                        value,
+                    }
+                };
+            }
+        },
 
     },
 
@@ -250,6 +294,28 @@ export function updateInstrumentParameter(instrumentId: string, parameterName: s
         ins.setParameterValue(parameterName, value);
         await dispatch(instrumentsSlice.actions.instrumentParameterUpdated(instrumentId, parameterName, value));
     };
+}
+
+export function soloInstrument(iid: string) {
+    console.debug('solo ', iid);
+    return async function soloThunk(dispatch: AppDispatch, getState: () => RootState) {
+        const solo = !selectInsSolo(getState(), iid);
+        const ins = instrumentPlayer.getInstrument(iid);
+        ins.setMute(false);
+        ins.setSolo(solo);
+        dispatch(instrumentsSlice.actions.instrumentSolod(iid, solo));
+    }
+}
+
+export function muteInstrument(iid: string) {
+    console.debug('mute ', iid);
+    return async function soloThunk(dispatch: AppDispatch, getState: () => RootState) {
+        const muted = !selectInsMuted(getState(), iid);
+        const ins = instrumentPlayer.getInstrument(iid);
+        ins.setMute(muted);
+        ins.setSolo(false);
+        dispatch(instrumentsSlice.actions.instrumentMuted(iid, muted));
+    }
 }
 
 export const playInstrument = createAsyncThunk('instruments/playInstrument', async (instrumentId: string) => {
@@ -326,6 +392,8 @@ function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
     return {
         id: dbo.uuid,
         screenName: dbo.name,
+        solo: false,
+        muted: false,
         params: normalizedObjectFromTuples(
             dbo.parameters.map(
                 (param: IInstrumentParameterConfig) => [param.name, param])),
@@ -337,6 +405,8 @@ function insToInsConfig(ins: IInstrument): IInstrumentConfig {
     return {
         id: ins.getUuid(),
         screenName: ins.getName(),
+        solo: false,
+        muted: false,
         params: normalizedObjectFromTuples(
             ins.getAllParameterNames().map(ins.getParameterConfig.bind(ins)).map(
                 (param: IInstrumentParameterConfig) => [param.name, param]))
@@ -395,6 +465,9 @@ export const selectParameterNamesForInstrument = (state: RootState, instrumentId
 // given instrument, parameter
 export const selectInstrumentParameter = (state: RootState, instrumentId: string, parameterName: string) =>
     state.instruments.instruments.byId[instrumentId].params.byId[parameterName];
+
+export const selectInsSolo = (state: RootState, iid: string) => state.instruments.instruments.byId[iid].solo;
+export const selectInsMuted = (state: RootState, iid: string) => state.instruments.instruments.byId[iid].muted;
 
 export const selectAvailableInstrumentNames = (state: RootState): Array<{ uuid: string, name: string }> =>
     state.instruments.availableInstrumentNames.allIds.map(id => ({

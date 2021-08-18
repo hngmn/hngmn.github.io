@@ -6,6 +6,9 @@ import { useSelector } from 'react-redux';
 
 import { useAppDispatch, RootState } from '../../app/store';
 import {
+    soloInstrument,
+    muteInstrument,
+
     selectInstrumentScreenName,
 } from '../instruments/instrumentsSlice';
 
@@ -20,21 +23,21 @@ export default function InstrumentQuickControls(props: Props) {
         onEdit,
     } = props;
 
-    const instrumentName = useSelector((state: RootState) => selectInstrumentScreenName(state, instrumentId));
+    const dispatch = useAppDispatch();
 
     const className = classnames('quickControls');
     return (
         <section className={className}>
             <button
                 className={classnames('quickControlButton', 'solo')}
-                onClick={ () => console.debug(`${instrumentName} solo`) }
+                onClick={ () => dispatch(soloInstrument(instrumentId)) }
             >
                 solo
             </button>
 
             <button
                 className={classnames('quickControlButton', 'mute')}
-                onClick={ () => console.debug(`${instrumentName} mute`) }
+                onClick={ () => dispatch(muteInstrument(instrumentId)) }
             >
                 mute
             </button>

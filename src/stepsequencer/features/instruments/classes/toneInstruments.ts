@@ -36,7 +36,7 @@ export class ToneSynth extends BaseInstrument {
                 name: options.name ? options.name : 'ToneSynth',
             }
         );
-        this.distortion = new Tone.Distortion(0.0).toDestination();
+        this.distortion = new Tone.Distortion(0.0).connect(this.channel);
         this.synth = new Tone.Synth().connect(this.distortion);
         this.kind = 'ToneSynth';
     }
@@ -119,7 +119,7 @@ export class TonePlayer extends BaseInstrument {
         );
 
         this.kind = 'TonePlayer';
-        this.lowpass = new Tone.Filter(15000, 'lowpass').toDestination();
+        this.lowpass = new Tone.Filter(15000, 'lowpass').connect(this.channel);
         this.distortion = new Tone.Distortion(0.0).connect(this.lowpass);
         this.player = new Tone.Player(url).connect(this.distortion);
     }
