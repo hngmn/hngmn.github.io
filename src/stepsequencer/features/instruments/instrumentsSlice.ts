@@ -403,7 +403,6 @@ function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
 }
 
 function insToInsConfig(ins: IInstrument): IInstrumentConfig {
-    console.debug('insToInsConfig', ins);
     return {
         id: ins.getUuid(),
         screenName: ins.getName(),

@@ -61,7 +61,7 @@ export default abstract class BaseInstrument implements IInstrument {
                 value: 0,
                 step: 0.1
             },
-            (v: number) => this.channel.set({volume: v})
+            (v: number) => this.channel.set({pan: v})
         );
 
         put(this.params, vol.getName(), vol);
