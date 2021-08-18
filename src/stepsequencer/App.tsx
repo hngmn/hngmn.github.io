@@ -12,39 +12,39 @@ import {
     fetchDbInstrumentNames,
     initializeDefaultInstruments,
     fetchSequencerInstruments,
-
-    selectDbFetchNamesStatus,
 } from './features/instruments/instrumentsSlice';
 import Loading from './features/sequencer/Loading';
 import StepSequencer from './features/sequencer/StepSequencer';
 import InstrumentBuilder from './features/instruments/InstrumentBuilder';
 
+type FetchStatus = 'notStarted' | 'pending' | 'fulfilled' | 'rejected';
+
 function App() {
     const dispatch = useAppDispatch();
-    const [loaded, setLoaded] = React.useState(false);
+    const [fetchNamesStatus, setFetchNamesStatus] = React.useState<FetchStatus>('notStarted');
+    const [fetchSeqInsStatus, setFetchSeqInsStatus] = React.useState<FetchStatus>('notStarted');
     React.useEffect(() => {
         // fetch
         (async () => {
             await instrumentPlayer.init();
 
-            dispatch(fetchSequencerInstruments());
-            dispatch(fetchDbInstrumentNames())
-                .unwrap()
-                .then((result) => {
+            handleFetch(
+                () => dispatch(fetchSequencerInstruments()).unwrap(),
+                setFetchSeqInsStatus
+            );
+
+            handleFetch(
+                () => dispatch(fetchDbInstrumentNames()).unwrap(),
+                setFetchNamesStatus
+            )
+                .then(async (result: Array<{uuid: string, name: string}>) => {
                     if (result.length === 0) {
                         console.debug('found no instruments in db. initializing default instruments');
-                        dispatch(initializeDefaultInstruments());
+                        await dispatch(initializeDefaultInstruments());
                     }
                 });
-
-            await instrumentPlayer.getTone().loaded();
-
-
-            setLoaded(true);
          })();
     }, []);
-
-    const dbFetchNamesStatus = useSelector(selectDbFetchNamesStatus);
 
     return (
         <Tabs>
@@ -55,8 +55,8 @@ function App() {
 
             <TabPanel>
                 <Loading
-                    status={dbFetchNamesStatus}
-                    ready={loaded}
+                    status={fetchSeqInsStatus}
+                    ready={fetchSeqInsStatus === 'fulfilled'}
                 >
                     <StepSequencer/>
                 </Loading>
@@ -64,14 +64,27 @@ function App() {
 
             <TabPanel>
                 <Loading
-                    status={dbFetchNamesStatus}
-                    ready={loaded}
+                    status={fetchNamesStatus}
+                    ready={fetchNamesStatus === 'fulfilled'}
                 >
                     <InstrumentBuilder/>
                 </Loading>
             </TabPanel>
         </Tabs>
     );
+}
+
+function handleFetch<T>(fetchFn: () => Promise<T>, setFetchStatus: (status: FetchStatus) => void) {
+    setFetchStatus('pending');
+    return fetchFn()
+        .then((result: T) => {
+            setFetchStatus('fulfilled')
+            return result;
+        })
+        .catch((err: Error) => {
+            setFetchStatus('rejected')
+            throw err;
+        });
 }
 
 export default App;
