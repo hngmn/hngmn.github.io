@@ -9,7 +9,8 @@ import {
     soloInstrument,
     muteInstrument,
 
-    selectInstrumentScreenName,
+    selectInsSolo,
+    selectInsMuted,
 } from '../instruments/instrumentsSlice';
 
 interface Props {
@@ -23,20 +24,22 @@ export default function InstrumentQuickControls(props: Props) {
         onEdit,
     } = props;
 
+    const solo = useSelector((state: RootState) => selectInsSolo(state, instrumentId));
+    const muted = useSelector((state: RootState) => selectInsMuted(state, instrumentId));
     const dispatch = useAppDispatch();
 
     const className = classnames('quickControls');
     return (
         <section className={className}>
             <button
-                className={classnames('quickControlButton', 'solo')}
+                className={classnames('quickControlButton', 'solo', solo ? 'on' : 'off')}
                 onClick={ () => dispatch(soloInstrument(instrumentId)) }
             >
                 solo
             </button>
 
             <button
-                className={classnames('quickControlButton', 'mute')}
+                className={classnames('quickControlButton', 'mute', muted ? 'on' : 'off')}
                 onClick={ () => dispatch(muteInstrument(instrumentId)) }
             >
                 mute

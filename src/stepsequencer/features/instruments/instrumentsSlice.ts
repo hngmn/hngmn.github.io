@@ -193,7 +193,7 @@ export const instrumentsSlice = createSlice({
             }
         },
 
-        instrumentSolod: {
+        instrumentSolo: {
             reducer(state, action: PayloadAction<{ id: string, value: boolean }>) {
                 const {
                     id,
@@ -301,9 +301,10 @@ export function soloInstrument(iid: string) {
     return async function soloThunk(dispatch: AppDispatch, getState: () => RootState) {
         const solo = !selectInsSolo(getState(), iid);
         const ins = instrumentPlayer.getInstrument(iid);
-        ins.setMute(false);
         ins.setSolo(solo);
-        dispatch(instrumentsSlice.actions.instrumentSolod(iid, solo));
+        dispatch(instrumentsSlice.actions.instrumentSolo(iid, solo));
+        ins.setMute(false);
+        dispatch(instrumentsSlice.actions.instrumentMuted(iid, false));
     }
 }
 
@@ -313,8 +314,9 @@ export function muteInstrument(iid: string) {
         const muted = !selectInsMuted(getState(), iid);
         const ins = instrumentPlayer.getInstrument(iid);
         ins.setMute(muted);
-        ins.setSolo(false);
         dispatch(instrumentsSlice.actions.instrumentMuted(iid, muted));
+        ins.setSolo(false);
+        dispatch(instrumentsSlice.actions.instrumentSolo(iid, false));
     }
 }
 

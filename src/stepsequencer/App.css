@@ -130,6 +130,13 @@ html, body {
   margin: 3px 5px;
 }
 
+.quickControlButton.on {
+  border: 2px solid yellow;
+}
+
+.quickControlButton.off {
+}
+
 .instrumentParameters {
   grid-area: parameters;
 }
