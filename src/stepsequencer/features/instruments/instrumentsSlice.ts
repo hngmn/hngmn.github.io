@@ -271,8 +271,6 @@ export const playInstrument = createAsyncThunk('instruments/playInstrument', asy
 
 export function initializeDefaultInstruments() {
     return async function initThunk(dispatch: AppDispatch, getState: () => RootState) {
-        await instrumentPlayer.init();
-
         console.debug('initializing default instruments');
         const defaultIns = await defaultInstruments();
 

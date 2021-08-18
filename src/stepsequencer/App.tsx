@@ -25,7 +25,9 @@ function App() {
     React.useEffect(() => {
         // fetch
         (async () => {
-            await dispatch(fetchSequencerInstruments());
+            await instrumentPlayer.init();
+
+            dispatch(fetchSequencerInstruments());
             dispatch(fetchDbInstrumentNames())
                 .unwrap()
                 .then((result) => {
