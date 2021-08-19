@@ -6,7 +6,7 @@ import * as React from 'react';
 
 import { useAppDispatch } from '../../app/store';
 import { putLocalInstrument } from '../instruments/instrumentsSlice';
-import { TonePlayer } from '../instruments/classes/toneInstruments';
+import { TonePlayer } from '../instruments/classes';
 
 export default function SampleUploader() {
     const [samples, setSamples] = React.useState<File[]>([]);

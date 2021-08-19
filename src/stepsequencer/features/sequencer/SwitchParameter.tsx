@@ -1,6 +1,6 @@
 'use strict';
 
-import type { ISwitchParameterConfig } from '../instruments/types';
+import type { ISwitchParameterConfig } from '../instruments/classes';
 
 import classnames from 'classnames';
 import * as React from 'react';

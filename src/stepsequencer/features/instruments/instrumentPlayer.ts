@@ -7,7 +7,7 @@ import type {
     IInstrument,
     IInstrumentParameter,
     IInstrumentParameterConfig,
-} from './types';
+} from './classes';
 import type { NoteTime } from '../sequencer/types';
 
 // instruments

@@ -12,3 +12,4 @@ I'll document the features I had in mind here for now.
 4. something
 5. Strong composability of modules/constructs
 6. Local persistence of uploaded samples, also instruments (need to be able to write it to something like IndexedDB).
+

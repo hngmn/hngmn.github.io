@@ -7,22 +7,55 @@ import { v4 as uuid } from 'uuid';
 import * as Tone from 'tone';
 
 import type { INormalizedObject } from '../../../global'
-import type {
-    IInstrument,
-    IInstrumentKind,
+import { put } from '../../../util/util';
+import type { ITonePlayerDBObject } from './TonePlayer';
+import type { IToneSynthDBObject } from './ToneSynth';
+import type { IConjunctionDBObject } from './Conjunction';
+import {
     IInstrumentParameter,
     IInstrumentParameterConfig,
-    IInstrumentDBObject,
-} from '../types';
-import { put } from '../../../util/util';
-import { SliderParameter } from './InstrumentParameter';
+
+    SliderParameter,
+} from './InstrumentParameter';
+
+
+type IInstrumentKind = 'ToneSynth' | 'TonePlayer' | 'Conjunction';
+
+export interface IInstrument {
+    getKind: () => IInstrumentKind;
+    getUuid: () => string;
+    getName: () => string;
+    setName: (newName: string) => void;
+    getAllParameterNames: () => Array<string>;
+    getParameter: (parameterName: string) => IInstrumentParameter,
+    getParameterConfig: (parameterName: string) => IInstrumentParameterConfig;
+    getParameterValue: (parameterName: string) => boolean | number;
+    setParameterValue: (parameterName: string, value: boolean | number) => void;
+
+    setSolo: (s: boolean) => void;
+    setMute: (m: boolean) => void;
+    schedule: (time: Unit.Time) => void;
+
+    // for idb storage
+    toDBObject: () => IInstrumentDBObject;
+}
+
+export type IInstrumentDBObject = ITonePlayerDBObject | IToneSynthDBObject | IConjunctionDBObject;
 
 export interface BaseInstrumentOptions {
     uuid?: string
     name?: string
 }
 
-export default abstract class BaseInstrument implements IInstrument {
+export interface IBaseInstrumentDBObject {
+    kind: IInstrumentKind;
+    uuid: string;
+    name: string;
+    screenName: string;
+    parameters: Array<IInstrumentParameterConfig>;
+}
+
+export abstract class BaseInstrument implements IInstrument {
     abstract kind: IInstrumentKind;
     uuid: string;
     name: string;
@@ -120,7 +153,7 @@ export default abstract class BaseInstrument implements IInstrument {
         this.channel.mute = m;
     }
 
-    abstract schedule(time: Unit.Time): void;
     abstract toDBObject(): IInstrumentDBObject;
+    abstract schedule(time: Unit.Time): void;
 }
 

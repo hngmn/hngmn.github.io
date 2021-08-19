@@ -3,7 +3,7 @@
 import * as idb from 'idb';
 import { Ok, Err, Result } from 'ts-results';
 
-import type { IInstrumentDBObject } from '../../features/instruments/types';
+import type { IInstrumentDBObject } from '../../features/instruments/classes';
 
 const DB = 'MyDB';
 const VERSION = 1;

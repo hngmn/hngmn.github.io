@@ -14,8 +14,8 @@ import {
     selectAvailableInstrumentNames,
     selectSequencerInstruments,
 } from './instrumentsSlice';
-import type { IInstrument } from './types';
-import { TonePlayer } from './classes/toneInstruments';
+import type { IInstrument } from './classes';
+import { TonePlayer } from './classes';
 
 interface Option {
     label: string;

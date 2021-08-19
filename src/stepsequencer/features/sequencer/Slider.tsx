@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { RootState } from '../../app/store';
-import { ISliderParameterConfig } from '../instruments/types';
+import { ISliderParameterConfig } from '../instruments/classes';
 
 interface SliderProps extends Omit<ISliderParameterConfig, 'kind'> {
     onInput: (value: number) => void;

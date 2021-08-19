@@ -18,8 +18,8 @@ import {
     IInstrumentParameterConfig,
     IInstrumentDBObject,
     ITonePlayerDBObject,
-} from './types';
-import { TonePlayer, defaultInstruments } from './classes/toneInstruments';
+} from './classes';
+import { TonePlayer, defaultInstruments } from './classes';
 
 export const fetchDbInstrumentNames = createAsyncThunk(
     'instruments/fetchDbInstrumentNames',
