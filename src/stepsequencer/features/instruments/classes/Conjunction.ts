@@ -9,6 +9,7 @@ import {
     BaseInstrumentOptions,
     IBaseInstrumentDBObject
 } from './BaseInstrument';
+import { dboToInstrument } from './toneInstruments';
 
 
 export interface IConjunctionDBObject extends IBaseInstrumentDBObject {
@@ -64,6 +65,24 @@ export class Conjunction extends BaseInstrument {
             i1: this.instrument1.toDBObject(),
             i2: this.instrument2.toDBObject(),
         };
+    }
+
+    static async from(dbo: IConjunctionDBObject) {
+        const i1Result = await dboToInstrument(dbo.i1);
+        if (i1Result.err) {
+            console.error('Got error creating i1: ', i1Result.val);
+            throw i1Result.val;
+        }
+        const i1 = i1Result.unwrap();
+
+        const i2Result = await dboToInstrument(dbo.i2);
+        if (i2Result.err) {
+            console.error('Got error creating i2: ', i2Result.val);
+            throw i2Result.val;
+        }
+        const i2 = i2Result.unwrap();
+
+        return new Conjunction(i1, i2);
     }
 }
 

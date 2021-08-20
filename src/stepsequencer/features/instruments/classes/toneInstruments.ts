@@ -18,10 +18,10 @@ export async function defaultInstruments() {
         new TonePlayer('/assets/audio/lazertom.wav'),
         new TonePlayer('/assets/audio/electrotom.wav'),
         new TonePlayer('/assets/audio/snare.wav'),
-        // new Conjunction(
-            // new TonePlayer('/assets/audio/kick.wav'),
-            // new ToneSynth({ name: 'synth' })
-        // ),
+        new Conjunction(
+            new TonePlayer('/assets/audio/kick.wav'),
+            new ToneSynth({ name: 'synth' })
+        ),
     ];
     await instrumentPlayer.getTone().loaded();
 
@@ -36,8 +36,11 @@ export async function dboToInstrument(dbo: IInstrumentDBObject): Promise<Result<
     case 'TonePlayer':
         const player = await TonePlayer.from(dbo);
         return Ok(player);
+    case 'Conjunction':
+        const cjx = await Conjunction.from(dbo);
+        return Ok(cjx);
     default:
         console.error('Not recognized IInstrument');
-        return Err(new Error(`Unrecognized instrumnet type: ${dbo.kind}`));
+        return Err(new Error(`Unrecognized instrument type: ${dbo}`));
     }
 }

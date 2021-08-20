@@ -18,7 +18,7 @@ export class ToneSynth extends BaseInstrument {
     synth: Tone.Synth;
     distortion: Tone.Distortion;
 
-    constructor(options: BaseInstrumentOptions) {
+    constructor(options: BaseInstrumentOptions = {}) {
         super(
             [
                 new SliderParameter(
