@@ -16,35 +16,42 @@ import {
 import Loading from './features/sequencer/Loading';
 import StepSequencer from './features/sequencer/StepSequencer';
 import InstrumentBuilder from './features/instruments/InstrumentBuilder';
+import ClickAnywhere from './ClickAnywhere';
 
 type FetchStatus = 'notStarted' | 'pending' | 'fulfilled' | 'rejected';
 
 function App() {
     const dispatch = useAppDispatch();
+    const [clicked, setClicked] = React.useState(false);
     const [fetchNamesStatus, setFetchNamesStatus] = React.useState<FetchStatus>('notStarted');
     const [fetchSeqInsStatus, setFetchSeqInsStatus] = React.useState<FetchStatus>('notStarted');
-    React.useEffect(() => {
+    async function initSequencer() {
+        console.log('initializing app');
         // fetch
-        (async () => {
-            await instrumentPlayer.init();
+        await instrumentPlayer.init();
 
-            handleFetch(
-                () => dispatch(fetchSequencerInstruments()).unwrap(),
-                setFetchSeqInsStatus
-            );
+        handleFetch(
+            () => dispatch(fetchSequencerInstruments()).unwrap(),
+            setFetchSeqInsStatus
+        );
 
-            handleFetch(
-                () => dispatch(fetchDbInstrumentNames()).unwrap(),
-                setFetchNamesStatus
-            )
-                .then(async (result: Array<{uuid: string, name: string}>) => {
-                    if (result.length === 0) {
-                        console.debug('found no instruments in db. initializing default instruments');
-                        await dispatch(initializeDefaultInstruments());
-                    }
-                });
-         })();
-    }, []);
+        handleFetch(
+            () => dispatch(fetchDbInstrumentNames()).unwrap(),
+            setFetchNamesStatus
+        ).then(async (result: Array<{uuid: string, name: string}>) => {
+            if (result.length === 0) {
+                console.debug('found no instruments in db. initializing default instruments');
+                await dispatch(initializeDefaultInstruments());
+            }
+        });
+    }
+
+    if (!clicked) {
+        return (<ClickAnywhere onClick={() => {
+            initSequencer();
+            setClicked(true)
+        }}/>);
+    }
 
     return (
         <Tabs>
