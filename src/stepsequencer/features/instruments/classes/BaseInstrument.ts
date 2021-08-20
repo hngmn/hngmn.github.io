@@ -11,6 +11,7 @@ import { put } from '../../../util/util';
 import type { ITonePlayerDBObject } from './TonePlayer';
 import type { IToneSynthDBObject } from './ToneSynth';
 import type { IConjunctionDBObject } from './Conjunction';
+import type { IDisjunctionDBObject } from './Disjunction';
 import {
     IInstrumentParameter,
     IInstrumentParameterConfig,
@@ -19,7 +20,7 @@ import {
 } from './InstrumentParameter';
 
 
-type IInstrumentKind = 'ToneSynth' | 'TonePlayer' | 'Conjunction';
+type IInstrumentKind = 'ToneSynth' | 'TonePlayer' | 'Conjunction' | 'Disjunction';
 
 export interface IInstrument {
     getKind: () => IInstrumentKind;
@@ -40,7 +41,7 @@ export interface IInstrument {
     toDBObject: () => IInstrumentDBObject;
 }
 
-export type IInstrumentDBObject = ITonePlayerDBObject | IToneSynthDBObject | IConjunctionDBObject;
+export type IInstrumentDBObject = ITonePlayerDBObject | IToneSynthDBObject | IConjunctionDBObject | IDisjunctionDBObject;
 
 export interface BaseInstrumentOptions {
     uuid?: string

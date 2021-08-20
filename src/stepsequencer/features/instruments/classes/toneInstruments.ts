@@ -11,9 +11,14 @@ import type {
 import { TonePlayer } from './TonePlayer';
 import { ToneSynth } from './ToneSynth';
 import { Conjunction } from './Conjunction';
+import { Disjunction } from './Disjunction';
 
 export async function defaultInstruments() {
     const instruments = [
+        new Disjunction(
+            new TonePlayer('/assets/audio/shaker1.wav'),
+            new TonePlayer('/assets/audio/shaker2.wav'),
+        ),
         new TonePlayer('/assets/audio/hat.wav'),
         new TonePlayer('/assets/audio/lazertom.wav'),
         new TonePlayer('/assets/audio/electrotom.wav'),
@@ -39,6 +44,9 @@ export async function dboToInstrument(dbo: IInstrumentDBObject): Promise<Result<
     case 'Conjunction':
         const cjx = await Conjunction.from(dbo);
         return Ok(cjx);
+    case 'Disjunction':
+        const djx = await Disjunction.from(dbo);
+        return Ok(djx);
     default:
         console.error('Not recognized IInstrument');
         return Err(new Error(`Unrecognized instrument type: ${dbo}`));
