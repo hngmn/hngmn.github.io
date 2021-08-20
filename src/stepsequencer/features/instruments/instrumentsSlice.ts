@@ -18,8 +18,11 @@ import {
     IInstrumentParameterConfig,
     IInstrumentDBObject,
     ITonePlayerDBObject,
+
+    TonePlayer,
+    defaultInstruments,
+    dboToInstrument,
 } from './classes';
-import { TonePlayer, defaultInstruments } from './classes';
 
 export const fetchDbInstrumentNames = createAsyncThunk(
     'instruments/fetchDbInstrumentNames',
@@ -424,13 +427,19 @@ async function loadInstrument(id: string) {
         return instrumentPlayer.getInstrument(id);
     }
 
-    const result = await db.getInstrument(id);
-    if (result.err) {
-        console.error('db failed loading instrument', result.val);
-        throw result.val;
+    const dbResult = await db.getInstrument(id);
+    if (dbResult.err) {
+        console.error('db failed loading instrument', dbResult.val);
+        throw dbResult.val;
     }
+    const dbo = dbResult.unwrap();
 
-    const ins = await TonePlayer.from(result.unwrap() as ITonePlayerDBObject);
+    const insResult = await dboToInstrument(dbo);
+    if (insResult.err) {
+        console.error('dboToInstrument failed', dbResult.val);
+        throw dbResult.val;
+    }
+    const ins = insResult.unwrap();
 
     instrumentPlayer.addInstrumentToScheduler(ins);
     return ins;
