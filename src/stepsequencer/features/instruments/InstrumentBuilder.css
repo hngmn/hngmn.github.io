@@ -4,7 +4,7 @@
   grid-template-rows: minmax(10px, auto) minmax(10px, auto) minmax(10px, auto);
   grid-template-areas:
     "titleLeft titleRight"
-    "select    select"
+    "listRight listRight"
     "ci        ci";
 }
 
@@ -20,8 +20,12 @@
   grid-area: titleRight;
 }
 
-.instrumentSelectInput {
-  grid-area: select;
+.instrumentSelectList.left {
+  grid-area: listLeft;
+}
+
+.instrumentSelectList.right {
+  grid-area: listRight;
 }
 
 .commitButton {

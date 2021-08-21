@@ -87,7 +87,13 @@ export const putLocalInstrument = createAsyncThunk<
         ins,
         { dispatch }
     ) => {
+        console.debug('putLocalInstrument', ins);
+
+        // store in instrumentPlayer for playback
+        instrumentPlayer.addInstrumentToScheduler(ins);
+
         dispatch(putInstrumentToDb(ins));
+
         return {
             id: ins.getUuid(),
             screenName: ins.getName(),
@@ -134,6 +140,8 @@ export const instrumentsSlice = createSlice({
                     screenName,
                     params,
                 } = action.payload;
+
+                state.sequencerInstrumentIds.push(id);
 
                 state.instruments.allIds.push(id);
                 state.instruments.byId[id] = {
@@ -331,18 +339,12 @@ export function initializeDefaultInstruments() {
     return async function initThunk(dispatch: AppDispatch, getState: () => RootState) {
         console.debug('initializing default instruments');
         const defaultIns = await defaultInstruments();
-
-        // store both instrument and the sequencer id set in db
-        await Promise.all(defaultIns.map(ins => {
-            dispatch(putInstrumentToDb(ins));
-        }));
-        const sequencerIds = defaultIns.map(id => id.getUuid());
-        await dispatch(putSequencerInstrumentsToDb(sequencerIds));
-
-        // update redux state
-        await dispatch(setSequencerInstrumentsInStore(sequencerIds));
-
         await instrumentPlayer.getTone().loaded();
+
+        defaultIns.forEach(ins => {
+            dispatch(putLocalInstrument(ins));
+            dispatch(instrumentsSlice.actions.instrumentAdded(ins));
+        })
     }
 }
 
@@ -353,11 +355,13 @@ function setSequencerInstrumentsInStore(ids: Array<string>) {
     console.debug('setSequencerInstrumentsInStore', ids);
     return async function setSequencerInstrumentsInStoreThunk(dispatch: AppDispatch, getState: () => RootState) {
         const currentSequencerInstrumentIds = selectSequencerInstrumentIds(getState());
+        console.debug('setSequencerInstrumentsInStore: current ids is', currentSequencerInstrumentIds);
 
         // remove instruments not in the new set
         currentSequencerInstrumentIds
             .filter(id => !ids.includes(id))
             .forEach(async id => {
+                console.debug(`removing ${id}`);
                 dispatch(instrumentsSlice.actions.instrumentRemoved(id));
             })
 
@@ -365,6 +369,7 @@ function setSequencerInstrumentsInStore(ids: Array<string>) {
         ids
             .filter(id => !currentSequencerInstrumentIds.includes(id))
             .forEach(async id => {
+                console.debug(`adding ${id}`);
                 const instrument = await loadInstrument(id);
                 dispatch(instrumentsSlice.actions.instrumentAdded(instrument));
             });
@@ -374,19 +379,26 @@ function setSequencerInstrumentsInStore(ids: Array<string>) {
 function putInstrumentToDb(ins: IInstrument) {
     console.debug('putInstrumentToDb', ins);
     return async function putInstrumentToDbThunk(dispatch: AppDispatch, getState: () => RootState) {
-        // store in instrumentPlayer for playback
-        instrumentPlayer.addInstrumentToScheduler(ins);
-
         // write to db for persistence
         const dbo = ins.toDBObject();
-        return await db.putInstrument(dbo);
+        const result = await db.putInstrument(dbo);
+        if (result.err) {
+            console.error('putInstrumentToDb: got error writing instrument', result.val);
+            throw result.val;
+        }
+        return result.unwrap();
     }
 };
 
 function putSequencerInstrumentsToDb(ids: Array<string>) {
     console.debug('putSequencerInstrumentsToDb', ids);
     return async function putSequencerInstrumentsToDbThunk(dispatch: AppDispatch, getState: () => RootState) {
-        return await db.putSequencerInstruments(ids);
+        const result = await db.putSequencerInstruments(ids);
+        if (result.err) {
+            console.error('putSequencerInstrumentsToDb: got error writing instrument', result.val);
+            throw result.val;
+        }
+        return result.unwrap();
     };
 }
 
@@ -487,11 +499,11 @@ export const selectAvailableInstrumentNames = (state: RootState): Array<{ uuid: 
 
 export const selectSequencerInstrumentIds = (state: RootState): Array<string> =>  state.instruments.sequencerInstrumentIds;
 
-export const selectSequencerInstruments = (state: RootState): Array<[string, string]> => 
-    state.instruments.instruments.allIds.map(id => [
-        state.instruments.instruments.byId[id].id,
-        state.instruments.instruments.byId[id].screenName,
-]);
+export const selectSequencerInstruments = (state: RootState): Array<{ uuid: string, name: string }> => 
+    state.instruments.instruments.allIds.map(id => ({
+        uuid: state.instruments.instruments.byId[id].id,
+        name: state.instruments.instruments.byId[id].screenName,
+    }));
 
 // Actions //
 export const {
