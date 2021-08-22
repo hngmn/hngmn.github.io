@@ -168,6 +168,17 @@ export const instrumentsSlice = createSlice({
             state.sequencerInstrumentIds.splice(state.sequencerInstrumentIds.indexOf(id), 1);
         },
 
+        /**
+         *  Delete instrument from available instruments
+         *
+         *  Preconditions: instrument not staged in sequencer
+         */
+        instrumentDeleted: (state, action) => {
+            const id = action.payload;
+            delete state.availableInstrumentNames.byId[id];
+            state.availableInstrumentNames.allIds.splice(state.availableInstrumentNames.allIds.indexOf(id), 1);
+        },
+
         instrumentParameterUpdated: {
             reducer(state, action: PayloadAction<{ instrumentId: string, parameterName: string, value: boolean | number }>) {
                 const {
@@ -281,8 +292,8 @@ export function setSequencerInstruments(ids: Array<string>) {
 
 export function removeInstrumentFromSequencer(id: string) {
     return async function removeInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
-        const sequencerIds = selectSequencerInstrumentIds(getState());
-        const removed = sequencerIds.splice(sequencerIds.indexOf(id), 1);
+        const removed = Array.from(selectSequencerInstrumentIds(getState()));
+        removed.splice(removed.indexOf(id), 1);
         return await dispatch(putSequencerInstrumentsToDb(removed));
         return dispatch(instrumentsSlice.actions.instrumentRemoved(id));
     }
@@ -387,6 +398,18 @@ function putInstrumentToDb(ins: IInstrument) {
             throw result.val;
         }
         return result.unwrap();
+    }
+};
+
+export function deleteInstrumentFromDb(iid: string) {
+    console.debug('deleteInstrumentFromDb', iid);
+    return async function deleteInstrumentFromDbThunk(dispatch: AppDispatch, getState: () => RootState) {
+        const result = await db.deleteInstrument(iid);
+        if (result.err) {
+            console.error('deleteInstrumentDb: got error deleting instrument', result.val);
+            throw result.val;
+        }
+        dispatch(instrumentsSlice.actions.instrumentDeleted(iid));
     }
 };
 

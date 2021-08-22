@@ -125,6 +125,15 @@ async function wrappedPut<SN extends StoreName>(
     });
 }
 
+async function wrappedDelete<SN extends StoreName>(
+    store: SN,
+    key: idb.StoreKey<Schema, SN>
+) {
+    return await tryDbOp(async (db) => {
+        return await db.delete(store, key);
+    });
+}
+
 async function wrappedGetAllKeysFromIndex<SN extends StoreName>(
     store: SN,
     index: idb.IndexNames<Schema, SN>
@@ -149,7 +158,7 @@ async function wrappedGetAllFromIndex<SN extends StoreName>(
 type WrappedDBResult<RT> = Promise<Result<RT, Error>>
 
 async function getInstrument(uuid: string): WrappedDBResult<IInstrumentDBObject> {
-    return (await wrappedGet(STORE, uuid));
+    return await wrappedGet(STORE, uuid);
 }
 
 async function putInstrument(ins: IInstrumentDBObject): WrappedDBResult<string> {
@@ -158,6 +167,12 @@ async function putInstrument(ins: IInstrumentDBObject): WrappedDBResult<string> 
         name: ins.name,
     });
     return await wrappedPut(STORE, ins);
+}
+
+async function deleteInstrument(iid: string): WrappedDBResult<void> {
+    await wrappedDelete(NAMES_STORE, iid);
+    await wrappedDelete(STORE, iid);
+    return Ok.EMPTY;
 }
 
 async function getAllInstruments(): WrappedDBResult<Array<IInstrumentDBObject>> {
@@ -186,6 +201,7 @@ export default {
     getAllInstruments,
     getAllInstrumentIds,
     getAllInstrumentNames,
+    deleteInstrument,
 
     getSequencerInstruments,
     putSequencerInstruments,

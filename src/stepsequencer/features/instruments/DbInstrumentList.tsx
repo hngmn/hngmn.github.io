@@ -6,6 +6,8 @@ import { useSelector } from 'react-redux';
 
 import { RootState, useAppDispatch } from '../../app/store';
 import {
+    deleteInstrumentFromDb,
+
     selectSequencerInstruments,
     selectAvailableInstrumentNames,
 } from './instrumentsSlice';
@@ -14,14 +16,19 @@ import {
 export default function DbInstrumentList() {
     const dbInstruments = useSelector(selectAvailableInstrumentNames);
     const sequencerInstruments = useSelector(selectSequencerInstruments);
-    const availableInstruments = dbInstruments.filter(ins => !sequencerInstruments.includes(ins));
+    const availableInstruments = dbInstruments.filter(
+        dbIns => !sequencerInstruments.map(seqIns => seqIns.uuid).includes(dbIns.uuid));
     console.debug('DbInstrumentList dbInstruments:', dbInstruments);
     console.debug('DbInstrumentList sequencerInstruments:', sequencerInstruments);
     console.debug('DbInstrumentList availableInstruments:', availableInstruments);
 
+    const dispatch = useAppDispatch();
+
     return (
         <section className={classnames('availableInstruments')}>
+
             <p className={classnames('instrumentSelectColumnTitle', 'left')}>Available to add</p>
+
             <ol className={classnames('instrumentSelectList', 'left')}>
                 {availableInstruments.map(({ uuid, name }) =>
                     <li
@@ -29,9 +36,20 @@ export default function DbInstrumentList() {
                         onDoubleClick={(e: React.MouseEvent) => {
                             console.debug(`${name} double clicked`);
                         }}
-                    >{name}</li>
+                    >
+                        <span>
+                            <button
+                                onClick={() => dispatch(deleteInstrumentFromDb(uuid))}
+                            >
+                                Delete
+                            </button>
+
+                            {name}
+                        </span>
+                    </li>
                 )}
             </ol>
+
         </section>
     );
 }
