@@ -2,11 +2,12 @@
 
 import * as Tone from 'tone';
 
+import { createEmpty3DArray } from '../../util/util';
 import type {
     IInstrument,
     IInstrumentParameter,
     IInstrumentParameterConfig,
-} from './types';
+} from './classes';
 import type { NoteTime } from '../sequencer/types';
 
 // instruments
@@ -45,6 +46,10 @@ function removeInstrumentFromScheduler(name: string) {
     return i;
 }
 
+function hasInstrument(instrumentId: string) {
+    return instrumentId in instruments;
+}
+
 function getInstrument(instrumentId: string) {
     return instruments[instrumentId];
 }
@@ -68,6 +73,17 @@ function setLoopBars(nBars: number) {
     Tone.Transport.setLoopPoints(0, `${nBars}m`);
 }
 
+function clearLoops() {
+    for (let bari = 0; bari < loopIds.length; bari++) {
+        for (let beati = 0; beati < loopIds[0].length; beati++) {
+            for (let padi = 0; padi < loopIds[0][0].length; padi++) {
+                Tone.Transport.clear(loopIds[bari][beati][padi]);
+            }
+        }
+    }
+}
+
+
 /**
  * Setup a Tone.Loop per pad. Each loop will will fetch all instruments enabled for its corresponding pad (via the
  * getInstrumentsForNote callback) and schedule each one.
@@ -79,9 +95,11 @@ function setUpLoops(
     getInstrumentsForNote: (note: NoteTime) => Array<string>,
     setNoteCallback: (note: NoteTime) => void,
 ) {
-    loopIds = (new Array(nBars)).fill(
-        (new Array(beatsPerBar)).fill(
-            (new Array(padsPerBeat)).fill(undefined)));
+    if (loopIds) {
+        clearLoops();
+    }
+
+    loopIds = createEmpty3DArray<number>(nBars, beatsPerBar, padsPerBeat, -1);
 
     for (let bari = 0; bari < nBars; bari++) {
         for (let beati = 0; beati < beatsPerBar; beati++) {
@@ -89,11 +107,15 @@ function setUpLoops(
                 loopIds[bari][beati][padi] = Tone.Transport.schedule(
                     time => {
                         const note: NoteTime = [bari, beati, padi];
+
+                        // schedule instruments that have the current pad on
                         getInstrumentsForNote(note).forEach(
                             (instrumentId) => instruments[instrumentId].schedule(time));
-                            Tone.Draw.schedule(() => {
-                                setNoteCallback(note);
-                            }, time);
+
+                        // schedule setNote to update UI
+                        Tone.Draw.schedule(() => {
+                            setNoteCallback(note);
+                        }, time);
                     },
                     `${bari}:${beati}:${padi}`
                 );
@@ -107,16 +129,17 @@ function playInstrument(instrumentId: string) {
 }
 
 export default {
-    init: init,
-    getCurrentTime: getCurrentTime,
-    getTone: getTone,
-    addInstrumentToScheduler: addInstrumentToScheduler,
-    removeInstrumentFromScheduler: removeInstrumentFromScheduler,
-    getInstrument: getInstrument,
-    setUpLoops: setUpLoops,
-    setLoopBars: setLoopBars,
-    playInstrument: playInstrument,
-    play: play,
-    pause: pause,
-    setTempo: setTempo,
+    init,
+    getCurrentTime,
+    getTone,
+    addInstrumentToScheduler,
+    removeInstrumentFromScheduler,
+    hasInstrument,
+    getInstrument,
+    setUpLoops,
+    setLoopBars,
+    playInstrument,
+    play,
+    pause,
+    setTempo,
 };

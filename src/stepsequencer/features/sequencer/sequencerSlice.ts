@@ -6,6 +6,7 @@ import * as Tone from 'tone';
 import { NoteTime } from './types';
 import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
+import { createEmpty3DArray } from '../../util/util';
 import { instrumentAdded, instrumentRemoved } from '../instruments/instrumentsSlice';
 import instrumentPlayer from '../instruments/instrumentPlayer';
 
@@ -43,9 +44,7 @@ export const sequencerSlice = createSlice({
         currentNote: [0, 0, 0],
 
         // sequencer pad state
-        pads: (new Array(INITIAL_NBARS).fill(
-            (new Array(INITIAL_BEATS_PER_BAR).fill(
-                (new Array(INITIAL_PADS_PER_BEAT).fill({})))))),
+        pads: createEmpty3DArray<Record<string, boolean>>(INITIAL_NBARS, INITIAL_BEATS_PER_BAR, INITIAL_PADS_PER_BEAT, {}),
 
     } as ISliceState,
 

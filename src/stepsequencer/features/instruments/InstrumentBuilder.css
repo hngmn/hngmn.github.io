@@ -1,0 +1,36 @@
+.instrumentSelect {
+  display: grid;
+  grid-template-columns: 50vw 50vw;
+  grid-template-rows: minmax(10px, auto) minmax(10px, auto) minmax(10px, auto);
+  grid-template-areas:
+    "titleLeft titleRight"
+    "listRight listRight"
+    "ci        ci";
+}
+
+.instrumentSelectColumnTitle {
+  align-self: center;
+}
+
+.instrumentSelectColumnTitle.left {
+  grid-area: titleLeft;
+}
+
+.instrumentSelectColumnTitle.right {
+  grid-area: titleRight;
+}
+
+.instrumentSelectList.left {
+  grid-area: listLeft;
+}
+
+.instrumentSelectList.right {
+  grid-area: listRight;
+}
+
+.commitButton {
+  grid-area: ci;
+  padding: 5px;
+  margin: 5px;
+  width: max-content;
+}

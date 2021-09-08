@@ -4,7 +4,7 @@ import * as React from 'react';
 
 type KeyboardShortcutCallback = () => void;
 
-export const useKeyboardShortcut = (shortcutKeys: Array<string>, callback: KeyboardShortcutCallback) => {
+const useKeyboardShortcut = (shortcutKeys: Array<string>, callback: KeyboardShortcutCallback) => {
     const initalKeyMapping = shortcutKeys.reduce(
         (currentKeys: Record<string, boolean>, key: string) => {
             currentKeys[key] = false;
@@ -93,3 +93,5 @@ function reducer(state: Record<string, boolean>, action: KeyboardShortcut.Action
     }
     return state;
 }
+
+export default useKeyboardShortcut;

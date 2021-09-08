@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch, RootState } from '../../app/store';
-import type { ISliderParameterConfig } from '../instruments/types';
+import type { ISliderParameterConfig } from '../instruments/classes';
 import {
     // actions
     updateInstrumentParameter,

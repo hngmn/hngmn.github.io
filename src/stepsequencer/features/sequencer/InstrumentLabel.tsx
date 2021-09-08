@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch, RootState } from '../../app/store';
-import { useKeyboardShortcut } from '../../util/useKeyboardShortcut';
+import useKeyboardShortcut from '../../util/useKeyboardShortcut';
 import { selectInstrumentScreenName, renameInstrument } from '../instruments/instrumentsSlice';
 
 interface Props {

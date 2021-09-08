@@ -4,9 +4,21 @@ import * as React from 'react';
 
 const TIMEOUT = 500; // ms
 
-export default function Loading() {
-    const [dots, setDots] = React.useState(0);
+interface Props {
+    status?: string
+    ready: boolean
+    children: React.ReactElement
+}
 
+export default function Loading(props: Props) {
+    const {
+        status,
+        ready,
+        children,
+    } = props;
+
+    // setup ... animation/timer
+    const [dots, setDots] = React.useState(0);
     function incrDots() {
         setDots(dots => (dots + 1) % 3);
     }
@@ -16,9 +28,15 @@ export default function Loading() {
         return () => window.clearTimeout(timerId);
     }, []);
 
-    return (
-        <div className={'loading'}>
-            {`Loading${'.'.repeat(dots + 1)}`}
-        </div>
-    )
+    if (ready) {
+        return children;
+    } else {
+        return (
+            <div className={'loading'}>
+                <p>{`Loading${'.'.repeat(dots + 1)}`}</p>
+
+                <p>{props.status ? `Status=${props.status}` : ''}</p>
+            </div>
+        )
+    }
 }
