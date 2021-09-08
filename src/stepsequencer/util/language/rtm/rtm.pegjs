@@ -40,8 +40,29 @@ Function
         return new Array(n).fill(false);
     }
 
+    / Invert _ rtm:Rhythm {
+        return rtm.map(beat => !beat);
+    }
+
+    / FixedLength n:Integer _ rtm:Rhythm {
+        if (n > rtm.length) {
+            return rtm.concat(new Array(n - rtm.length).fill(false));
+        } else {
+            return rtm.slice(n);
+        }
+    }
+
+    / Repeat n:Integer _ rtm:Rhythm {
+        return new Array(n).fill(rtm).flat();
+    }
+
+// Function names
 All = "all" / "a"
 Empty = "empty" / "e"
+Invert = "invert" / "i"
+FixedLength = "fixedlength" / "fl"
+Repeat = "repeat" / "rpt" / "r"
+
 
 // Terminals
 

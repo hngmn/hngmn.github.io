@@ -11,6 +11,10 @@ const testCases = [
     ['cat\n  x.\nx.', [true, false, true, false]],
     ['all4', [true, true, true, true]],
     ['empty4', [false, false, false, false]],
+    ['fl8 x..', [true, false, false, false, false, false, false, false]],
+    ['fl4 x...x...', [true, false, false, false]],
+    ['invert x.x.', [false, true, false, true]],
+    ['rpt4 x.', [true, false, true, false, true, false, true, false]],
 ];
 
 describe('rtm', () => {
