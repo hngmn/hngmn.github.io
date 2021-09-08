@@ -10,6 +10,7 @@
     "build": "npx webpack --progress",
     "build:watch": "npm run build -- --watch",
     "test": "jest --maxWorkers=50%",
+    "test:lang": "jest --maxWorkers=50% --testPathPattern=language",
     "test:watch": "jest --watch --maxWorkers=25%",
     "dev": "npm run build -- --watch --mode development",
     "dist": "npm run type-check && npm run build && npm run test"
