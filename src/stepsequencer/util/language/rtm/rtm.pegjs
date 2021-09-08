@@ -8,7 +8,7 @@ Start
     }
 
 Definition
-    = _ id:Identifier _ "=" _ rtm:Rhythm {
+    = id:Identifier _ "=" _ rtm:Rhythm {
         if (id in env) {
             error(`Variable "${id} already defined."`);
         }
@@ -18,6 +18,7 @@ Definition
 
 Rhythm
     = RhythmLiteral
+    / Function
     / id:Identifier {
         if (!(id in env)) {
             error(`Variable "${id}" undefined.`);
@@ -25,6 +26,22 @@ Rhythm
 
         return env[id];
     }
+
+Function
+    = "cat" _ rtms:Rhythm+ {
+        return rtms.flat();
+    }
+    
+    / All n:Integer {
+        return new Array(n).fill(true);
+    }
+
+    / Empty n:Integer {
+        return new Array(n).fill(false);
+    }
+
+All = "all" / "a"
+Empty = "empty" / "e"
 
 // Terminals
 
