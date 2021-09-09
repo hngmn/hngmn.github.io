@@ -10,6 +10,7 @@ import { selectInstrumentScreenName } from '../instruments/instrumentsSlice';
 import InstrumentLabel from './InstrumentLabel';
 import InstrumentPlayButton from './InstrumentPlayButton';
 import InstrumentParameters from './InstrumentParameters';
+import RtmBox from './RtmBox';
 
 interface Props {
     instrumentId: string,
@@ -36,6 +37,8 @@ export default function InstrumentFullControlPanel(props: Props) {
             </span>
 
             <InstrumentParameters instrumentId={instrumentId}/>
+
+            <RtmBox instrumentId={instrumentId}/>
         </section>
     );
 }
