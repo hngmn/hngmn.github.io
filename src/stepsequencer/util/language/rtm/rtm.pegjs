@@ -1,6 +1,12 @@
 {
     const env = {};
     const NBEATS_PER_MEASURE = 16;
+
+    function shorterLonger(arr1, arr2) {
+        return arr1.length <= arr2.length ?
+            [arr1, arr2] :
+            [arr2, arr1];
+    }
 }
 
 Start
@@ -57,12 +63,48 @@ Function
         return new Array(n).fill(rtm).flat();
     }
 
+    / And r1:Rhythm r2:Rhythm {
+        const [shorter, longer] = shorterLonger(r1, r2);
+
+        const andRtm = longer;
+        shorter.forEach((b, index) => {
+            andRtm[index] = andRtm[index] && b;
+        });
+
+        return andRtm;
+    }
+
+    / Or r1:Rhythm r2:Rhythm {
+        const [shorter, longer] = shorterLonger(r1, r2);
+
+        const orRtm = longer;
+        shorter.forEach((b, index) => {
+            orRtm[index] = orRtm[index] || b;
+        });
+
+        return orRtm;
+    }
+
+    / Xor r1:Rhythm r2:Rhythm {
+        const [shorter, longer] = shorterLonger(r1, r2);
+
+        const xorRtm = longer;
+        shorter.forEach((b, index) => {
+            xorRtm[index] = (xorRtm[index] || b) && !(xorRtm[index] && b);
+        });
+
+        return xorRtm;
+    }
+
 // Function names
 All = "all" / "a"
 Empty = "empty" / "e"
 Invert = "invert" / "i"
 FixedLength = "fixedlength" / "fl"
 Repeat = "repeat" / "rpt" / "r"
+And = "and" / "both" / "overlap"
+Or = "or" / "either" / "merge"
+Xor = "xor"
 
 NORINTERVAL = Interval / Integer
 
