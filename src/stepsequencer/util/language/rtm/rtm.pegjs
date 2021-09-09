@@ -1,5 +1,6 @@
 {
     const env = {};
+    const NBEATS_PER_MEASURE = 16;
 }
 
 Start
@@ -32,11 +33,11 @@ Function
         return rtms.flat();
     }
     
-    / All n:Integer {
+    / All n:NORINTERVAL {
         return new Array(n).fill(true);
     }
 
-    / Empty n:Integer {
+    / Empty n:NORINTERVAL {
         return new Array(n).fill(false);
     }
 
@@ -44,7 +45,7 @@ Function
         return rtm.map(beat => !beat);
     }
 
-    / FixedLength n:Integer _ rtm:Rhythm {
+    / FixedLength n:NORINTERVAL _ rtm:Rhythm {
         if (n > rtm.length) {
             return rtm.concat(new Array(n - rtm.length).fill(false));
         } else {
@@ -63,15 +64,31 @@ Invert = "invert" / "i"
 FixedLength = "fixedlength" / "fl"
 Repeat = "repeat" / "rpt" / "r"
 
+NORINTERVAL = Interval / Integer
 
 // Terminals
 
 RhythmLiteral
-    = _ beats:[x. ]+ {
+    = _ beats:[x.]+ {
         return beats
-            .filter(c => c != ' ')
+            // .filter(c => c != ' ')
             .map(beat => beat === 'x' ? true : false);
     }
+
+Interval
+    = _ n:Integer unit:Unit {
+        const unitMap = {
+            m: NBEATS_PER_MEASURE,
+            h: NBEATS_PER_MEASURE / 2,
+            q: NBEATS_PER_MEASURE / 4,
+            e: NBEATS_PER_MEASURE / 8,
+            s: NBEATS_PER_MEASURE / 16
+        }
+
+        return n * unitMap[unit];
+    }
+
+Unit = [mhqes]
 
 Identifier
     = _ id:[a-z]+ { return id; }
@@ -81,6 +98,3 @@ Integer "integer"
 
 _ "whitespace"
     = [ \t\n\r]*
-
-_l
-    = [ \t]*

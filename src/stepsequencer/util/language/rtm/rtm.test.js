@@ -3,14 +3,19 @@
 import * as rtm from './rtm';
 
 const testCases = [
+    // literals
     ['x...', [true, false, false, false]],
-    ['x ...', [true, false, false, false]],
-    ['x... x...', [true, false, false, false, true, false, false, false]],
+
+    // definitions
     ['down = x...\ndown', [true, false, false, false]],
     ['down = x...\nup=..x.\n up', [false, false, true, false]],
+
+    // functions
     ['cat\n  x.\nx.', [true, false, true, false]],
     ['all4', [true, true, true, true]],
+    ['all4s', [true, true, true, true]],
     ['empty4', [false, false, false, false]],
+    ['empty2e', [false, false, false, false]],
     ['fl8 x..', [true, false, false, false, false, false, false, false]],
     ['fl4 x...x...', [true, false, false, false]],
     ['invert x.x.', [false, true, false, true]],
