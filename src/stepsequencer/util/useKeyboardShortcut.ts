@@ -4,6 +4,10 @@ import * as React from 'react';
 
 type KeyboardShortcutCallback = () => void;
 
+/**
+ * Ex:
+ *     useKeyboardShortcut([' '], () => someAction());
+ */
 const useKeyboardShortcut = (shortcutKeys: Array<string>, callback: KeyboardShortcutCallback) => {
     const initalKeyMapping = shortcutKeys.reduce(
         (currentKeys: Record<string, boolean>, key: string) => {

@@ -23,7 +23,7 @@ export default function SequencerControls() {
 
     // Play/Pause functionality for 'Space' key and the Play button
     const playpause = () => isPlaying ? dispatch(pauseThunk) : dispatch(playThunk);
-    useKeyboardShortcut([' '], playpause);
+    //useKeyboardShortcut([' '], playpause);
 
     return (
         <section className={'sequencerControls'}>

@@ -87,6 +87,36 @@ export const sequencerSlice = createSlice({
             },
         },
 
+        setPads: {
+            reducer(state, action: PayloadAction<{ instrumentName: string, pads: Array<boolean> }>) {
+                const {
+                    instrumentName,
+                    pads,
+                } = action.payload;
+
+                const {
+                    nBars,
+                    beatsPerBar,
+                    padsPerBeat,
+                } = state;
+
+                let padsi = 0;
+                for (let bari = 0; bari < nBars; bari++) {
+                    for (let beati = 0; beati < beatsPerBar; beati++) {
+                        for (let padi = 0; padi < padsPerBeat; padi++) {
+                            state.pads[bari][beati][padi][instrumentName] = pads[padsi++];
+                        }
+                    }
+                }
+            },
+
+            prepare(instrumentName: string, pads: Array<boolean>) {
+                return {
+                    payload: { instrumentName, pads }
+                };
+            },
+        },
+
         clearAllPads: (state) => {
             const {
                 nBars,
@@ -104,6 +134,7 @@ export const sequencerSlice = createSlice({
                 }
             }
         },
+
     },
 
     extraReducers: builder => {
@@ -212,6 +243,7 @@ export const {
     setCurrentNote,
 
     padClick,
+    setPads,
     clearAllPads,
 } = sequencerSlice.actions;
 
