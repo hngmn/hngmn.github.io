@@ -10,9 +10,12 @@
 }
 
 Start
-    = Definition* rtm:Rhythm {
+    = _ (DefinitionList __)? rtm:Rhythm _ {
         return rtm;
     }
+
+DefinitionList
+    = Definition (__ Definition)*
 
 Definition
     = id:Identifier _ "=" _ rtm:Rhythm {
@@ -35,10 +38,12 @@ Rhythm
     }
 
 Function
-    = "cat" _ rtms:Rhythm+ {
-        return rtms.flat();
+    = "cat" __ head:Rhythm tail:(__ Rhythm)* {
+        return head.concat(
+            tail.map(([_, rtm]) => rtm).flat()
+        );
     }
-    
+
     / All n:NORINTERVAL {
         return new Array(n).fill(true);
     }
@@ -47,11 +52,11 @@ Function
         return new Array(n).fill(false);
     }
 
-    / Invert _ rtm:Rhythm {
+    / Invert __ rtm:Rhythm {
         return rtm.map(beat => !beat);
     }
 
-    / FixedLength n:NORINTERVAL _ rtm:Rhythm {
+    / FixedLength n:NORINTERVAL __ rtm:Rhythm {
         if (n > rtm.length) {
             return rtm.concat(new Array(n - rtm.length).fill(false));
         } else {
@@ -59,25 +64,25 @@ Function
         }
     }
 
-    / Repeat n:Integer _ rtm:Rhythm {
+    / Repeat n:Integer __ rtm:Rhythm {
         return new Array(n).fill(rtm).flat();
     }
 
-    / RightShift n:NORINTERVAL _ rtm:Rhythm {
+    / RightShift n:NORINTERVAL __ rtm:Rhythm {
         for (let i = 0; i < n; i++) {
             rtm.unshift(rtm.pop());
         }
         return rtm;
     }
 
-    / LeftShift n:NORINTERVAL _ rtm:Rhythm {
+    / LeftShift n:NORINTERVAL __ rtm:Rhythm {
         for (let i = 0; i < n; i++) {
             rtm.push(rtm.shift());
         }
         return rtm;
     }
 
-    / And r1:Rhythm r2:Rhythm {
+    / And __ r1:Rhythm __ r2:Rhythm {
         const [shorter, longer] = shorterLonger(r1, r2);
 
         const andRtm = longer;
@@ -88,7 +93,7 @@ Function
         return andRtm;
     }
 
-    / Or r1:Rhythm r2:Rhythm {
+    / Or __ r1:Rhythm __ r2:Rhythm {
         const [shorter, longer] = shorterLonger(r1, r2);
 
         const orRtm = longer;
@@ -99,7 +104,7 @@ Function
         return orRtm;
     }
 
-    / Xor r1:Rhythm r2:Rhythm {
+    / Xor __ r1:Rhythm __ r2:Rhythm {
         const [shorter, longer] = shorterLonger(r1, r2);
 
         const xorRtm = longer;
@@ -127,14 +132,14 @@ NORINTERVAL = Interval / Integer
 // Terminals
 
 RhythmLiteral
-    = _ beats:[x.]+ {
+    = beats:[-.]+ {
         return beats
             // .filter(c => c != ' ')
-            .map(beat => beat === 'x' ? true : false);
+            .map(beat => beat === '-' ? true : false);
     }
 
 Interval
-    = _ n:Integer unit:Unit {
+    = n:Integer unit:Unit {
         const unitMap = {
             m: NBEATS_PER_MEASURE,
             h: NBEATS_PER_MEASURE / 2,
@@ -149,10 +154,13 @@ Interval
 Unit = [mhqes]
 
 Identifier
-    = _ id:[a-z]+ { return id; }
+    = id:[a-z]+ { return text(); }
 
 Integer "integer"
-    = _ [0-9]+ { return parseInt(text(), 10); }
+    = [0-9]+ { return parseInt(text(), 10); }
 
-_ "whitespace"
+_ "whitespaceoptional"
     = [ \t\n\r]*
+
+__ "whitespacerequired"
+    = [ \t\n\r]+
