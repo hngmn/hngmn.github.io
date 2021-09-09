@@ -63,6 +63,20 @@ Function
         return new Array(n).fill(rtm).flat();
     }
 
+    / RightShift n:NORINTERVAL _ rtm:Rhythm {
+        for (let i = 0; i < n; i++) {
+            rtm.unshift(rtm.pop());
+        }
+        return rtm;
+    }
+
+    / LeftShift n:NORINTERVAL _ rtm:Rhythm {
+        for (let i = 0; i < n; i++) {
+            rtm.push(rtm.shift());
+        }
+        return rtm;
+    }
+
     / And r1:Rhythm r2:Rhythm {
         const [shorter, longer] = shorterLonger(r1, r2);
 
@@ -102,9 +116,11 @@ Empty = "empty" / "e"
 Invert = "invert" / "i"
 FixedLength = "fixedlength" / "fl"
 Repeat = "repeat" / "rpt" / "r"
+RightShift = "rs"
+LeftShift = "ls"
 And = "and" / "both" / "overlap"
 Or = "or" / "either" / "merge"
-Xor = "xor"
+Xor = "exor"
 
 NORINTERVAL = Interval / Integer
 

@@ -20,6 +20,9 @@ const testCases = [
     ['fl4 x...x...', [true, false, false, false]],
     ['invert x.x.', [false, true, false, true]],
     ['rpt4 x.', [true, false, true, false, true, false, true, false]],
+    ['rs1 x..', [false, true, false]],
+    ['rs2 x..', [false, false, true]],
+    ['ls2 x..', [false, true, false]],
     ['and x. .x', [false, false]],
     ['and xx .x', [false, true]],
     ['and x.x. ..', [false, false, true, false]],
@@ -27,9 +30,9 @@ const testCases = [
     ['or x. .x', [true, true]],
     ['or xx .x', [true, true]],
     ['or x. ..x.', [true, false, true, false]],
-    ['xor x. .x', [true, true]],
-    ['xor xx .x', [true, true]],
-    ['xor x. ..x.', [true, false, true, false]],
+    ['exor x. .x', [true, true]],
+    ['exor xx .x', [true, false]],
+    ['exor x. ..x.', [true, false, true, false]],
 ];
 
 describe('rtm', () => {
