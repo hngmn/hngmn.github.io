@@ -36,6 +36,7 @@ Rhythm
 
         return env[id];
     }
+    / "(" _ rtm:Rhythm _ ")" { return rtm; }
 
 Function
     = "cat" __ head:Rhythm tail:(__ Rhythm)* {
@@ -56,12 +57,8 @@ Function
         return rtm.map(beat => !beat);
     }
 
-    / FixedLength n:NORINTERVAL __ rtm:Rhythm {
-        if (n > rtm.length) {
-            return rtm.concat(new Array(n - rtm.length).fill(false));
-        } else {
-            return rtm.slice(n);
-        }
+    / Reverse __ rtm:Rhythm {
+        return rtm.reverse();
     }
 
     / Repeat n:Integer __ rtm:Rhythm {
@@ -80,6 +77,14 @@ Function
             rtm.push(rtm.shift());
         }
         return rtm;
+    }
+
+    / FixedLength n:NORINTERVAL __ rtm:Rhythm {
+        if (n > rtm.length) {
+            return rtm.concat(new Array(n - rtm.length).fill(false));
+        } else {
+            return rtm.slice(n);
+        }
     }
 
     / And __ r1:Rhythm __ r2:Rhythm {
@@ -119,6 +124,7 @@ Function
 All = "all" / "a"
 Empty = "empty" / "e"
 Invert = "invert" / "i"
+Reverse = "reverse" / "rv"
 FixedLength = "fixedlength" / "fl"
 Repeat = "repeat" / "rpt" / "r"
 RightShift = "rs"

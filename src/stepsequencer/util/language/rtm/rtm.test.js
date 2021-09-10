@@ -5,6 +5,7 @@ import * as rtm from './rtm';
 const testCases = [
     // literals
     ['-...', [true, false, false, false]],
+    ['(-.-.)', [true, false, true, false]],
 
     // definitions
     ['down = -...\ndown', [true, false, false, false]],
@@ -19,6 +20,7 @@ const testCases = [
     ['fl8 -..', [true, false, false, false, false, false, false, false]],
     ['fl4 -...-...', [true, false, false, false]],
     ['invert -.-.', [false, true, false, true]],
+    ['reverse -..-.', [false, true, false, false, true]],
     ['rpt4 -.', [true, false, true, false, true, false, true, false]],
     ['rs1 -..', [false, true, false]],
     ['rs2 -..', [false, false, true]],
@@ -34,10 +36,16 @@ const testCases = [
     ['exor -- .-', [true, false]],
     ['exor -. ..-.', [true, false, true, false]],
 
+    // nesting
+    ['r3 rv -..', [false, false, true, false, false, true, false, false, true]],
+    ['or -... r2 .-', [true, true, false, true]],
+    ['or r2 .- -...', [true, true, false, true]],
+
     // misc edge cases
     [' -..', [true, false, false]],
     ['-.. ', [true, false, false]],
     [' -.. ', [true, false, false]],
+    ['( -.-.)', [true, false, true, false]],
 ];
 
 describe('rtm', () => {
