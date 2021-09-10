@@ -13,6 +13,7 @@ const testCases = [
 
     // functions
     ['cat\n  -.\n-.', [true, false, true, false]],
+    ['cat\n  -.\n-. ..', [true, false, true, false, false, false]],
     ['all4', [true, true, true, true]],
     ['all4s', [true, true, true, true]],
     ['empty4', [false, false, false, false]],
@@ -40,6 +41,9 @@ const testCases = [
     ['r3 rv -..', [false, false, true, false, false, true, false, false, true]],
     ['or -... r2 .-', [true, true, false, true]],
     ['or r2 .- -...', [true, true, false, true]],
+    [
+        'cat -...\n\trpt2 -.\n\t--\n',
+        [true, false, false, false, true, false, true, false, true, true]],
 
     // misc edge cases
     [' -..', [true, false, false]],
