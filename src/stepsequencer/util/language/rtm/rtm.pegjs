@@ -7,11 +7,143 @@
             [arr1, arr2] :
             [arr2, arr1];
     }
+
+    const builtins = {
+
+        all: {
+            name: 'all',
+            aliases: [],
+            fn: (n) => {
+                return new Array(n).fill(true);
+            }
+        },
+
+        empty: {
+            name: 'empty',
+            aliases: [],
+            fn: (n) => {
+                return new Array(n).fill(false);
+            }
+        },
+
+        invert: {
+            name: 'invert',
+            aliases: [],
+            fn: (rtm) => {
+                return rtm.map(beat => !beat);
+            }
+        },
+
+        reverse: {
+            name: 'reverse',
+            aliases: [],
+            fn: (rtm) => {
+                return rtm.reverse();
+            }
+        },
+
+        repeat: {
+            name: 'repeat',
+            aliases: [],
+            fn: (n, rtm) => {
+                return new Array(n).fill(rtm).flat();
+            }
+        },
+
+        rightshift: {
+            name: 'rightshift',
+            aliases: [],
+            fn: (n, rtm) => {
+                for (let i = 0; i < n; i++) {
+                    rtm.unshift(rtm.pop());
+                }
+                return rtm;
+            }
+        },
+
+        leftshift: {
+            name: 'leftshift',
+            aliases: [],
+            fn: (n, rtm) => {
+                for (let i = 0; i < n; i++) {
+                    rtm.push(rtm.shift());
+                }
+                return rtm;
+            }
+        },
+
+        fixedlength: {
+            name: 'fixedlength',
+            aliases: [],
+            fn: (n, rtm) => {
+                if (n > rtm.length) {
+                    return rtm.concat(new Array(n - rtm.length).fill(false));
+                } else {
+                    return rtm.slice(n);
+                }
+            }
+        },
+
+        bwand: {
+            name: 'bwand',
+            aliases: ['and'],
+            fn: (r1, r2) => {
+                const [shorter, longer] = shorterLonger(r1, r2);
+
+                const andRtm = longer;
+                shorter.forEach((b, index) => {
+                    andRtm[index] = andRtm[index] && b;
+                });
+
+                return andRtm;
+            }
+        },
+
+        bwor: {
+            name: 'bwor',
+            aliases: ['or'],
+            fn: (r1, r2) => {
+                const [shorter, longer] = shorterLonger(r1, r2);
+
+                const orRtm = longer;
+                shorter.forEach((b, index) => {
+                    orRtm[index] = orRtm[index] || b;
+                });
+
+                return orRtm;
+            }
+        },
+
+        bwxor: {
+            name: 'bwxor',
+            aliases: ['xor'],
+            fn: (r1, r2) => {
+                const [shorter, longer] = shorterLonger(r1, r2);
+
+                const xorRtm = longer;
+                shorter.forEach((b, index) => {
+                    xorRtm[index] = (xorRtm[index] || b) && !(xorRtm[index] && b);
+                });
+
+                return xorRtm;
+            }
+        },
+
+
+        /*
+
+        / "cat" __ head:Rhythm tail:(__ Rhythm)* {
+            return [head].concat(
+                tail.map(([_, rtm]) => rtm).flat()
+            );
+        }
+        */
+    };
 }
 
 Start
     = _ (DefinitionList __)? rtm:Rhythm _ {
-        return rtm;
+        return rtm.data;
     }
 
 DefinitionList
@@ -23,102 +155,62 @@ Definition
             error(`Variable "${id} already defined."`);
         }
 
-        env[id] = rtm;
+        env[id] = rtm.data;
+    }
+
+Expr
+    = Rhythm
+    / Primitive
+
+ExprList
+    = head:Expr tail:(__ Expr)* {
+        return [head].concat(
+            tail.map(([_, expr]) => expr).flat()
+        );
     }
 
 Rhythm
     = RhythmLiteral
-    / Function
-    / id:Identifier {
-        if (!(id in env)) {
-            error(`Variable "${id}" undefined.`);
-        }
-
-        return env[id];
-    }
+    / FunctionCall
+    / VariableRef
     / "(" _ rtm:Rhythm _ ")" { return rtm; }
 
-Function
-    = "cat" __ head:Rhythm tail:(__ Rhythm)* {
-        return head.concat(
-            tail.map(([_, rtm]) => rtm).flat()
-        );
-    }
-
-    / All n:NORINTERVAL {
-        return new Array(n).fill(true);
-    }
-
-    / Empty n:NORINTERVAL {
-        return new Array(n).fill(false);
-    }
-
-    / Invert __ rtm:Rhythm {
-        return rtm.map(beat => !beat);
-    }
-
-    / Reverse __ rtm:Rhythm {
-        return rtm.reverse();
-    }
-
-    / Repeat n:Integer __ rtm:Rhythm {
-        return new Array(n).fill(rtm).flat();
-    }
-
-    / RightShift n:NORINTERVAL __ rtm:Rhythm {
-        for (let i = 0; i < n; i++) {
-            rtm.unshift(rtm.pop());
+VariableRef
+    = v:Identifier {
+        console.log(`VariableRef: ${v.data}`);
+        if (!(id in env)) {
+            error(`Variable "${v.data}" undefined.`);
         }
-        return rtm;
-    }
 
-    / LeftShift n:NORINTERVAL __ rtm:Rhythm {
-        for (let i = 0; i < n; i++) {
-            rtm.push(rtm.shift());
-        }
-        return rtm;
-    }
-
-    / FixedLength n:NORINTERVAL __ rtm:Rhythm {
-        if (n > rtm.length) {
-            return rtm.concat(new Array(n - rtm.length).fill(false));
-        } else {
-            return rtm.slice(n);
+        return {
+            type: 'VARIABLE',
+            variable: id,
+            data: env[id],
         }
     }
 
-    / And __ r1:Rhythm __ r2:Rhythm {
-        const [shorter, longer] = shorterLonger(r1, r2);
+FunctionCall
+    = fn:Identifier __ args:ExprList {
+        // console.log(`FunctionCall: ${fn.data}, ${args.length} args`);
+        // args.forEach((arg, index) => console.log(`${index}: `, arg));
 
-        const andRtm = longer;
-        shorter.forEach((b, index) => {
-            andRtm[index] = andRtm[index] && b;
-        });
+        const fnName = fn.data;
+        if (!(fnName in builtins)) {
+            error(`Function ${fnName} not found`);
+        }
 
-        return andRtm;
+        const result = builtins[fnName]['fn'].apply(null, args.map(arg => arg.data));
+        // console.log('result: ', result);
+        const node = {
+            type: 'FUNCTIONCALL',
+            name: fnName,
+            args: args,
+            data: result,
+        };
+        console.log('FUNCTIONCALL: ', node);
+        return node;
     }
 
-    / Or __ r1:Rhythm __ r2:Rhythm {
-        const [shorter, longer] = shorterLonger(r1, r2);
-
-        const orRtm = longer;
-        shorter.forEach((b, index) => {
-            orRtm[index] = orRtm[index] || b;
-        });
-
-        return orRtm;
-    }
-
-    / Xor __ r1:Rhythm __ r2:Rhythm {
-        const [shorter, longer] = shorterLonger(r1, r2);
-
-        const xorRtm = longer;
-        shorter.forEach((b, index) => {
-            xorRtm[index] = (xorRtm[index] || b) && !(xorRtm[index] && b);
-        });
-
-        return xorRtm;
-    }
 
 // Function names
 All = "all" / "a"
@@ -139,10 +231,13 @@ NORINTERVAL = Interval / Integer
 
 RhythmLiteral
     = beats:[-.]+ {
-        return beats
-            // .filter(c => c != ' ')
-            .map(beat => beat === '-' ? true : false);
+        return {
+            type: 'LITERAL',
+            data: beats.map(beat => beat === '-' ? true : false),
+        };
     }
+
+Primitive = Interval / Unit / Integer
 
 Interval
     = n:Integer unit:Unit {
@@ -154,16 +249,34 @@ Interval
             s: NBEATS_PER_MEASURE / 16
         }
 
-        return n * unitMap[unit];
+        return {
+            type: 'INTERVAL',
+            data: n * unitMap[unit.data],
+        };
     }
 
-Unit = [mhqes]
+Unit = [mhqes] {
+    return {
+        type: 'UNIT',
+        data: text(),
+    }
+}
 
 Identifier
-    = id:[a-z]+ { return text(); }
+    = [a-z]+ {
+        return {
+            type: 'IDENTIFIER',
+            data: text(),
+        };
+    }
 
 Integer "integer"
-    = [0-9]+ { return parseInt(text(), 10); }
+    = [0-9]+ {
+        return {
+            type: 'INTEGER',
+            data: parseInt(text(), 10),
+        };
+    }
 
 _ "whitespaceoptional"
     = [ \t\n\r]*

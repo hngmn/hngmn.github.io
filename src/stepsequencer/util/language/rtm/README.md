@@ -50,3 +50,9 @@ rightshift2 x...x...
 Or x... ..x.
   > x.x.
 ```
+
+## Todo
+Running todo list
+* implement functions as a first class member
+* defun
+* type system (?)
