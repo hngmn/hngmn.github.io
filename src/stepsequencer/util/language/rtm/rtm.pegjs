@@ -129,15 +129,14 @@
             }
         },
 
+        cat: {
+            name: 'cat',
+            aliases: [],
+            fn: (...rtms) => {
+                return rtms.flat();
+            }
+        },
 
-        /*
-
-        / "cat" __ head:Rhythm tail:(__ Rhythm)* {
-            return [head].concat(
-                tail.map(([_, rtm]) => rtm).flat()
-            );
-        }
-        */
     };
 }
 
@@ -150,12 +149,13 @@ DefinitionList
     = Definition (__ Definition)*
 
 Definition
-    = id:Identifier _ "=" _ rtm:Rhythm {
-        if (id in env) {
-            error(`Variable "${id} already defined."`);
+    = variable:Identifier _ "=" _ rtm:Rhythm {
+        const varName = variable.data;
+        if (varName in env) {
+            error(`Variable "${varName} already defined."`);
         }
 
-        env[id] = rtm.data;
+        env[varName] = rtm.data;
     }
 
 Expr
@@ -177,15 +177,16 @@ Rhythm
 
 VariableRef
     = v:Identifier {
-        console.log(`VariableRef: ${v.data}`);
-        if (!(id in env)) {
-            error(`Variable "${v.data}" undefined.`);
+        const varName = v.data;
+        console.log(`VariableRef: ${varName}`);
+        if (!(varName in env)) {
+            error(`Variable "${varName}" undefined.`);
         }
 
         return {
             type: 'VARIABLE',
-            variable: id,
-            data: env[id],
+            variable: varName,
+            data: env[varName],
         }
     }
 
@@ -251,7 +252,7 @@ Interval
 
         return {
             type: 'INTERVAL',
-            data: n * unitMap[unit.data],
+            data: n.data * unitMap[unit.data],
         };
     }
 

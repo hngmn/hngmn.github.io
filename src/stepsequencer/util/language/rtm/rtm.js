@@ -146,12 +146,13 @@ function peg$parse(input, options) {
           },
       peg$c1 = "=",
       peg$c2 = peg$literalExpectation("=", false),
-      peg$c3 = function(id, rtm) {
-              if (id in env) {
-                  error(`Variable "${id} already defined."`);
+      peg$c3 = function(variable, rtm) {
+              const varName = variable.data;
+              if (varName in env) {
+                  error(`Variable "${varName} already defined."`);
               }
 
-              env[id] = rtm.data;
+              env[varName] = rtm.data;
           },
       peg$c4 = function(head, tail) {
               return [head].concat(
@@ -164,15 +165,16 @@ function peg$parse(input, options) {
       peg$c8 = peg$literalExpectation(")", false),
       peg$c9 = function(rtm) { return rtm; },
       peg$c10 = function(v) {
-              console.log(`VariableRef: ${v.data}`);
-              if (!(id in env)) {
-                  error(`Variable "${v.data}" undefined.`);
+              const varName = v.data;
+              console.log(`VariableRef: ${varName}`);
+              if (!(varName in env)) {
+                  error(`Variable "${varName}" undefined.`);
               }
 
               return {
                   type: 'VARIABLE',
-                  variable: id,
-                  data: env[id],
+                  variable: varName,
+                  data: env[varName],
               }
           },
       peg$c11 = function(fn, args) {
@@ -258,7 +260,7 @@ function peg$parse(input, options) {
 
               return {
                   type: 'INTERVAL',
-                  data: n * unitMap[unit.data],
+                  data: n.data * unitMap[unit.data],
               };
           },
       peg$c60 = /^[mhqes]/,
@@ -1382,15 +1384,14 @@ function peg$parse(input, options) {
               }
           },
 
+          cat: {
+              name: 'cat',
+              aliases: [],
+              fn: (...rtms) => {
+                  return rtms.flat();
+              }
+          },
 
-          /*
-
-          / "cat" __ head:Rhythm tail:(__ Rhythm)* {
-              return [head].concat(
-                  tail.map(([_, rtm]) => rtm).flat()
-              );
-          }
-          */
       };
 
 
