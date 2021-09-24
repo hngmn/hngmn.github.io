@@ -38,12 +38,12 @@ const testCases = [
     ['bwxor -. ..-.', [true, false, true, false]],
 
     // nesting
-    ['repeat 3 rv -..', [false, false, true, false, false, true, false, false, true]],
+    ['repeat 3 reverse -..', [false, false, true, false, false, true, false, false, true]],
     ['bwor -... repeat 2 .-', [true, true, false, true]],
-    ['bwor repeat 2 .- -...', [true, true, false, true]],
+    ['bwor (repeat 2 .-) -...', [true, true, false, true]],
     [
-        'cat -...\n\trpt 2 -.\n\t--\n',
-        [true, false, false, false, true, false, true, false, true, true]],
+        'cat -...\n\trepeat 2 -.',
+        [true, false, false, false, true, false, true, false]],
 
     // misc edge cases
     [' -..', [true, false, false]],

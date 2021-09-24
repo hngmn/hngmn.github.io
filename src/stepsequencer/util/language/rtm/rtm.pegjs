@@ -1,4 +1,10 @@
 {
+    // helpers //
+    function printNode(text, node) {
+        console.log(`text:${text}\nnode:`, JSON.stringify(node, null, 4));
+    }
+    // end helpers //
+
     const env = {};
     const NBEATS_PER_MEASURE = 16;
 
@@ -90,7 +96,7 @@
             fn: (r1, r2) => {
                 const [shorter, longer] = shorterLonger(r1, r2);
 
-                const andRtm = longer;
+                const andRtm = Array.from(longer);
                 shorter.forEach((b, index) => {
                     andRtm[index] = andRtm[index] && b;
                 });
@@ -178,7 +184,7 @@ Rhythm
 VariableRef
     = v:Identifier {
         const varName = v.data;
-        console.log(`VariableRef: ${varName}`);
+        // console.log(`VariableRef: ${varName}`);
         if (!(varName in env)) {
             error(`Variable "${varName}" undefined.`);
         }
@@ -192,41 +198,29 @@ VariableRef
 
 FunctionCall
     = fn:Identifier __ args:ExprList {
-        // console.log(`FunctionCall: ${fn.data}, ${args.length} args`);
-        // args.forEach((arg, index) => console.log(`${index}: `, arg));
-
         const fnName = fn.data;
         if (!(fnName in builtins)) {
             error(`Function ${fnName} not found`);
         }
 
-        const result = builtins[fnName]['fn'].apply(null, args.map(arg => arg.data));
-        // console.log('result: ', result);
         const node = {
             type: 'FUNCTIONCALL',
             name: fnName,
             args: args,
-            data: result,
+            data: null,
         };
-        console.log('FUNCTIONCALL: ', node);
+
+        try {
+            const result = builtins[fnName]['fn'].apply(null, args.map(arg => arg.data));
+            node.data = result;
+        } catch (err) {
+            printNode(text(), node);
+            error(`Got error running function: ${err.message}`);
+        }
+        //printNode(text(), node);
         return node;
     }
 
-
-// Function names
-All = "all" / "a"
-Empty = "empty" / "e"
-Invert = "invert" / "i"
-Reverse = "reverse" / "rv"
-FixedLength = "fixedlength" / "fl"
-Repeat = "repeat" / "rpt" / "r"
-RightShift = "rs"
-LeftShift = "ls"
-And = "and" / "both" / "overlap"
-Or = "or" / "either" / "merge"
-Xor = "exor"
-
-NORINTERVAL = Interval / Integer
 
 // Terminals
 
