@@ -37,6 +37,9 @@ const testCases = [
     ['bwxor -- .-', [true, false]],
     ['bwxor -. ..-.', [true, false, true, false]],
 
+    // variable ref in function call
+    ['b = .-\nrepeat 2 b', [false, true, false, true]],
+
     // nesting
     ['repeat 3 reverse -..', [false, false, true, false, false, true, false, false, true]],
     ['bwor -... repeat 2 .-', [true, true, false, true]],
