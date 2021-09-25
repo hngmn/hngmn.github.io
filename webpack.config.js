@@ -1,4 +1,5 @@
-const path = require('path')
+const path = require('path');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const MODULES = [
   'boombox',
@@ -34,6 +35,7 @@ module.exports = MODULES.map((moduleName) => {
         }
       ]
     },
+    plugins: [new ESLintPlugin({})],
     resolve: {
       extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
     },
