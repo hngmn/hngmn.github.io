@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 
-import { RootState, useAppDispatch } from '../../app/store';
+import { useAppDispatch } from '../../app/store';
 import {
     deleteInstrumentFromDb,
 
@@ -13,7 +13,7 @@ import {
 } from './instrumentsSlice';
 
 
-export default function DbInstrumentList() {
+export default function DbInstrumentList(): React.ReactElement {
     const dbInstruments = useSelector(selectAvailableInstrumentNames);
     const sequencerInstruments = useSelector(selectSequencerInstruments);
     const availableInstruments = dbInstruments.filter(
@@ -34,7 +34,7 @@ export default function DbInstrumentList() {
                     <li
                         key={uuid}
                         onDoubleClick={(e: React.MouseEvent) => {
-                            console.debug(`${name} double clicked`);
+                            console.debug(`${name} double clicked`, e);
                         }}
                     >
                         <span>

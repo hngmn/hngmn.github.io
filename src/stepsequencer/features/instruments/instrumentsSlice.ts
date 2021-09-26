@@ -350,12 +350,13 @@ export function initializeDefaultInstruments() {
     return async function initThunk(dispatch: AppDispatch, getState: () => RootState) {
         console.debug('initializing default instruments');
         const defaultIns = await defaultInstruments();
+        const defaultInsIds = defaultIns.map(ins => ins.getUuid());
         await instrumentPlayer.getTone().loaded();
 
         defaultIns.forEach(ins => {
             dispatch(putLocalInstrument(ins));
-            dispatch(instrumentsSlice.actions.instrumentAdded(ins));
         })
+        dispatch(setSequencerInstruments(defaultInsIds));
     }
 }
 
