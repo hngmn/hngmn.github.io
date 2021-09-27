@@ -265,10 +265,6 @@ export const instrumentsSlice = createSlice({
                 state.availableInstrumentNames.allIds.push(id);
                 state.availableInstrumentNames.byId[id] = screenName;
             })
-
-            .addCase(fetchSequencerInstruments.fulfilled, (state, action) => {
-                state.sequencerInstrumentIds = action.payload;
-            })
     },
 });
 
@@ -282,7 +278,14 @@ export function setSequencerInstruments(ids: Array<string>) {
 export function removeInstrumentFromSequencer(id: string) {
     return async function removeInstrumentThunk(dispatch: AppDispatch, getState: () => RootState): Promise<void> {
         const removed = Array.from(selectSequencerInstrumentIds(getState()));
-        removed.splice(removed.indexOf(id), 1);
+        console.debug('removeInstrumentFromSequencer: current sequencer=', removed);
+        const index = removed.indexOf(id);
+        if (index > -1) {
+            removed.splice(index, 1);
+        } else {
+            console.error(`id ${id} not found in array:`, removed);
+        }
+        console.debug(`removeInstrumentFromSequencer: removing iid=${id}, new sequencerInstruments=`, removed)
         await dispatch(putSequencerInstrumentsToDb(removed));
         dispatch(instrumentsSlice.actions.instrumentRemoved(id));
     }
@@ -353,10 +356,9 @@ export function initializeDefaultInstruments() {
 // Helper thunks
 
 function setSequencerInstrumentsInStore(ids: Array<string>) {
-    console.debug('setSequencerInstrumentsInStore', ids);
     return async function setSequencerInstrumentsInStoreThunk(dispatch: AppDispatch, getState: () => RootState) {
         const currentSequencerInstrumentIds = selectSequencerInstrumentIds(getState());
-        console.debug('setSequencerInstrumentsInStore: current ids is', currentSequencerInstrumentIds);
+        console.debug('setSequencerInstrumentsInStore: current=', currentSequencerInstrumentIds, 'setting to: ', ids);
 
         // remove instruments not in the new set
         currentSequencerInstrumentIds
@@ -371,6 +373,7 @@ function setSequencerInstrumentsInStore(ids: Array<string>) {
             .forEach(async id => {
                 const instrument = await loadInstrument(id);
                 dispatch(instrumentsSlice.actions.instrumentAdded(instrument));
+                console.debug(`adding iid=${id}`);
             });
     };
 }
