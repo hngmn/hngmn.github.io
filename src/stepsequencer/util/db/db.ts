@@ -103,7 +103,9 @@ async function wrappedGet<SN extends StoreName>(
     key: idb.StoreKey<Schema, SN>
 ) {
     return await tryDbOp(async (db) => {
-        return await db.get(store, key);
+        const result = await db.get(store, key);
+        console.debug(`get store=${store}, result=`, result);
+        return result;
     });
 }
 
@@ -111,7 +113,9 @@ async function wrappedGetAll<SN extends StoreName>(
     store: SN
 ) {
     return await tryDbOp(async (db) => {
-        return await db.getAll(store);
+        const result = await db.getAll(store);
+        console.debug(`getAll store=${store}, result=`, result);
+        return result;
     });
 }
 
@@ -121,7 +125,9 @@ async function wrappedPut<SN extends StoreName>(
     key?: idb.StoreKey<Schema, SN>
 ) {
     return await tryDbOp(async (db) => {
-        return await db.put(store, item, key);
+        const result = await db.put(store, item, key);
+        console.debug(`put store=${store}, item=`, item);
+        return result;
     });
 }
 
@@ -130,7 +136,9 @@ async function wrappedDelete<SN extends StoreName>(
     key: idb.StoreKey<Schema, SN>
 ) {
     return await tryDbOp(async (db) => {
-        return await db.delete(store, key);
+        const result = await db.delete(store, key);
+        console.debug(`delete store=`, store, `, key=${key}`);
+        return result;
     });
 }
 
@@ -139,7 +147,9 @@ async function wrappedGetAllKeysFromIndex<SN extends StoreName>(
     index: idb.IndexNames<Schema, SN>
 ) {
     return await tryDbOp(async (db) => {
-        return await db.getAllKeysFromIndex(store, index);
+        const result = await db.getAllKeysFromIndex(store, index);
+        console.debug(`getAllKeysFromIndex store=${store}, index=${index}, result=`, result);
+        return result;
     });
 }
 
@@ -148,7 +158,9 @@ async function wrappedGetAllFromIndex<SN extends StoreName>(
     index: idb.IndexNames<Schema, SN>
 ) {
     return await tryDbOp(async (db) => {
-        return await db.getAllFromIndex(store, index);
+        const result = await db.getAllFromIndex(store, index);
+        console.debug(`getAllFromIndex store=${store}, index=${index}, result=`, result);
+        return result;
     });
 }
 

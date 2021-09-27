@@ -13,7 +13,7 @@ import { ToneSynth } from './ToneSynth';
 import { Conjunction } from './Conjunction';
 import { Disjunction } from './Disjunction';
 
-export async function defaultInstruments() {
+export async function defaultInstruments(): Promise<Array<IInstrument>> {
     const instruments = [
         new Disjunction(
             new TonePlayer('/assets/audio/shaker1.wav'),
@@ -34,19 +34,20 @@ export async function defaultInstruments() {
 }
 
 export async function dboToInstrument(dbo: IInstrumentDBObject): Promise<Result<IInstrument, Error>> {
+    let ins;
     switch (dbo.kind) {
     case 'ToneSynth':
-        const synth = await ToneSynth.from(dbo);
-        return Ok(synth);
+        ins = await ToneSynth.from(dbo);
+        return Ok(ins);
     case 'TonePlayer':
-        const player = await TonePlayer.from(dbo);
-        return Ok(player);
+        ins = await TonePlayer.from(dbo);
+        return Ok(ins);
     case 'Conjunction':
-        const cjx = await Conjunction.from(dbo);
-        return Ok(cjx);
+        ins = await Conjunction.from(dbo);
+        return Ok(ins);
     case 'Disjunction':
-        const djx = await Disjunction.from(dbo);
-        return Ok(djx);
+        ins = await Disjunction.from(dbo);
+        return Ok(ins);
     default:
         console.error('Not recognized IInstrument');
         return Err(new Error(`Unrecognized instrument type: ${dbo}`));

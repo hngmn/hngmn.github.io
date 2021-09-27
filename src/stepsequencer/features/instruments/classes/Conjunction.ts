@@ -3,7 +3,6 @@
 import * as Tone from 'tone';
 
 import { IInstrument, IInstrumentDBObject } from './BaseInstrument';
-import { SliderParameter, SwitchParameter } from './InstrumentParameter';
 import {
     BaseInstrument,
     BaseInstrumentOptions,
@@ -35,14 +34,16 @@ export class Conjunction extends BaseInstrument {
             });
         }
 
+        if (!options.name) {
+            options.name = `Conjunction-${instrument1.getName()}-${instrument2.getName()}`;
+        }
+
         super(
             [
                 ...getInstrumentParameters(instrument1),
                 ...getInstrumentParameters(instrument2),
             ],
-            {
-                name: options.name ? options.name : `Conjunction-${instrument1.getName()}-${instrument2.getName()}`,
-            }
+            options
         );
 
         this.kind = 'Conjunction';
@@ -50,12 +51,12 @@ export class Conjunction extends BaseInstrument {
         this.instrument2 = instrument2;
     }
 
-    schedule(time: Tone.Unit.Time) {
+    schedule(time: Tone.Unit.Time): void {
         this.instrument1.schedule(time);
         this.instrument2.schedule(time);
     }
 
-    toDBObject() {
+    toDBObject(): IConjunctionDBObject {
         return {
             kind: this.kind,
             uuid: this.getUuid(),
@@ -67,7 +68,7 @@ export class Conjunction extends BaseInstrument {
         };
     }
 
-    static async from(dbo: IConjunctionDBObject) {
+    static async from(dbo: IConjunctionDBObject): Promise<Conjunction> {
         const i1Result = await dboToInstrument(dbo.i1);
         if (i1Result.err) {
             console.error('Got error creating i1: ', i1Result.val);
@@ -82,7 +83,14 @@ export class Conjunction extends BaseInstrument {
         }
         const i2 = i2Result.unwrap();
 
-        return new Conjunction(i1, i2);
+        return new Conjunction(
+            i1,
+            i2,
+            {
+                uuid: dbo.uuid,
+                name: dbo.name,
+            }
+        );
     }
 }
 

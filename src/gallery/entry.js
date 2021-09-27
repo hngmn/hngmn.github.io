@@ -1,9 +1,8 @@
 'use strict';
 
-import React from "react";
+import * as React from "react";
 import ReactDOM from "react-dom";
-
-const e = React.createElement;
+import PropTypes from "prop-types";
 
 class MyGallery extends React.Component {
   constructor(props) {
@@ -23,6 +22,10 @@ class MyGallery extends React.Component {
       </button>
     );
   }
+}
+
+MyGallery.propTypes = {
+  photoDir: PropTypes.string,
 }
 
 const domContainer = document.querySelector('#gallery_container');

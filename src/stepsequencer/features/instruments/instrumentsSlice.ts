@@ -14,12 +14,9 @@ import { AppDispatch, RootState } from '../../app/store';
 import instrumentPlayer from './instrumentPlayer';
 import {
     IInstrument,
-    IInstrumentParameter,
     IInstrumentParameterConfig,
     IInstrumentDBObject,
-    ITonePlayerDBObject,
 
-    TonePlayer,
     defaultInstruments,
     dboToInstrument,
 } from './classes';
@@ -32,8 +29,6 @@ export const fetchDbInstrumentNames = createAsyncThunk(
             console.error('got error fetching db names');
             throw result.val;
         }
-
-        console.debug('got inames from db', result.unwrap());
 
         return result.unwrap();
     }
@@ -52,7 +47,6 @@ export const fetchSequencerInstruments = createAsyncThunk<
         arg,
         {
             dispatch,
-            getState,
         }
     ) => {
         const result = await db.getSequencerInstruments();
@@ -62,8 +56,6 @@ export const fetchSequencerInstruments = createAsyncThunk<
         }
 
         const sequencerInstrumentIds = result.unwrap();
-
-        console.debug('got sequencer ins ids', sequencerInstrumentIds);
 
         dispatch(setSequencerInstrumentsInStore(sequencerInstrumentIds));
 
@@ -87,8 +79,6 @@ export const putLocalInstrument = createAsyncThunk<
         ins,
         { dispatch }
     ) => {
-        console.debug('putLocalInstrument', ins);
-
         // store in instrumentPlayer for playback
         instrumentPlayer.addInstrumentToScheduler(ins);
 
@@ -283,24 +273,23 @@ export const instrumentsSlice = createSlice({
 });
 
 export function setSequencerInstruments(ids: Array<string>) {
-    return async function setSequencerInstrumentsThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function setSequencerInstrumentsThunk(dispatch: AppDispatch): Promise<void> {
         await dispatch(setSequencerInstrumentsInStore(ids));
         await dispatch(putSequencerInstrumentsToDb(ids));
-        return;
     }
 }
 
 export function removeInstrumentFromSequencer(id: string) {
-    return async function removeInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function removeInstrumentThunk(dispatch: AppDispatch, getState: () => RootState): Promise<void> {
         const removed = Array.from(selectSequencerInstrumentIds(getState()));
         removed.splice(removed.indexOf(id), 1);
-        return await dispatch(putSequencerInstrumentsToDb(removed));
-        return dispatch(instrumentsSlice.actions.instrumentRemoved(id));
+        await dispatch(putSequencerInstrumentsToDb(removed));
+        dispatch(instrumentsSlice.actions.instrumentRemoved(id));
     }
 }
 
 export function renameInstrument(id: string, newScreenName: string) {
-    return async function renameInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function renameInstrumentThunk(dispatch: AppDispatch): Promise<void> {
         const ins = instrumentPlayer.getInstrument(id);
         ins.setName(newScreenName);
         await Promise.all([
@@ -311,7 +300,7 @@ export function renameInstrument(id: string, newScreenName: string) {
 }
 
 export function updateInstrumentParameter(instrumentId: string, parameterName: string, value: boolean | number) {
-    return async function updateInstrumentThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function updateInstrumentThunk(dispatch: AppDispatch): Promise<void> {
         const ins = instrumentPlayer.getInstrument(instrumentId);
         ins.setParameterValue(parameterName, value);
         await dispatch(instrumentsSlice.actions.instrumentParameterUpdated(instrumentId, parameterName, value));
@@ -320,7 +309,7 @@ export function updateInstrumentParameter(instrumentId: string, parameterName: s
 
 export function soloInstrument(iid: string) {
     console.debug('solo ', iid);
-    return async function soloThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function soloThunk(dispatch: AppDispatch, getState: () => RootState): Promise<void> {
         const solo = !selectInsSolo(getState(), iid);
         const ins = instrumentPlayer.getInstrument(iid);
         ins.setSolo(solo);
@@ -347,15 +336,16 @@ export const playInstrument = createAsyncThunk('instruments/playInstrument', asy
 });
 
 export function initializeDefaultInstruments() {
-    return async function initThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function initThunk(dispatch: AppDispatch): Promise<void> {
         console.debug('initializing default instruments');
         const defaultIns = await defaultInstruments();
+        const defaultInsIds = defaultIns.map(ins => ins.getUuid());
         await instrumentPlayer.getTone().loaded();
 
         defaultIns.forEach(ins => {
             dispatch(putLocalInstrument(ins));
-            dispatch(instrumentsSlice.actions.instrumentAdded(ins));
         })
+        dispatch(setSequencerInstruments(defaultInsIds));
     }
 }
 
@@ -372,7 +362,6 @@ function setSequencerInstrumentsInStore(ids: Array<string>) {
         currentSequencerInstrumentIds
             .filter(id => !ids.includes(id))
             .forEach(async id => {
-                console.debug(`removing ${id}`);
                 dispatch(instrumentsSlice.actions.instrumentRemoved(id));
             })
 
@@ -380,16 +369,15 @@ function setSequencerInstrumentsInStore(ids: Array<string>) {
         ids
             .filter(id => !currentSequencerInstrumentIds.includes(id))
             .forEach(async id => {
-                console.debug(`adding ${id}`);
                 const instrument = await loadInstrument(id);
                 dispatch(instrumentsSlice.actions.instrumentAdded(instrument));
             });
     };
 }
 
-function putInstrumentToDb(ins: IInstrument) {
+export function putInstrumentToDb(ins: IInstrument) {
     console.debug('putInstrumentToDb', ins);
-    return async function putInstrumentToDbThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function putInstrumentToDbThunk() {
         // write to db for persistence
         const dbo = ins.toDBObject();
         const result = await db.putInstrument(dbo);
@@ -399,11 +387,11 @@ function putInstrumentToDb(ins: IInstrument) {
         }
         return result.unwrap();
     }
-};
+}
 
 export function deleteInstrumentFromDb(iid: string) {
     console.debug('deleteInstrumentFromDb', iid);
-    return async function deleteInstrumentFromDbThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function deleteInstrumentFromDbThunk(dispatch: AppDispatch): Promise<void> {
         const result = await db.deleteInstrument(iid);
         if (result.err) {
             console.error('deleteInstrumentDb: got error deleting instrument', result.val);
@@ -411,17 +399,16 @@ export function deleteInstrumentFromDb(iid: string) {
         }
         dispatch(instrumentsSlice.actions.instrumentDeleted(iid));
     }
-};
+}
 
 function putSequencerInstrumentsToDb(ids: Array<string>) {
     console.debug('putSequencerInstrumentsToDb', ids);
-    return async function putSequencerInstrumentsToDbThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return async function putSequencerInstrumentsToDbThunk(): Promise<void> {
         const result = await db.putSequencerInstruments(ids);
         if (result.err) {
             console.error('putSequencerInstrumentsToDb: got error writing instrument', result.val);
             throw result.val;
         }
-        return result.unwrap();
     };
 }
 
@@ -484,7 +471,7 @@ async function loadInstrument(id: string) {
 // Selectors //
 
 // instrument id (in order)
-export const selectInstrumentIds = (state: RootState) => state.instruments.instruments.allIds;
+export const selectInstrumentIds = (state: RootState): Array<string> => state.instruments.instruments.allIds;
 
 // all instrument configs (in order)
 export const selectInstrumentConfigs = createSelector(
@@ -496,23 +483,23 @@ export const selectInstrumentConfigs = createSelector(
 );
 
 // screen name for given iid
-export const selectInstrumentScreenName = (state: RootState, instrumentId: string) =>
+export const selectInstrumentScreenName = (state: RootState, instrumentId: string): string =>
     state.instruments.instruments.byId[instrumentId].screenName;
 
 // config for given instrument id
-export const selectInstrumentConfig = (state: RootState, instrumentId: string) =>
+export const selectInstrumentConfig = (state: RootState, instrumentId: string): IInstrumentConfig =>
     state.instruments.instruments.byId[instrumentId];
 
 // parameter names (in order) for given instrument id
-export const selectParameterNamesForInstrument = (state: RootState, instrumentId: string) =>
+export const selectParameterNamesForInstrument = (state: RootState, instrumentId: string): Array<string> =>
     state.instruments.instruments.byId[instrumentId].params.allIds;
 
 // given instrument, parameter
-export const selectInstrumentParameter = (state: RootState, instrumentId: string, parameterName: string) =>
+export const selectInstrumentParameter = (state: RootState, instrumentId: string, parameterName: string): IInstrumentParameterConfig =>
     state.instruments.instruments.byId[instrumentId].params.byId[parameterName];
 
-export const selectInsSolo = (state: RootState, iid: string) => state.instruments.instruments.byId[iid].solo;
-export const selectInsMuted = (state: RootState, iid: string) => state.instruments.instruments.byId[iid].muted;
+export const selectInsSolo = (state: RootState, iid: string): boolean => state.instruments.instruments.byId[iid].solo;
+export const selectInsMuted = (state: RootState, iid: string): boolean => state.instruments.instruments.byId[iid].muted;
 
 export const selectAvailableInstrumentNames = (state: RootState): Array<{ uuid: string, name: string }> =>
     state.instruments.availableInstrumentNames.allIds.map(id => ({

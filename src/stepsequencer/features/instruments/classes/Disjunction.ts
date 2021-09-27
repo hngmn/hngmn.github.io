@@ -3,7 +3,6 @@
 import * as Tone from 'tone';
 
 import { IInstrument, IInstrumentDBObject } from './BaseInstrument';
-import { SliderParameter, SwitchParameter } from './InstrumentParameter';
 import {
     BaseInstrument,
     BaseInstrumentOptions,
@@ -36,14 +35,16 @@ export class Disjunction extends BaseInstrument {
             });
         }
 
+        if (!options.name) {
+            options.name = `Disjunction-${instrument1.getName()}-${instrument2.getName()}`;
+        }
+
         super(
             [
                 ...getInstrumentParameters(instrument1),
                 ...getInstrumentParameters(instrument2),
             ],
-            {
-                name: options.name ? options.name : `Disjunction-${instrument1.getName()}-${instrument2.getName()}`,
-            }
+            options
         );
 
         this.kind = 'Disjunction';
@@ -52,7 +53,7 @@ export class Disjunction extends BaseInstrument {
         this.distribution = [0.80, 0.2];
     }
 
-    schedule(time: Tone.Unit.Time) {
+    schedule(time: Tone.Unit.Time): void {
         const randIns = this.pickRandom<IInstrument, 2>([this.instrument1, this.instrument2], this.distribution);
 
         randIns.schedule(time);
@@ -68,7 +69,7 @@ export class Disjunction extends BaseInstrument {
         }
     }
 
-    toDBObject() {
+    toDBObject(): IDisjunctionDBObject {
         return {
             kind: this.kind,
             uuid: this.getUuid(),
@@ -80,7 +81,7 @@ export class Disjunction extends BaseInstrument {
         };
     }
 
-    static async from(dbo: IDisjunctionDBObject) {
+    static async from(dbo: IDisjunctionDBObject): Promise<Disjunction> {
         const i1Result = await dboToInstrument(dbo.i1);
         if (i1Result.err) {
             console.error('Got error creating i1: ', i1Result.val);
@@ -95,7 +96,14 @@ export class Disjunction extends BaseInstrument {
         }
         const i2 = i2Result.unwrap();
 
-        return new Disjunction(i1, i2);
+        return new Disjunction(
+            i1,
+            i2,
+            {
+                uuid: dbo.uuid,
+                name: dbo.name,
+            }
+        );
     }
 }
 
