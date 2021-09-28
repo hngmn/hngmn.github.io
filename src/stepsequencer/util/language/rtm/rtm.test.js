@@ -38,8 +38,12 @@ const testCases = [
     ['bwxor -. .-', [true, true]],
     ['bwxor -- .-', [true, false]],
     ['bwxor -. ..-.', [true, false, true, false]],
-    ['rotateright 2 -....', [false, false, true, false, false]],
-    ['rotateleft 2 -....', [false, false, false, true, false]],
+
+    // function aliases
+    ['rs 1 -..', [false, true, false]],
+    ['rs 2 -..', [false, false, true]],
+    ['ls 2 -..', [false, true, false]],
+    ['rv -..-.', [false, true, false, false, true]],
 
     // variable ref in function call
     ['b = .-\nrepeat 2 b', [false, true, false, true]],

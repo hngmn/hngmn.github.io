@@ -44,7 +44,7 @@
 
         invert: {
             name: 'invert',
-            aliases: [],
+            aliases: ['inv'],
             fn: (rtm) => {
                 return rtm.map(beat => !beat);
             }
@@ -52,7 +52,7 @@
 
         reverse: {
             name: 'reverse',
-            aliases: [],
+            aliases: ['rv', 'rev'],
             fn: (rtm) => {
                 return rtm.reverse();
             }
@@ -60,7 +60,7 @@
 
         repeat: {
             name: 'repeat',
-            aliases: [],
+            aliases: ['rpt'],
             fn: (n, rtm) => {
                 return new Array(n).fill(rtm).flat();
             }
@@ -68,7 +68,7 @@
 
         rightshift: {
             name: 'rightshift',
-            aliases: [],
+            aliases: ['rs'],
             fn: (n, rtm) => {
                 for (let i = 0; i < n; i++) {
                     rtm.unshift(rtm.pop());
@@ -79,7 +79,7 @@
 
         leftshift: {
             name: 'leftshift',
-            aliases: [],
+            aliases: ['ls'],
             fn: (n, rtm) => {
                 for (let i = 0; i < n; i++) {
                     rtm.push(rtm.shift());
@@ -90,7 +90,7 @@
 
         fixedlength: {
             name: 'fixedlength',
-            aliases: [],
+            aliases: ['fl', 'truncate'],
             fn: (n, rtm) => {
                 if (n > rtm.length) {
                     return rtm.concat(new Array(n - rtm.length).fill(false));
@@ -145,28 +145,6 @@
             }
         },
 
-        rotateright: {
-            name: 'rotateright',
-            aliases: ['rotr'],
-            fn: (n, rtm) => {
-                for (let i = 0; i < n; i++) {
-                    rtm.unshift(rtm.pop());
-                }
-                return rtm;
-            }
-        },
-
-        rotateleft: {
-            name: 'rotateleft',
-            aliases: ['rotl'],
-            fn: (n, rtm) => {
-                for (let i = 0; i < n; i++) {
-                    rtm.push(rtm.shift());
-                }
-                return rtm;
-            }
-        },
-
         cat: {
             name: 'cat',
             aliases: [],
@@ -176,6 +154,15 @@
         },
 
     };
+    // map aliases
+    for (const [_, builtin] of Object.entries(builtins)) {
+        for (const alias of builtin.aliases) {
+            if (alias in builtins) { // error - duplicate identifier
+                throw new Error(`Duplicate found while mapping aliases: ${alias}`);
+            }
+            builtins[alias] = builtin;
+        }
+    }
 }
 
 Start
