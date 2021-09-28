@@ -8,8 +8,8 @@ const testCases = [
     ['(-.-.)', [true, false, true, false]],
 
     // definitions
-    ['down = -...\ndown', [true, false, false, false]],
-    ['down = -...\nup=..-.\n up', [false, false, true, false]],
+    ['downb = -...\ndownb', [true, false, false, false]],
+    ['downb = -...\nupb=..-.\n upb', [false, false, true, false]],
 
     // functions
     ['cat\n  -.\n-.', [true, false, true, false]],
@@ -18,6 +18,8 @@ const testCases = [
     ['all 4s', [true, true, true, true]],
     ['empty 4', [false, false, false, false]],
     ['empty 2e', [false, false, false, false]],
+    ['down 1e', [true, false]],
+    ['down 1q', [true, false, false, false]],
     ['fixedlength 8 -..', [true, false, false, false, false, false, false, false]],
     ['fixedlength 4 -...-...', [true, false, false, false]],
     ['invert -.-.', [false, true, false, true]],
@@ -36,6 +38,8 @@ const testCases = [
     ['bwxor -. .-', [true, true]],
     ['bwxor -- .-', [true, false]],
     ['bwxor -. ..-.', [true, false, true, false]],
+    ['rotateright 2 -....', [false, false, true, false, false]],
+    ['rotateleft 2 -....', [false, false, false, true, false]],
 
     // variable ref in function call
     ['b = .-\nrepeat 2 b', [false, true, false, true]],

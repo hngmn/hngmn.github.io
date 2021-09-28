@@ -982,6 +982,16 @@ function peg$parse(input, options) {
               }
           },
 
+          down: {
+              name: 'down',
+              aliases: ['first'],
+              fn: (n) => {
+                  const rtm = new Array(n).fill(false);
+                  rtm[0] = true;
+                  return rtm;
+              }
+          },
+
           invert: {
               name: 'invert',
               aliases: [],
@@ -1082,6 +1092,28 @@ function peg$parse(input, options) {
                   });
 
                   return xorRtm;
+              }
+          },
+
+          rotateright: {
+              name: 'rotateright',
+              aliases: ['rotr'],
+              fn: (n, rtm) => {
+                  for (let i = 0; i < n; i++) {
+                      rtm.unshift(rtm.pop());
+                  }
+                  return rtm;
+              }
+          },
+
+          rotateleft: {
+              name: 'rotateleft',
+              aliases: ['rotl'],
+              fn: (n, rtm) => {
+                  for (let i = 0; i < n; i++) {
+                      rtm.push(rtm.shift());
+                  }
+                  return rtm;
               }
           },
 
