@@ -36,7 +36,7 @@ export class Disjunction extends BaseInstrument {
         }
 
         if (!options.name) {
-            options.name = `Disjunction-${instrument1.getName()}-${instrument2.getName()}`;
+            options.name = `Djx-${instrument1.getName()}-${instrument2.getName()}`;
         }
 
         super(

@@ -24,7 +24,7 @@ export class TonePlayer extends BaseInstrument {
     constructor(url: string | AudioBuffer, options: BaseInstrumentOptions = {}) {
         if (!options.name) {
             if (typeof url === 'string') {
-                options.name = url;
+                options.name = TonePlayer.splitFilename(url);
             } else {
                 options.name = 'buffer';
             }
@@ -137,6 +137,11 @@ export class TonePlayer extends BaseInstrument {
         );
         await Tone.loaded();
         return player;
+    }
+
+    static splitFilename(filepath: string) {
+        const splits = filepath.split('/');
+        return splits[splits.length - 1];
     }
 }
 

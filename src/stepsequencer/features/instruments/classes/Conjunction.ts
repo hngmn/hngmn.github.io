@@ -35,7 +35,7 @@ export class Conjunction extends BaseInstrument {
         }
 
         if (!options.name) {
-            options.name = `Conjunction-${instrument1.getName()}-${instrument2.getName()}`;
+            options.name = `Cjx-${instrument1.getName()}-${instrument2.getName()}`;
         }
 
         super(
