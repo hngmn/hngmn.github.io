@@ -177,10 +177,19 @@ function peg$parse(input, options) {
                   data: env[varName],
               }
           },
-      peg$c11 = function(fn, args) {
-              const fnName = fn.data;
+      peg$c11 = function(fnNameId, args) {
+              const fnName = fnNameId.data;
+
+              // check defined
               if (!(fnName in builtins)) {
                   error(`Function ${fnName} not found`);
+              }
+
+              const fnObj = builtins[fnName];
+
+              // check arity
+              if (fnObj.argn > 0 && args.length != fnObj.argn) {
+                  error(`Function ${fnName} expected ${fnObj.argn} args but got ${args.length}.`);
               }
 
               const node = {
@@ -191,13 +200,13 @@ function peg$parse(input, options) {
               };
 
               try {
-                  const result = builtins[fnName]['fn'].apply(null, args.map(arg => arg.data));
+                  const result = fnObj['fn'].apply(null, args.map(arg => arg.data));
                   node.data = result;
               } catch (err) {
                   printNode(text(), node);
                   error(`Got error running function: ${err.message}`);
               }
-              //printNode(text(), node);
+
               return node;
           },
       peg$c12 = /^[\-.]/,
@@ -969,6 +978,7 @@ function peg$parse(input, options) {
           all: {
               name: 'all',
               aliases: [],
+              argn: 1,
               fn: (n) => {
                   return new Array(n).fill(true);
               }
@@ -977,6 +987,7 @@ function peg$parse(input, options) {
           empty: {
               name: 'empty',
               aliases: [],
+              argn: 1,
               fn: (n) => {
                   return new Array(n).fill(false);
               }
@@ -985,6 +996,7 @@ function peg$parse(input, options) {
           down: {
               name: 'down',
               aliases: ['first'],
+              argn: 1,
               fn: (n) => {
                   const rtm = new Array(n).fill(false);
                   rtm[0] = true;
@@ -995,6 +1007,7 @@ function peg$parse(input, options) {
           invert: {
               name: 'invert',
               aliases: ['inv'],
+              argn: 1,
               fn: (rtm) => {
                   return rtm.map(beat => !beat);
               }
@@ -1003,6 +1016,7 @@ function peg$parse(input, options) {
           reverse: {
               name: 'reverse',
               aliases: ['rv', 'rev'],
+              argn: 1,
               fn: (rtm) => {
                   return rtm.reverse();
               }
@@ -1011,14 +1025,26 @@ function peg$parse(input, options) {
           repeat: {
               name: 'repeat',
               aliases: ['rpt'],
+              argn: 2,
               fn: (n, rtm) => {
                   return new Array(n).fill(rtm).flat();
               }
           },
 
+          repeatfill: {
+              name: 'repeatfill',
+              aliases: ['rptf'],
+              argn: 2,
+              fn: (n, rtm) => {
+                  const times = Math.ceil(n / rtm.length);
+                  return new Array(times).fill(rtm).flat().slice(0, n);
+              },
+          },
+
           rightshift: {
               name: 'rightshift',
               aliases: ['rs'],
+              argn: 2,
               fn: (n, rtm) => {
                   for (let i = 0; i < n; i++) {
                       rtm.unshift(rtm.pop());
@@ -1030,6 +1056,7 @@ function peg$parse(input, options) {
           leftshift: {
               name: 'leftshift',
               aliases: ['ls'],
+              argn: 2,
               fn: (n, rtm) => {
                   for (let i = 0; i < n; i++) {
                       rtm.push(rtm.shift());
@@ -1041,6 +1068,7 @@ function peg$parse(input, options) {
           fixedlength: {
               name: 'fixedlength',
               aliases: ['fl', 'truncate'],
+              argn: 2,
               fn: (n, rtm) => {
                   if (n > rtm.length) {
                       return rtm.concat(new Array(n - rtm.length).fill(false));
@@ -1053,6 +1081,7 @@ function peg$parse(input, options) {
           bwand: {
               name: 'bwand',
               aliases: ['and'],
+              argn: 2,
               fn: (r1, r2) => {
                   const [shorter, longer] = shorterLonger(r1, r2);
 
@@ -1068,6 +1097,7 @@ function peg$parse(input, options) {
           bwor: {
               name: 'bwor',
               aliases: ['or'],
+              argn: 2,
               fn: (r1, r2) => {
                   const [shorter, longer] = shorterLonger(r1, r2);
 
@@ -1083,6 +1113,7 @@ function peg$parse(input, options) {
           bwxor: {
               name: 'bwxor',
               aliases: ['xor'],
+              argn: 2,
               fn: (r1, r2) => {
                   const [shorter, longer] = shorterLonger(r1, r2);
 
@@ -1098,6 +1129,7 @@ function peg$parse(input, options) {
           cat: {
               name: 'cat',
               aliases: [],
+              argn: -1, // no argn requirement
               fn: (...rtms) => {
                   return rtms.flat();
               }

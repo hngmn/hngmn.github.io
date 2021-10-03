@@ -67,9 +67,10 @@ html, body {
 .fullControlPanel {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: minmax(10px, auto) minmax(10px, 1fr);
+  grid-template-rows: minmax(10px, auto) minmax(10px, auto) minmax(10px, 1fr);
   grid-template-areas:
     "label"
+    "rtm"
     "parameters";
   justify-items: stretch;
 
@@ -135,6 +136,18 @@ html, body {
 }
 
 .quickControlButton.off {
+}
+
+.rtmBox {
+  grid-area: "rtm";
+}
+
+.rtmInput {
+  font-family: monospace;
+}
+
+.rtmInput.invalid {
+  border: 2px solid red;
 }
 
 .instrumentParameters {

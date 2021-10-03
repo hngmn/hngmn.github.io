@@ -1,27 +1,34 @@
 'use strict';
 
-import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit'
-import * as Tone from 'tone';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { NoteTime } from './types';
-import { INormalizedObject } from '../../global';
 import { AppDispatch, RootState } from '../../app/store';
 import { createEmpty3DArray } from '../../util/util';
+import * as rtm from '../../util/language/rtm';
 import { instrumentAdded, instrumentRemoved } from '../instruments/instrumentsSlice';
 import instrumentPlayer from '../instruments/instrumentPlayer';
 
+import { NoteTime } from './types';
+
 interface ISliceState {
-    isPlaying: boolean,
+    isPlaying: boolean;
 
     // Timing
-    nBars: number,
-    beatsPerBar: number,
-    padsPerBeat: number,
-    tempo: number,
-    currentNote: NoteTime,
+    nBars: number;
+    beatsPerBar: number;
+    padsPerBeat: number;
+    tempo: number;
+    currentNote: NoteTime;
 
-    pads: Array<Array<Array<Record<string, boolean>>>>,
+    pads: Array<Array<Array<Record<string, boolean>>>>;
+    rtms: Record<string, RtmState>;
+}
 
+interface RtmState {
+    input: string;
+    synced: boolean;
+    valid: boolean;
+    errorMessage: string;
 }
 
 const INITIAL_NBARS = 2;
@@ -45,6 +52,9 @@ export const sequencerSlice = createSlice({
 
         // sequencer pad state
         pads: createEmpty3DArray<Record<string, boolean>>(INITIAL_NBARS, INITIAL_BEATS_PER_BAR, INITIAL_PADS_PER_BEAT, {}),
+
+        // rtm states per instrument
+        rtms: {},
 
     } as ISliceState,
 
@@ -78,6 +88,8 @@ export const sequencerSlice = createSlice({
                 const [bari, beati, padi] = note;
 
                 state.pads[bari][beati][padi][instrumentName] = !state.pads[bari][beati][padi][instrumentName];
+                
+                state.rtms[instrumentName].synced = false;
             },
 
             prepare(instrumentName: string, note: NoteTime) {
@@ -87,34 +99,56 @@ export const sequencerSlice = createSlice({
             },
         },
 
-        setPads: {
-            reducer(state, action: PayloadAction<{ instrumentName: string, pads: Array<boolean> }>) {
+        setRtmInput: {
+            reducer(state, action: PayloadAction<{ instrumentId: string, rtm: string }>) {
                 const {
-                    instrumentName,
-                    pads,
+                    instrumentId,
+                    rtm,
                 } = action.payload;
 
-                const {
-                    nBars,
-                    beatsPerBar,
-                    padsPerBeat,
-                } = state;
-
-                let padsi = 0;
-                for (let bari = 0; bari < nBars; bari++) {
-                    for (let beati = 0; beati < beatsPerBar; beati++) {
-                        for (let padi = 0; padi < padsPerBeat; padi++) {
-                            state.pads[bari][beati][padi][instrumentName] = pads[padsi++];
-                        }
-                    }
-                }
+                state.rtms[instrumentId].input = rtm;
             },
 
-            prepare(instrumentName: string, pads: Array<boolean>) {
+            prepare(instrumentId: string, rtm: string) {
                 return {
-                    payload: { instrumentName, pads }
+                    payload: { instrumentId, rtm }
                 };
             },
+        },
+
+        compileRtm: (state, action) => {
+            const instrumentId = action.payload;
+            const input = state.rtms[instrumentId].input;
+            const {
+                nBars,
+                beatsPerBar,
+                padsPerBeat,
+            } = state;
+            const nPads = calculateTotalPads(nBars, beatsPerBar, padsPerBeat);
+
+            const result  = rtm.compile(input, nPads);
+
+            if (result.err) {
+                state.rtms[instrumentId].valid = false;
+                state.rtms[instrumentId].errorMessage = result.val.message;
+                return;
+            }
+
+            // update rtm state
+            state.rtms[instrumentId].valid = true;
+            state.rtms[instrumentId].errorMessage = '';
+            state.rtms[instrumentId].synced = true;
+
+            // set pads
+            const pads = result.val;
+            let padsi = 0;
+            for (let bari = 0; bari < nBars; bari++) {
+                for (let beati = 0; beati < beatsPerBar; beati++) {
+                    for (let padi = 0; padi < padsPerBeat; padi++) {
+                        state.pads[bari][beati][padi][instrumentId] = pads[padsi++];
+                    }
+                }
+            }
         },
 
         clearAllPads: (state) => {
@@ -133,8 +167,11 @@ export const sequencerSlice = createSlice({
                     }
                 }
             }
-        },
 
+            for (const id of Object.keys(state.rtms)) {
+                state.rtms[id].synced = false;
+            }
+        },
     },
 
     extraReducers: builder => {
@@ -157,6 +194,13 @@ export const sequencerSlice = createSlice({
                     }
                 }
             }
+
+            state.rtms[id] = {
+                input: '',
+                synced: false,
+                valid: true,
+                errorMessage: '',
+            };
         })
 
         .addCase(instrumentRemoved, (state, action) => {
@@ -175,6 +219,8 @@ export const sequencerSlice = createSlice({
                     }
                 }
             }
+
+            delete state.rtms[id];
         })
     },
 });
@@ -185,27 +231,27 @@ export const sequencerSlice = createSlice({
 /////////////////////////////
 
 // thunk for scheduling
-export function playThunk(dispatch: AppDispatch, getState: () => RootState) {
+export function playThunk(dispatch: AppDispatch): void {
     // update UI
     dispatch(sequencerSlice.actions.play());
     instrumentPlayer.play();
 }
 
-export function pauseThunk(dispatch: AppDispatch, getState: () => RootState) {
+export function pauseThunk(dispatch: AppDispatch): void {
     // update UI
     dispatch(sequencerSlice.actions.pause());
     instrumentPlayer.pause();
 }
 
 export function setTempo(tempo: number) {
-    return function setTempoThunk(dispatch: AppDispatch, getState: () => RootState) {
+    return function setTempoThunk(dispatch: AppDispatch): void {
         dispatch(sequencerSlice.actions.setTempo(tempo));
         instrumentPlayer.setTempo(tempo);
     };
 }
 
 export function setNBars(nBars: number) {
-    return function setNBarsThunk(dispatch: AppDispatch, getSTate: () => RootState) {
+    return function setNBarsThunk(dispatch: AppDispatch): void {
         dispatch(sequencerSlice.actions.setNBars(nBars));
         instrumentPlayer.setLoopBars(nBars);
     }
@@ -217,25 +263,27 @@ export function setNBars(nBars: number) {
 ///////////////
 
 // Timing state
-export const selectNBars = (state: RootState) => state.sequencer.nBars;
-export const selectBeatsPerBar = (state: RootState) => state.sequencer.beatsPerBar;
-export const selectPadsPerBeat = (state: RootState) => state.sequencer.padsPerBeat;
-export const selectCurrentNote = (state: RootState) => state.sequencer.currentNote;
+export const selectNBars = (state: RootState): number => state.sequencer.nBars;
+export const selectBeatsPerBar = (state: RootState): number => state.sequencer.beatsPerBar;
+export const selectPadsPerBeat = (state: RootState): number => state.sequencer.padsPerBeat;
+export const selectCurrentNote = (state: RootState): NoteTime => state.sequencer.currentNote;
 
 // # of pads per instrument
 function calculateTotalPads(nBars: number, beatsPerBar: number, padsPerBeat: number) {
     return nBars * beatsPerBar * padsPerBeat;
 }
-export const selectNumberOfPads = (state: RootState) => calculateTotalPads(state.sequencer.nBars, state.sequencer.beatsPerBar, state.sequencer.padsPerBeat);
+export const selectNumberOfPads = (state: RootState): number => calculateTotalPads(state.sequencer.nBars, state.sequencer.beatsPerBar, state.sequencer.padsPerBeat);
 
 // pad names (instrument ids)
-export const selectPadNames = (state: RootState) => Object.keys(state.sequencer.pads[0][0][0]);
+export const selectPadNames = (state: RootState): Array<string> => Object.keys(state.sequencer.pads[0][0][0]);
 
-export const selectPad = (state: RootState, instrumentName: string, [bari, beati, padi]: NoteTime) => state.sequencer.pads[bari][beati][padi][instrumentName];
+export const selectPad = (state: RootState, instrumentName: string, [bari, beati, padi]: NoteTime): boolean => state.sequencer.pads[bari][beati][padi][instrumentName];
 
-export const selectInstrumentsEnabledForPad = (state: RootState, note: NoteTime) =>
+export const selectInstrumentsEnabledForPad = (state: RootState, note: NoteTime): Array<string> =>
     selectPadNames(state).filter((instrumentName) => selectPad(state, instrumentName, note));
 
+// rtm states
+export const selectRtmState = (state: RootState, instrumentId: string): RtmState => state.sequencer.rtms[instrumentId];
 
 // Auto-generated Actions //
 
@@ -243,8 +291,10 @@ export const {
     setCurrentNote,
 
     padClick,
-    setPads,
     clearAllPads,
+
+    setRtmInput,
+    compileRtm
 } = sequencerSlice.actions;
 
 export default sequencerSlice.reducer;

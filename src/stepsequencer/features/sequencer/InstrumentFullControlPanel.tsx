@@ -36,9 +36,9 @@ export default function InstrumentFullControlPanel(props: Props) {
                 <InstrumentPlayButton instrumentId={instrumentId} keyboardShortcut={'s'}/>
             </span>
 
-            <InstrumentParameters instrumentId={instrumentId}/>
-
             <RtmBox instrumentId={instrumentId}/>
+
+            <InstrumentParameters instrumentId={instrumentId}/>
         </section>
     );
 }
