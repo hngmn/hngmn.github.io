@@ -97,7 +97,7 @@ rs 1e qdown
 ```
 
 
-#### Useful Examples
+#### Examples
 
 Example simple drum beat
 
@@ -107,6 +107,8 @@ kick = rpf 2m qdown              // -...-...-...-... -...-...-...-...
 hat = rs 1e kick                 // ..-...-...-...-. ..-...-...-...-.
 snare = rs 1q (rpf 2m (down 1h)) // ....-.......-... ....-.......-...
 ```
+
+[Here](https://hngmn.github.io/things/stepsequencer) is a working drum sequencer that supports RTM to edit each track.
 
 ## Todo
 Running todo list
