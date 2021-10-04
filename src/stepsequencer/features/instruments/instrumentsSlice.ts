@@ -100,7 +100,7 @@ interface IInstrumentConfig {
 }
 
 interface ISliceState {
-    instruments: INormalizedObject<IInstrumentConfig>;
+    loadedInstruments: INormalizedObject<IInstrumentConfig>;
     availableInstrumentNames: INormalizedObject<string>;
     sequencerInstrumentIds: Array<string>;
 }
@@ -109,7 +109,7 @@ export const instrumentsSlice = createSlice({
     name: 'instruments',
 
     initialState: {
-        instruments: {
+        loadedInstruments: {
             byId: {},
             allIds: [],
         },
@@ -123,8 +123,11 @@ export const instrumentsSlice = createSlice({
     } as ISliceState,
 
     reducers: {
-        instrumentAdded: {
-            reducer(state, action: PayloadAction<{ id: string, screenName: string, params: INormalizedObject<IInstrumentParameterConfig> }>) {
+        instrumentStaged: {
+            reducer(
+                state,
+                action: PayloadAction<{ id: string, screenName: string, params: INormalizedObject<IInstrumentParameterConfig> }>
+            ) {
                 const {
                     id,
                     screenName,
@@ -133,8 +136,8 @@ export const instrumentsSlice = createSlice({
 
                 state.sequencerInstrumentIds.push(id);
 
-                state.instruments.allIds.push(id);
-                state.instruments.byId[id] = {
+                state.loadedInstruments.allIds.push(id);
+                state.loadedInstruments.byId[id] = {
                     id: id,
                     screenName: screenName,
                     muted: false,
@@ -150,11 +153,11 @@ export const instrumentsSlice = createSlice({
             },
         },
 
-        instrumentRemoved: (state, action) => {
+        instrumentUnstaged: (state, action) => {
             const id = action.payload;
 
-            delete state.instruments.byId[id];
-            state.instruments.allIds.splice(state.instruments.allIds.indexOf(id), 1);
+            delete state.loadedInstruments.byId[id];
+            state.loadedInstruments.allIds.splice(state.loadedInstruments.allIds.indexOf(id), 1);
             state.sequencerInstrumentIds.splice(state.sequencerInstrumentIds.indexOf(id), 1);
         },
 
@@ -177,7 +180,7 @@ export const instrumentsSlice = createSlice({
                     value,
                 } = action.payload;
 
-                state.instruments.byId[instrumentId].params.byId[parameterName].value = value;
+                state.loadedInstruments.byId[instrumentId].params.byId[parameterName].value = value;
             },
 
             prepare(instrumentId: string, parameterName: string, value: boolean | number) {
@@ -194,7 +197,7 @@ export const instrumentsSlice = createSlice({
                     newScreenName,
                 } = action.payload;
 
-                state.instruments.byId[instrumentId].screenName = newScreenName;
+                state.loadedInstruments.byId[instrumentId].screenName = newScreenName;
                 state.availableInstrumentNames.byId[instrumentId] = newScreenName;
             },
 
@@ -212,7 +215,7 @@ export const instrumentsSlice = createSlice({
                     value,
                 } = action.payload;
 
-                state.instruments.byId[id].solo = value;
+                state.loadedInstruments.byId[id].solo = value;
             },
 
             prepare(id: string, value: boolean) {
@@ -232,7 +235,7 @@ export const instrumentsSlice = createSlice({
                     value,
                 } = action.payload;
 
-                state.instruments.byId[id].muted = value;
+                state.loadedInstruments.byId[id].muted = value;
             },
 
             prepare(id: string, value: boolean) {
@@ -287,7 +290,7 @@ export function removeInstrumentFromSequencer(id: string) {
         }
         console.debug(`removeInstrumentFromSequencer: removing iid=${id}, new sequencerInstruments=`, removed)
         await dispatch(putSequencerInstrumentsToDb(removed));
-        dispatch(instrumentsSlice.actions.instrumentRemoved(id));
+        dispatch(instrumentsSlice.actions.instrumentUnstaged(id));
     }
 }
 
@@ -360,19 +363,19 @@ function setSequencerInstrumentsInStore(ids: Array<string>) {
         const currentSequencerInstrumentIds = selectSequencerInstrumentIds(getState());
         console.debug('setSequencerInstrumentsInStore: current=', currentSequencerInstrumentIds, 'setting to: ', ids);
 
-        // remove instruments not in the new set
+        // unstage instruments not in the new set
         currentSequencerInstrumentIds
             .filter(id => !ids.includes(id))
             .forEach(async id => {
-                dispatch(instrumentsSlice.actions.instrumentRemoved(id));
+                dispatch(instrumentsSlice.actions.instrumentUnstaged(id));
             })
 
-        // add new instruments
+        // stage new instruments
         ids
             .filter(id => !currentSequencerInstrumentIds.includes(id))
             .forEach(async id => {
                 const instrument = await loadInstrument(id);
-                dispatch(instrumentsSlice.actions.instrumentAdded(instrument));
+                dispatch(instrumentsSlice.actions.instrumentStaged(instrument));
                 console.debug(`adding iid=${id}`);
             });
     };
@@ -474,35 +477,35 @@ async function loadInstrument(id: string) {
 // Selectors //
 
 // instrument id (in order)
-export const selectInstrumentIds = (state: RootState): Array<string> => state.instruments.instruments.allIds;
+export const selectInstrumentIds = (state: RootState): Array<string> => state.instruments.loadedInstruments.allIds;
 
 // all instrument configs (in order)
 export const selectInstrumentConfigs = createSelector(
     [
         selectInstrumentIds,
-        (state) => state.instruments.instruments.byId,
+        (state) => state.instruments.loadedInstruments.byId,
     ],
     (instrumentIds, byId) => instrumentIds.map(id => byId[id])
 );
 
 // screen name for given iid
 export const selectInstrumentScreenName = (state: RootState, instrumentId: string): string =>
-    state.instruments.instruments.byId[instrumentId].screenName;
+    state.instruments.loadedInstruments.byId[instrumentId].screenName;
 
 // config for given instrument id
 export const selectInstrumentConfig = (state: RootState, instrumentId: string): IInstrumentConfig =>
-    state.instruments.instruments.byId[instrumentId];
+    state.instruments.loadedInstruments.byId[instrumentId];
 
 // parameter names (in order) for given instrument id
 export const selectParameterNamesForInstrument = (state: RootState, instrumentId: string): Array<string> =>
-    state.instruments.instruments.byId[instrumentId].params.allIds;
+    state.instruments.loadedInstruments.byId[instrumentId].params.allIds;
 
 // given instrument, parameter
 export const selectInstrumentParameter = (state: RootState, instrumentId: string, parameterName: string): IInstrumentParameterConfig =>
-    state.instruments.instruments.byId[instrumentId].params.byId[parameterName];
+    state.instruments.loadedInstruments.byId[instrumentId].params.byId[parameterName];
 
-export const selectInsSolo = (state: RootState, iid: string): boolean => state.instruments.instruments.byId[iid].solo;
-export const selectInsMuted = (state: RootState, iid: string): boolean => state.instruments.instruments.byId[iid].muted;
+export const selectInsSolo = (state: RootState, iid: string): boolean => state.instruments.loadedInstruments.byId[iid].solo;
+export const selectInsMuted = (state: RootState, iid: string): boolean => state.instruments.loadedInstruments.byId[iid].muted;
 
 export const selectAvailableInstrumentNames = (state: RootState): Array<{ uuid: string, name: string }> =>
     state.instruments.availableInstrumentNames.allIds.map(id => ({
@@ -513,15 +516,15 @@ export const selectAvailableInstrumentNames = (state: RootState): Array<{ uuid: 
 export const selectSequencerInstrumentIds = (state: RootState): Array<string> =>  state.instruments.sequencerInstrumentIds;
 
 export const selectSequencerInstruments = (state: RootState): Array<{ uuid: string, name: string }> => 
-    state.instruments.instruments.allIds.map(id => ({
-        uuid: state.instruments.instruments.byId[id].id,
-        name: state.instruments.instruments.byId[id].screenName,
+    state.instruments.sequencerInstrumentIds.map(id => ({
+        uuid: state.instruments.loadedInstruments.byId[id].id,
+        name: state.instruments.loadedInstruments.byId[id].screenName,
     }));
 
 // Actions //
 export const {
-    instrumentAdded,
-    instrumentRemoved,
+    instrumentStaged,
+    instrumentUnstaged,
 } = instrumentsSlice.actions;
 
 export default instrumentsSlice.reducer;

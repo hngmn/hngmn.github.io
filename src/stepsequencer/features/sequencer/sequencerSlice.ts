@@ -5,7 +5,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppDispatch, RootState } from '../../app/store';
 import { createEmpty3DArray } from '../../util/util';
 import * as rtm from '../../util/language/rtm';
-import { instrumentAdded, instrumentRemoved } from '../instruments/instrumentsSlice';
+import { instrumentStaged, instrumentUnstaged } from '../instruments/instrumentsSlice';
 import instrumentPlayer from '../instruments/instrumentPlayer';
 
 import { NoteTime } from './types';
@@ -176,7 +176,7 @@ export const sequencerSlice = createSlice({
 
     extraReducers: builder => {
         builder
-        .addCase(instrumentAdded, (state, action) => {
+        .addCase(instrumentStaged, (state, action) => {
             const {
                 nBars,
                 beatsPerBar,
@@ -203,7 +203,7 @@ export const sequencerSlice = createSlice({
             };
         })
 
-        .addCase(instrumentRemoved, (state, action) => {
+        .addCase(instrumentUnstaged, (state, action) => {
             const {
                 nBars,
                 beatsPerBar,

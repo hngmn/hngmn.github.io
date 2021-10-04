@@ -9,12 +9,13 @@ import {
     selectSequencerInstruments,
 } from './instrumentsSlice';
 
-export default function SequencerInstrumentList() {
+export default function SequencerInstrumentList(): React.ReactElement {
     const sequencerInstruments = useSelector(selectSequencerInstruments);
 
     return (
         <section className={classnames('sequencerInstruments')}>
-            <p className={classnames('instrumentSelectColumnTitle', 'right')}>Instruments in Sequencer</p>
+            <p className={classnames('instrumentSelectColumnTitle', 'right')}>Staged Instruments</p>
+
             <ol className={classnames('instrumentSelectList', 'right')}>
                 {sequencerInstruments.map(({ uuid, name }) =>
                     <li
