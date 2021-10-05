@@ -32,7 +32,7 @@ export default function DbInstrumentList(): React.ReactElement {
             <p className={classnames('instrumentSelectColumnTitle', 'left')}>Available to add</p>
 
             <ol className={classnames('instrumentSelectList', 'left')}>
-                {availableInstruments.map(({ uuid, name }, index) =>
+                {availableInstruments.map(({ uuid, name }) =>
                     <li
                         key={uuid}
                         onDoubleClick={(e: React.MouseEvent) => {
@@ -40,20 +40,21 @@ export default function DbInstrumentList(): React.ReactElement {
                             dispatch(playInstrument(uuid));
                         }}
                     >
-                        <span>
-                            <button
-                                onClick={() => dispatch(deleteInstrumentFromDb(uuid))}
-                            >
-                                x
-                            </button>
-
-                            {`${index}. ${name}`}
+                        <span className={classnames('dbInstrumentsListItem')}>
+                            {name}
 
                             <button
                                 onClick={() => dispatch(stageInstrument(uuid))}
                             >
                                 Stage
                             </button>
+
+                            <button
+                                onClick={() => dispatch(deleteInstrumentFromDb(uuid))}
+                            >
+                                Delete
+                            </button>
+
                         </span>
                     </li>
                 )}

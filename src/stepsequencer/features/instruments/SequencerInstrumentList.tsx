@@ -22,7 +22,7 @@ export default function SequencerInstrumentList(): React.ReactElement {
             <p className={classnames('instrumentSelectColumnTitle', 'right')}>Staged Instruments</p>
 
             <ol className={classnames('instrumentSelectList', 'right')}>
-                {sequencerInstruments.map(({ uuid, name }, index) =>
+                {sequencerInstruments.map(({ uuid, name }) =>
                     <li
                         key={uuid}
                         onDoubleClick={() => {
@@ -30,8 +30,8 @@ export default function SequencerInstrumentList(): React.ReactElement {
                             dispatch(playInstrument(uuid));
                         }}
                     >
-                        <span>
-                            {`${index}. ${name}`}
+                        <span className={classnames('sequencerInstrumentsListItem')}>
+                            {name}
 
                             <button
                                 onClick={() => dispatch(unstageInstrument(uuid))}

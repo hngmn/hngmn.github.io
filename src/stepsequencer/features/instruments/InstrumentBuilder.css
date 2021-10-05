@@ -11,20 +11,30 @@
 
 .availableInstruments {
   grid-area: available;
+  border: 1px solid black;
+  margin: 2%;
 }
 
 .sequencerInstruments {
   grid-area: staged;
+  border: 1px solid black;
+  margin: 2%;
 }
 
-.instrumentSelectColumnTitle {
-  align-self: center;
-  border-bottom: 1px solid black;
+.dbInstrumentsListItem {
+  margin-right: 10%;
+
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: 1fr;
+  grid-template-areas: "label stage delete";
 }
 
-.commitButton {
-  grid-area: ci;
-  padding: 5px;
-  margin: 5px;
-  width: max-content;
+.sequencerInstrumentsListItem {
+  margin-right: 10%;
+
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr;
+  grid-template-areas: "label unstage";
 }
