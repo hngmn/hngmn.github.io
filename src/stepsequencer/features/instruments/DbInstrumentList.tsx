@@ -29,33 +29,32 @@ export default function DbInstrumentList(): React.ReactElement {
     return (
         <section className={classnames('availableInstruments')}>
 
-            <p className={classnames('instrumentSelectColumnTitle', 'left')}>Available to add</p>
+            <p className={classnames('instrumentListTitle')}>Available to add</p>
 
             <ol className={classnames('instrumentSelectList', 'left')}>
-                {availableInstruments.map(({ uuid, name }) =>
+                {availableInstruments.map(({ uuid, name }, index) =>
                     <li
+                        className={classnames('instrumentListItem', 'available')}
                         key={uuid}
-                        onDoubleClick={(e: React.MouseEvent) => {
-                            console.debug(`${name} double clicked`, e);
+                        onClick={() => {
                             dispatch(playInstrument(uuid));
                         }}
                     >
-                        <span className={classnames('dbInstrumentsListItem')}>
-                            {name}
+                        {`${index+1}. ${name}`}
 
-                            <button
-                                onClick={() => dispatch(stageInstrument(uuid))}
-                            >
-                                Stage
-                            </button>
+                        <div className={classnames('spacer')}/>
 
-                            <button
-                                onClick={() => dispatch(deleteInstrumentFromDb(uuid))}
-                            >
-                                Delete
-                            </button>
+                        <button
+                            onClick={() => dispatch(stageInstrument(uuid))}
+                        >
+                            Stage
+                        </button>
 
-                        </span>
+                        <button
+                            onClick={() => dispatch(deleteInstrumentFromDb(uuid))}
+                        >
+                            Delete
+                        </button>
                     </li>
                 )}
             </ol>

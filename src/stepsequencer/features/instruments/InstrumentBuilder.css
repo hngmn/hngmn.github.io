@@ -21,20 +21,34 @@
   margin: 2%;
 }
 
-.dbInstrumentsListItem {
-  margin-right: 10%;
-
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  grid-template-rows: 1fr;
-  grid-template-areas: "label stage delete";
+.instrumentListTitle {
+  margin: 0px auto;
 }
 
-.sequencerInstrumentsListItem {
+.instrumentListItem {
   margin-right: 10%;
-
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: 1fr;
-  grid-template-areas: "label unstage";
 }
+
+.instrumentListItem:hover {
+  border: 1px solid black;
+}
+
+.instrumentListItem#button {
+  width: fit-content;
+}
+
+.instrumentListItem.available {
+  display: grid;
+  grid-template-columns: minmax(10px, auto) 1fr minmax(10px, min-content) minmax(10px, min-content);
+  grid-template-rows: auto;
+  grid-template-areas: "label . stage delete";
+}
+
+.instrumentListItem.sequencer {
+  display: grid;
+  grid-template-columns: minmax(10px, auto) 1fr minmax(10px, min-content);
+  grid-template-rows: auto;
+  grid-template-areas: "label . unstage";
+}
+
+

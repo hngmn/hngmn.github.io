@@ -19,26 +19,26 @@ export default function SequencerInstrumentList(): React.ReactElement {
 
     return (
         <section className={classnames('sequencerInstruments')}>
-            <p className={classnames('instrumentSelectColumnTitle', 'right')}>Staged Instruments</p>
+            <p className={classnames('instrumentListTitle')}>Staged Instruments</p>
 
             <ol className={classnames('instrumentSelectList', 'right')}>
-                {sequencerInstruments.map(({ uuid, name }) =>
+                {sequencerInstruments.map(({ uuid, name }, index) =>
                     <li
+                        className={classnames('instrumentListItem', 'sequencer')}
                         key={uuid}
-                        onDoubleClick={() => {
-                            console.debug(`${name} double clicked`);
+                        onClick={() => {
                             dispatch(playInstrument(uuid));
                         }}
                     >
-                        <span className={classnames('sequencerInstrumentsListItem')}>
-                            {name}
+                        {`${index+1}. ${name}`}
 
-                            <button
-                                onClick={() => dispatch(unstageInstrument(uuid))}
-                            >
-                                Unstage
-                            </button>
-                        </span>
+                        <div className={classnames('spacer')}/>
+
+                        <button
+                            onClick={() => dispatch(unstageInstrument(uuid))}
+                        >
+                            Unstage
+                        </button>
                     </li>
                 )}
             </ol>
