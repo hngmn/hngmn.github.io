@@ -13,5 +13,11 @@ Jest and React-Testing-Library
 * Local persistence
   * [x] save instruments
   * [ ] handle instrument ids, names, screennames
-  * [ ] save sequencer state
+  * [x] save sequencer state
+  * [ ] something like a DSL for specifying instruments that can be played and
+    configured in the sequencer (syntax lisp-like or json)
+  * [ ] instrument parameters can be picked here to be exposed in the sequencer
+        control panels
+  * [x] auxiliary features include instrument CRUD, sampling, parameter
+        configuration
 
