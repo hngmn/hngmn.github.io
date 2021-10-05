@@ -278,19 +278,33 @@ export function setSequencerInstruments(ids: Array<string>) {
     }
 }
 
-export function removeInstrumentFromSequencer(id: string) {
-    return async function removeInstrumentThunk(dispatch: AppDispatch, getState: () => RootState): Promise<void> {
+export function stageInstrument(id: string) {
+    return async function stageInstrumentThunk(dispatch: AppDispatch, getState: () => RootState): Promise<Array<string>> {
+        const sequencerInstrumentIds = Array.from(selectSequencerInstrumentIds(getState()));
+        const ins = await loadInstrument(id);
+        dispatch(instrumentsSlice.actions.instrumentStaged(ins));
+        sequencerInstrumentIds.push(id);
+        dispatch(putSequencerInstrumentsToDb(sequencerInstrumentIds));
+
+        return sequencerInstrumentIds;
+    }
+}
+
+export function unstageInstrument(id: string) {
+    return async function removeInstrumentThunk(dispatch: AppDispatch, getState: () => RootState): Promise<Array<string>> {
         const removed = Array.from(selectSequencerInstrumentIds(getState()));
-        console.debug('removeInstrumentFromSequencer: current sequencer=', removed);
+        dispatch(instrumentsSlice.actions.instrumentUnstaged(id));
+        console.debug('unstageInstrument: current sequencer=', removed);
         const index = removed.indexOf(id);
         if (index > -1) {
             removed.splice(index, 1);
         } else {
             console.error(`id ${id} not found in array:`, removed);
         }
-        console.debug(`removeInstrumentFromSequencer: removing iid=${id}, new sequencerInstruments=`, removed)
+        console.debug(`unstageInstrument: removing iid=${id}, new sequencerInstruments=`, removed)
         await dispatch(putSequencerInstrumentsToDb(removed));
-        dispatch(instrumentsSlice.actions.instrumentUnstaged(id));
+
+        return removed;
     }
 }
 
@@ -338,6 +352,7 @@ export function muteInstrument(iid: string) {
 }
 
 export const playInstrument = createAsyncThunk('instruments/playInstrument', async (instrumentId: string) => {
+    await loadInstrument(instrumentId);
     instrumentPlayer.playInstrument(instrumentId)
 });
 

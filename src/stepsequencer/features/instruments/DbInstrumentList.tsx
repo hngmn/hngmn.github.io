@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../../app/store';
 import {
     deleteInstrumentFromDb,
+    playInstrument,
+    stageInstrument,
 
     selectSequencerInstruments,
     selectAvailableInstrumentNames,
@@ -30,21 +32,28 @@ export default function DbInstrumentList(): React.ReactElement {
             <p className={classnames('instrumentSelectColumnTitle', 'left')}>Available to add</p>
 
             <ol className={classnames('instrumentSelectList', 'left')}>
-                {availableInstruments.map(({ uuid, name }) =>
+                {availableInstruments.map(({ uuid, name }, index) =>
                     <li
                         key={uuid}
                         onDoubleClick={(e: React.MouseEvent) => {
                             console.debug(`${name} double clicked`, e);
+                            dispatch(playInstrument(uuid));
                         }}
                     >
                         <span>
                             <button
                                 onClick={() => dispatch(deleteInstrumentFromDb(uuid))}
                             >
-                                Delete
+                                x
                             </button>
 
-                            {name}
+                            {`${index}. ${name}`}
+
+                            <button
+                                onClick={() => dispatch(stageInstrument(uuid))}
+                            >
+                                Stage
+                            </button>
                         </span>
                     </li>
                 )}

@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch, RootState } from '../../app/store';
-import { removeInstrumentFromSequencer, selectInstrumentScreenName } from '../instruments/instrumentsSlice';
+import { unstageInstrument, selectInstrumentScreenName } from '../instruments/instrumentsSlice';
 import InstrumentLabel from './InstrumentLabel';
 import InstrumentPlayButton from './InstrumentPlayButton';
 import InstrumentQuickControls from './InstrumentQuickControls';
@@ -31,7 +31,7 @@ export default function InstrumentQuickControlPanel(props: Props) {
         <section className={panelClassname}>
             <button
                 className={classnames('removeInstrumentButton')}
-                onClick={(e => dispatch(removeInstrumentFromSequencer(instrumentId)))}
+                onClick={(e => dispatch(unstageInstrument(instrumentId)))}
             >
                 x
             </button>

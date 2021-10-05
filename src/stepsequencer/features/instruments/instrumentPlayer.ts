@@ -124,8 +124,12 @@ function setUpLoops(
     }
 }
 
-function playInstrument(instrumentId: string) {
-    instruments[instrumentId].schedule('+0.05');
+function playInstrument(instrumentId: string): void {
+    if (instrumentId in instruments) {
+        instruments[instrumentId].schedule('+0.05');
+    } else {
+        console.error(`instrument ${instrumentId} not loaded yet`);
+    }
 }
 
 export default {
