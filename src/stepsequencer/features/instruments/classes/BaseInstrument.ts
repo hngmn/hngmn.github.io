@@ -101,56 +101,56 @@ export abstract class BaseInstrument implements IInstrument {
         put(this.params, vol.getName(), vol);
         put(this.params, pan.getName(), pan);
         
-        for (let p of params) {
+        for (const p of params) {
             put(this.params, p.getName(), p);
         }
     }
 
-    getKind() {
+    getKind(): IInstrumentKind {
         return this.kind;
     }
 
-    getUuid() {
+    getUuid(): string {
         return this.uuid;
     }
 
-    getName() {
+    getName(): string {
         return this.name;
     }
 
-    setName(newName: string) {
+    setName(newName: string): void {
         this.name = newName;
     }
 
-    getAllParameterNames() {
+    getAllParameterNames(): Array<string> {
         return this.params.allIds;
     }
 
-    getParameter(parameterName: string) {
+    getParameter(parameterName: string): IInstrumentParameter {
         return this.params.byId[parameterName];
     }
 
-    getParameterConfig(parameterName: string) {
+    getParameterConfig(parameterName: string): IInstrumentParameterConfig {
         return this.params.byId[parameterName].toConfigObject();
     }
 
-    getParameterValue(parameterName: string) {
+    getParameterValue(parameterName: string): number | boolean {
         return this.params.byId[parameterName].getValue();
     }
 
-    setParameterValue(parameterName: string, value: boolean | number) {
+    setParameterValue(parameterName: string, value: boolean | number): void {
         this.params.byId[parameterName].setValue(value);
     }
 
-    getAllParameterConfigs() {
+    getAllParameterConfigs(): Array<IInstrumentParameterConfig> {
         return this.params.allIds.map(id => this.params.byId[id].toConfigObject());
     }
 
-    setSolo(s: boolean) {
+    setSolo(s: boolean): void {
         this.channel.solo = s;
     }
 
-    setMute(m: boolean) {
+    setMute(m: boolean): void {
         this.channel.mute = m;
     }
 

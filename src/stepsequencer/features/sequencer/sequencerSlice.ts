@@ -80,21 +80,21 @@ export const sequencerSlice = createSlice({
         },
 
         padClick: {
-            reducer(state, action: PayloadAction<{ instrumentName: string, note: NoteTime }>) {
+            reducer(state, action: PayloadAction<{ id: string, note: NoteTime }>) {
                 const {
-                    instrumentName,
+                    id,
                     note,
                 } = action.payload;
                 const [bari, beati, padi] = note;
 
-                state.pads[bari][beati][padi][instrumentName] = !state.pads[bari][beati][padi][instrumentName];
+                state.pads[bari][beati][padi][id] = !state.pads[bari][beati][padi][id];
                 
-                state.rtms[instrumentName].synced = false;
+                state.rtms[id].synced = false;
             },
 
-            prepare(instrumentName: string, note: NoteTime) {
+            prepare(id: string, note: NoteTime) {
                 return {
-                    payload: { instrumentName, note }
+                    payload: { id, note }
                 };
             },
         },
@@ -161,8 +161,8 @@ export const sequencerSlice = createSlice({
             for (let bari = 0; bari < nBars; bari++) {
                 for (let beati = 0; beati < beatsPerBar; beati++) {
                     for (let padi = 0; padi < padsPerBeat; padi++) {
-                        Object.keys(state.pads[bari][beati][padi]).forEach((instrumentName) => {
-                            state.pads[bari][beati][padi][instrumentName] = false;
+                        Object.keys(state.pads[bari][beati][padi]).forEach((id) => {
+                            state.pads[bari][beati][padi][id] = false;
                         });
                     }
                 }
@@ -275,15 +275,15 @@ function calculateTotalPads(nBars: number, beatsPerBar: number, padsPerBeat: num
 export const selectNumberOfPads = (state: RootState): number => calculateTotalPads(state.sequencer.nBars, state.sequencer.beatsPerBar, state.sequencer.padsPerBeat);
 
 // pad names (instrument ids)
-export const selectPadNames = (state: RootState): Array<string> => Object.keys(state.sequencer.pads[0][0][0]);
+export const selectPadIds = (state: RootState): Array<string> => Object.keys(state.sequencer.pads[0][0][0]);
 
-export const selectPad = (state: RootState, instrumentName: string, [bari, beati, padi]: NoteTime): boolean => state.sequencer.pads[bari][beati][padi][instrumentName];
+export const selectPad = (state: RootState, iid: string, [bari, beati, padi]: NoteTime): boolean => state.sequencer.pads[bari][beati][padi][iid];
 
 export const selectInstrumentsEnabledForPad = (state: RootState, note: NoteTime): Array<string> =>
-    selectPadNames(state).filter((instrumentName) => selectPad(state, instrumentName, note));
+    selectPadIds(state).filter((iid) => selectPad(state, iid, note));
 
 // rtm states
-export const selectRtmState = (state: RootState, instrumentId: string): RtmState => state.sequencer.rtms[instrumentId];
+export const selectRtmState = (state: RootState, iid: string): RtmState => state.sequencer.rtms[iid];
 
 // Auto-generated Actions //
 

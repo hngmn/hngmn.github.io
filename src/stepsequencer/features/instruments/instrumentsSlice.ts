@@ -67,7 +67,7 @@ export const fetchSequencerInstruments = createAsyncThunk<
 export const putLocalInstrument = createAsyncThunk<
     {
         id: string
-        screenName: string
+        name: string
     },
     IInstrument,
     {
@@ -86,14 +86,14 @@ export const putLocalInstrument = createAsyncThunk<
 
         return {
             id: ins.getUuid(),
-            screenName: ins.getName(),
+            name: ins.getName(),
         }
     }
 );
 
 interface IInstrumentConfig {
     id: string,
-    screenName: string,
+    name: string,
     muted: boolean,
     solo: boolean,
     params: INormalizedObject<IInstrumentParameterConfig>,
@@ -126,11 +126,11 @@ export const instrumentsSlice = createSlice({
         instrumentStaged: {
             reducer(
                 state,
-                action: PayloadAction<{ id: string, screenName: string, params: INormalizedObject<IInstrumentParameterConfig> }>
+                action: PayloadAction<{ id: string, name: string, params: INormalizedObject<IInstrumentParameterConfig> }>
             ) {
                 const {
                     id,
-                    screenName,
+                    name,
                     params,
                 } = action.payload;
 
@@ -139,7 +139,7 @@ export const instrumentsSlice = createSlice({
                 state.loadedInstruments.allIds.push(id);
                 state.loadedInstruments.byId[id] = {
                     id: id,
-                    screenName: screenName,
+                    name: name,
                     muted: false,
                     solo: false,
                     params: params,
@@ -197,7 +197,7 @@ export const instrumentsSlice = createSlice({
                     newScreenName,
                 } = action.payload;
 
-                state.loadedInstruments.byId[instrumentId].screenName = newScreenName;
+                state.loadedInstruments.byId[instrumentId].name = newScreenName;
                 state.availableInstrumentNames.byId[instrumentId] = newScreenName;
             },
 
@@ -262,11 +262,11 @@ export const instrumentsSlice = createSlice({
             .addCase(putLocalInstrument.fulfilled, (state, action) => {
                 const {
                     id,
-                    screenName,
+                    name,
                 } = action.payload;
 
                 state.availableInstrumentNames.allIds.push(id);
-                state.availableInstrumentNames.byId[id] = screenName;
+                state.availableInstrumentNames.byId[id] = name;
             })
     },
 });
@@ -439,7 +439,7 @@ function putSequencerInstrumentsToDb(ids: Array<string>) {
 function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
     return {
         id: dbo.uuid,
-        screenName: dbo.name,
+        name: dbo.name,
         solo: false,
         muted: false,
         params: normalizedObjectFromTuples(
@@ -451,7 +451,7 @@ function dboToInsConfig(dbo: IInstrumentDBObject): IInstrumentConfig {
 function insToInsConfig(ins: IInstrument): IInstrumentConfig {
     return {
         id: ins.getUuid(),
-        screenName: ins.getName(),
+        name: ins.getName(),
         solo: false,
         muted: false,
         params: normalizedObjectFromTuples(
@@ -505,7 +505,7 @@ export const selectInstrumentConfigs = createSelector(
 
 // screen name for given iid
 export const selectInstrumentScreenName = (state: RootState, instrumentId: string): string =>
-    state.instruments.loadedInstruments.byId[instrumentId].screenName;
+    state.instruments.loadedInstruments.byId[instrumentId].name;
 
 // config for given instrument id
 export const selectInstrumentConfig = (state: RootState, instrumentId: string): IInstrumentConfig =>
@@ -533,7 +533,7 @@ export const selectSequencerInstrumentIds = (state: RootState): Array<string> =>
 export const selectSequencerInstruments = (state: RootState): Array<{ uuid: string, name: string }> => 
     state.instruments.sequencerInstrumentIds.map(id => ({
         uuid: state.instruments.loadedInstruments.byId[id].id,
-        name: state.instruments.loadedInstruments.byId[id].screenName,
+        name: state.instruments.loadedInstruments.byId[id].name,
     }));
 
 // Actions //

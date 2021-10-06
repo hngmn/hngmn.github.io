@@ -12,7 +12,7 @@ Jest and React-Testing-Library
 # Todo
 * Local persistence
   * [x] save instruments
-  * [ ] handle instrument ids, names, screennames
+  * [x] handle instrument ids, names, screennames
   * [x] save sequencer state
   * [ ] something like a DSL for specifying instruments that can be played and
     configured in the sequencer (syntax lisp-like or json)
