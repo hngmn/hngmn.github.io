@@ -4,7 +4,8 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const MODULES = [
   'boombox',
   'gallery',
-  'stepsequencer'
+  'stepsequencer',
+  'chorder'
 ]
 
 /**
