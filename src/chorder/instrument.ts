@@ -26,12 +26,23 @@ export default class Instrument {
     }
 
     play(): void {
-        const now = Tone.now();
         const c4 = Note.from('C4');
-        this.synth.triggerAttack(c4.toString(), now)
+        const e4 = c4.M3();
+        const g4 = e4.m3();
+        this.playNote(c4.octave(-1));
+        this.playNote(c4);
+        this.playNote(e4);
+        this.playNote(g4);
+    }
+
+    playNote(note: Note): void {
+        const now = Tone.now();
+        this.synth.triggerAttack(note.toString(), now)
+        this.notesPlaying.push(note);
     }
 
     stop(): void {
-        this.synth.triggerRelease(['C4', 'E4', 'G3'], Tone.now());
+        this.synth.triggerRelease(this.notesPlaying.map(n => n.toString()), Tone.now());
+        this.notesPlaying = [];
     }
 }

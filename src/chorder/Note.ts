@@ -16,12 +16,24 @@ for (const [i, note] of intToNote.entries()) {
 export default class Note {
     value: number;
 
-    constructor(n: number) {
+    private constructor(n: number) {
         this.value = n;
     }
 
     toString(): string {
         return intToNote[this.value];
+    }
+
+    M3(): Note {
+        return new Note(this.value + 4);
+    }
+
+    m3(): Note {
+        return new Note(this.value + 3);
+    }
+
+    octave(n = 1): Note {
+        return new Note(this.value + (n * 12));
     }
 
     static from(note: NoteString): Note {
