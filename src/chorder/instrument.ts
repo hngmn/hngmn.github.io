@@ -2,7 +2,7 @@
 
 import * as Tone from 'tone';
 
-import Note from './Note';
+import Note, { NoteString } from './Note';
 
 export default class Instrument {
     synth: Tone.PolySynth
@@ -26,19 +26,22 @@ export default class Instrument {
     }
 
     play(): void {
-        const c4 = Note.from('C4');
-        const e4 = c4.M3();
-        const g4 = e4.m3();
-        this.playNote(c4.octave(-1));
-        this.playNote(c4);
-        this.playNote(e4);
-        this.playNote(g4);
+        this.playChord('C4');
     }
 
     playNote(note: Note): void {
         const now = Tone.now();
         this.synth.triggerAttack(note.toString(), now)
         this.notesPlaying.push(note);
+    }
+
+    playChord(noteString: NoteString): void {
+        const root = Note.from(noteString);
+        const third = root.M3();
+        const fifth = third.m3();
+        this.playNote(root);
+        this.playNote(third);
+        this.playNote(fifth);
     }
 
     stop(): void {

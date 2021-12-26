@@ -45,4 +45,4 @@ type NoteLetterr = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
 type NoteModifier = '' | 'b' | '#';
 type NoteLetter = `${NoteLetterr}${NoteModifier}`;
 type Octave = '-2' | '-1' | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
-type NoteString = `${NoteLetter}${Octave}`;
+export type NoteString = `${NoteLetter}${Octave}`;
