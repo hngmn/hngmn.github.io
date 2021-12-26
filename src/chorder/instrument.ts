@@ -7,7 +7,7 @@ import Note from './Note';
 import Scale from './Scale';
 
 export default class Instrument {
-    static DEBOUNCE_MS = 200;
+    static DEBOUNCE_MS = 60;
 
     synth: Tone.PolySynth
     scale: Scale;
@@ -39,7 +39,7 @@ export default class Instrument {
     }
 
     getRoot(): Note {
-        return this.scale.at(this.degree);
+        return this.scale.at(this.degree).up(this.transposition);
     }
 
     playNote(note: Note): void {
