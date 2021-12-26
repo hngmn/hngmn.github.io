@@ -10,6 +10,8 @@ export default class Instrument {
     scale: Scale;
     transposition: number;
 
+    doubleRoot: boolean;
+
     notesPlaying: Array<Note>;
 
     constructor() {
@@ -17,6 +19,7 @@ export default class Instrument {
 	this.notesPlaying = [];
         this.scale = Scale.CMAJOR;
         this.transposition = 0;
+        this.doubleRoot = false;
     }
 
     play(): void {
@@ -42,6 +45,12 @@ export default class Instrument {
 
         let notes = [root, third, fifth];
 
+        // double root
+        if (this.doubleRoot) {
+            notes.push(root.octave(-1));
+        }
+
+        // apply transposition
         notes = notes.map(n => n.up(this.transposition));
 
         this.playNotes(notes);
@@ -53,6 +62,11 @@ export default class Instrument {
     transpose(n: number): number {
         this.transposition += n;
         return this.transposition;
+    }
+
+    setDoubleRoot(b: boolean): boolean {
+        this.doubleRoot = b;
+        return this.doubleRoot;
     }
 
     stop(): void {

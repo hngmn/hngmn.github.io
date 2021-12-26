@@ -23,11 +23,16 @@ export default function Chorder(): React.ReactElement {
     const [transposition, setTransposition] = React.useState(0);
 
     // Set up key mappings
+
+    // chord degree
     const keyPressed = useSingleKeyPress(
         Object.keys(keyMapping),
         (k: Key) => {
             const notes = ins.playChord(keyMapping[k]);
-            setNotesPlaying(notes.map(note => note.noteString()));
+            setNotesPlaying(
+                notes.sort((n1, n2) => n1.value - n2.value)
+                    .map(note => note.noteString())
+            );
         },
         () => {
             ins.stop();
@@ -35,6 +40,7 @@ export default function Chorder(): React.ReactElement {
         }
     );
 
+    // transpose
     useSingleKeyPress(
         ['t', 'g'],
         () => { return; },
@@ -46,6 +52,16 @@ export default function Chorder(): React.ReactElement {
             }
         }
     );
+
+    useSingleKeyPress(
+        ['y'],
+        () => {
+            ins.setDoubleRoot(true);
+        },
+        () => {
+            ins.setDoubleRoot(false);
+        }
+    )
 
     return (
         <>
