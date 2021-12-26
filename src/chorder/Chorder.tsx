@@ -67,6 +67,15 @@ export default function Chorder(): React.ReactElement {
     );
 
     // voicing
+    const rootLow = useKeyHold('m', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[0] = val));
+    const rootMid = useKeyHold('j', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[1] = val));
+    const rootHigh = useKeyHold('u', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[2] = val));
+    const midLow = useKeyHold(',', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[0] = val));
+    const midMid = useKeyHold('k', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[1] = val));
+    const midHigh = useKeyHold('i', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[2] = val));
+    const highLow = useKeyHold('.', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[0] = val));
+    const highMid = useKeyHold('l', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[1] = val));
+    const highHigh = useKeyHold('o', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[2] = val));
 
     return (
         <>

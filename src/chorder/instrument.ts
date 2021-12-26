@@ -12,6 +12,12 @@ export default class Instrument {
 
     doubleRoot: boolean;
 
+    voicings: {
+        root: [boolean, boolean, boolean],
+        mid: [boolean, boolean, boolean],
+        high: [boolean, boolean, boolean],
+    };
+
     notesPlaying: Array<Note>;
 
     constructor() {
@@ -19,7 +25,13 @@ export default class Instrument {
 	this.notesPlaying = [];
         this.scale = Scale.CMAJOR;
         this.transposition = 0;
+
         this.doubleRoot = false;
+        this.voicings = {
+            root: [false, false, false],
+            mid: [false, false, false],
+            high: [false, false, false],
+        };
     }
 
     play(): void {
@@ -38,26 +50,42 @@ export default class Instrument {
 
     playChord(degree: number): Array<Note> {
         console.log(`chord: ${degree}`);
-        const root = this.scale.at(degree);
-        const third = this.scale.at(degree+2);
-        const fifth = this.scale.at(degree+4);
 
+        const chord = {
+            root: this.scale.at(degree),
+            mid: this.scale.at(degree+2),
+            high: this.scale.at(degree+4),
+            toPlay: [] as Array<Note>,
+        }
 
-        let notes = [root, third, fifth];
-
-        // double root
-        if (this.doubleRoot) {
-            notes.push(root.octave(-1));
+        // voicings
+        for (let i = 0; i < 3; i++) {
+            if (this.voicings.root[i]) {
+                chord.toPlay.push(chord.root.octave(i-1));
+            }
+            if (this.voicings.mid[i]) {
+                chord.toPlay.push(chord.mid.octave(i-1));
+            }
+            if (this.voicings.high[i]) {
+                chord.toPlay.push(chord.high.octave(i-1));
+            }
         }
 
         // apply transposition
-        notes = notes.map(n => n.up(this.transposition));
+        chord.toPlay = chord.toPlay.map(n => n.up(this.transposition));
 
-        this.playNotes(notes);
-        return notes;
+        this.playNotes(chord.toPlay);
+        return chord.toPlay;
     }
 
     // modifiers
+
+    flagSettersForKeyPresses(setFlag: (ins: Instrument, val: boolean) => void) {
+        return {
+            down: () => setFlag(this, true),
+            up: () => setFlag(this, false),
+        };
+    }
 
     transpose(n: number): number {
         this.transposition += n;
