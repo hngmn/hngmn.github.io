@@ -20,7 +20,6 @@ const keyMapping: Record<Key, number> = {
 
 export default function Chorder(): React.ReactElement {
     // Chorder state
-    const [degree, setDegree] = React.useState(1);
     const [notesPlaying, setNotesPlaying] = React.useState<Array<string>>([]);
     const [transposition, setTransposition] = React.useState(0);
 
@@ -33,11 +32,10 @@ export default function Chorder(): React.ReactElement {
     }
 
     // chord degree
-    const keyPressed = useSingleKeyPress(
+    useSingleKeyPress(
         Object.keys(keyMapping),
         (k: Key) => {
             ins.setDegree(keyMapping[k]);
-            setDegree(keyMapping[k]);
             updateNotesPlaying(ins.update());
         },
         () => {
@@ -59,15 +57,15 @@ export default function Chorder(): React.ReactElement {
     );
 
     // voicing
-    const rootLow = useKeyHold('m', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[0] = val, updateNotesPlaying));
-    const rootMid = useKeyHold('j', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[1] = val, updateNotesPlaying));
-    const rootHigh = useKeyHold('u', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[2] = val, updateNotesPlaying));
-    const midLow = useKeyHold(',', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[0] = val, updateNotesPlaying));
-    const midMid = useKeyHold('k', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[1] = val, updateNotesPlaying));
-    const midHigh = useKeyHold('i', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[2] = val, updateNotesPlaying));
-    const highLow = useKeyHold('.', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[0] = val, updateNotesPlaying));
-    const highMid = useKeyHold('l', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[1] = val, updateNotesPlaying));
-    const highHigh = useKeyHold('o', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[2] = val, updateNotesPlaying));
+    useKeyHold('m', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[0] = val, updateNotesPlaying));
+    useKeyHold('j', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[1] = val, updateNotesPlaying));
+    useKeyHold('u', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[2] = val, updateNotesPlaying));
+    useKeyHold(',', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[0] = val, updateNotesPlaying));
+    useKeyHold('k', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[1] = val, updateNotesPlaying));
+    useKeyHold('i', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[2] = val, updateNotesPlaying));
+    useKeyHold('.', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[0] = val, updateNotesPlaying));
+    useKeyHold('l', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[1] = val, updateNotesPlaying));
+    useKeyHold('o', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[2] = val, updateNotesPlaying));
 
     return (
         <>

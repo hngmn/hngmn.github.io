@@ -1,11 +1,14 @@
 'use strict';
 
+import { debounce } from 'lodash';
 import * as Tone from 'tone';
 
 import Note from './Note';
 import Scale from './Scale';
 
 export default class Instrument {
+    static DEBOUNCE_MS = 200;
+
     synth: Tone.PolySynth
     scale: Scale;
     transposition: number;
@@ -31,6 +34,8 @@ export default class Instrument {
             mid: [false, false, false],
             high: [false, false, false],
         };
+
+        this.playNotes = debounce(this.playNotes, Instrument.DEBOUNCE_MS);
     }
 
     getRoot(): Note {
