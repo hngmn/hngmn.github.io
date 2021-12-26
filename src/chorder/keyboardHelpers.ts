@@ -11,7 +11,6 @@ export function useSingleKeyPress(keys: Array<Key>, downCallback: KeyCallback, u
     const downHandler = useCallback(
         ({ key }: KeyboardEvent) => {
             if (keySet.has(key) && key !== keyPressed) {
-                console.log(`keydown ${key}`);
                 setKeyPressed(key);
                 downCallback(key);
             }
@@ -22,7 +21,6 @@ export function useSingleKeyPress(keys: Array<Key>, downCallback: KeyCallback, u
     const upHandler = useCallback(
         ({ key }: KeyboardEvent) => {
             if (key === keyPressed) {
-                console.log(`keyup ${key}`);
                 setKeyPressed('');
                 upCallback(key);
             }

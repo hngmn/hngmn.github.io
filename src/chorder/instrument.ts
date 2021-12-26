@@ -2,50 +2,45 @@
 
 import * as Tone from 'tone';
 
-import Note, { NoteString } from './Note';
+import Note from './Note';
+import Scale from './Scale';
 
 export default class Instrument {
     synth: Tone.PolySynth
-    note: number;
+    scale: Scale;
 
     notesPlaying: Array<Note>;
 
     constructor() {
         this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
-	this.note = -1;
 	this.notesPlaying = [];
-    }
-
-    setNote(n: number): void {
-	this.note = n;
-	this.notesPlaying = []; // TODO
-    }
-
-    unsetNote(): void {
-	this.note = -1;
+        this.scale = Scale.CMAJOR;
     }
 
     play(): void {
-        this.playChord('C4');
+        this.playChord(1);
     }
 
     playNote(note: Note): void {
         const now = Tone.now();
-        this.synth.triggerAttack(note.toString(), now)
+        this.synth.triggerAttack(note.noteString(), now)
         this.notesPlaying.push(note);
     }
 
-    playChord(noteString: NoteString): void {
-        const root = Note.from(noteString);
-        const third = root.M3();
-        const fifth = third.m3();
+    playChord(degree: number): Array<Note> {
+        console.log(`chord: ${degree}`);
+        const root = this.scale.at(degree);
+        const third = this.scale.at(degree+2);
+        const fifth = this.scale.at(degree+4);
         this.playNote(root);
         this.playNote(third);
         this.playNote(fifth);
+
+        return [root, third, fifth];
     }
 
     stop(): void {
-        this.synth.triggerRelease(this.notesPlaying.map(n => n.toString()), Tone.now());
+        this.synth.triggerRelease(this.notesPlaying.map(n => n.noteString()), Tone.now());
         this.notesPlaying = [];
     }
 }

@@ -3,41 +3,38 @@
 import * as React from 'react';
 
 import Instrument from './instrument';
-import { NoteString } from './Note';
 import { useSingleKeyPress, Key } from './keyboardHelpers';
 
 const ins = new Instrument();
 
-const keyMapping: Record<Key, NoteString> = {
-    'a': 'C4',
-    's': 'D4',
-    'd': 'E4',
+const keyMapping: Record<Key, number> = {
+    'a': 1,
+    's': 2,
+    'd': 3,
+    'f': 4,
+    'q': 5,
+    'w': 6,
+    'e': 7,
 };
 
 export default function Chorder(): React.ReactElement {
+    const [notesPlaying, setNotesPlaying] = React.useState<Array<string>>([]);
     const keyPressed = useSingleKeyPress(
         Object.keys(keyMapping),
-        (k: Key) => ins.playChord(keyMapping[k]),
-        () => ins.stop()
+        (k: Key) => {
+            const notes = ins.playChord(keyMapping[k]);
+            setNotesPlaying(notes.map(note => note.noteString()));
+        },
+        () => {
+            ins.stop();
+            setNotesPlaying([]);
+        }
     );
-
-    const [playing, setPlaying] = React.useState(false);
-
-    if (playing) {
-        ins.play();
-    } else {
-        ins.stop();
-    }
 
     return (
         <>
-            <button
-                onClick={() => setPlaying(!playing)}
-            >
-                {playing ? 'pause' : 'playing'}
-            </button>
-
-            <p>KeyPressed: {keyPressed}</p>
+            <p>key: {keyMapping[keyPressed]}</p>
+            <p>chord: {notesPlaying.join(', ')}</p>
         </>
     );
 }

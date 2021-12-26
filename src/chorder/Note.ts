@@ -20,16 +20,12 @@ export default class Note {
         this.value = n;
     }
 
-    toString(): string {
+    noteString(): string {
         return intToNote[this.value];
     }
 
-    M3(): Note {
-        return new Note(this.value + 4);
-    }
-
-    m3(): Note {
-        return new Note(this.value + 3);
+    up(n = 1): Note {
+        return new Note(this.value + n);
     }
 
     octave(n = 1): Note {
