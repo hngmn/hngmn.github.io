@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import Instrument from './instrument';
-import { useSingleKeyPress, Key } from './keyboardHelpers';
+import { useSingleKeyPress, useKeyHold, Key } from './keyboardHelpers';
 
 const ins = new Instrument();
 
@@ -40,7 +40,7 @@ export default function Chorder(): React.ReactElement {
         }
     );
 
-    // transpose
+    // transpose (scalar)
     useSingleKeyPress(
         ['t', 'g'],
         () => { return; },
@@ -53,15 +53,20 @@ export default function Chorder(): React.ReactElement {
         }
     );
 
-    useSingleKeyPress(
-        ['y'],
-        () => {
-            ins.setDoubleRoot(true);
-        },
-        () => {
-            ins.setDoubleRoot(false);
+    // double root (button)
+    useKeyHold(
+        'y',
+        {
+            down: () => {
+                ins.setDoubleRoot(true);
+            },
+            up: () => {
+                ins.setDoubleRoot(false);
+            }
         }
-    )
+    );
+
+    // voicing
 
     return (
         <>
@@ -73,7 +78,7 @@ export default function Chorder(): React.ReactElement {
 
             Other controls:
             <ul>
-                <li>Hold 'y' to double the chord root</li>
+                <li>Hold &apos;y&apos; to double the chord root</li>
             </ul>
         </>
     );

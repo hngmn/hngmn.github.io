@@ -40,4 +40,44 @@ export function useSingleKeyPress(keys: Array<Key>, downCallback: KeyCallback, u
     return keyPressed;
 }
 
+interface KeyHoldCallbacks {
+    down: KeyCallback,
+    up: KeyCallback,
+}
+
+export function useKeyHold(targetKey: Key, khcb: KeyHoldCallbacks): boolean {
+    const [keyPressed, setKeyPressed] = useState(false);
+
+    const downHandler = useCallback(
+        ({ key }: KeyboardEvent) => {
+            if (key === targetKey) {
+                setKeyPressed(true);
+                khcb.down(key);
+            }
+        },
+        [targetKey, khcb]
+    )
+
+    const upHandler = useCallback(
+        ({ key }: KeyboardEvent) => {
+            if (key === targetKey) {
+                setKeyPressed(false);
+                khcb.up(key);
+            }
+        },
+        [targetKey, khcb]
+    );
+
+    useEffect(() => {
+        window.addEventListener("keydown", downHandler);
+        window.addEventListener("keyup", upHandler);
+        return () => {
+            window.removeEventListener("keydown", downHandler);
+            window.removeEventListener("keyup", upHandler);
+        };
+    }, [upHandler, downHandler]);
+
+    return keyPressed;
+}
+
 export type Key = string;
