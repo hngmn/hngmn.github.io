@@ -4,7 +4,7 @@ import Note from './Note';
 
 const Intervals: Record<string, Array<number>>= {
     MAJOR: [2, 2, 1, 2, 2, 2],
-    MINOR: [2, 1, 2, 2, 2, 1],
+    MINOR: [2, 1, 2, 2, 1, 2],
 }
 
 export default class Scale {

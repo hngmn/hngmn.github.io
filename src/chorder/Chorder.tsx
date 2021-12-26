@@ -18,7 +18,11 @@ const keyMapping: Record<Key, number> = {
 };
 
 export default function Chorder(): React.ReactElement {
+    // Chorder state
     const [notesPlaying, setNotesPlaying] = React.useState<Array<string>>([]);
+    const [transposition, setTransposition] = React.useState(0);
+
+    // Set up key mappings
     const keyPressed = useSingleKeyPress(
         Object.keys(keyMapping),
         (k: Key) => {
@@ -31,9 +35,22 @@ export default function Chorder(): React.ReactElement {
         }
     );
 
+    useSingleKeyPress(
+        ['t', 'g'],
+        () => { return; },
+        (k: Key) => {
+            if (k === 't') {
+                setTransposition(ins.transpose(1));
+            } else if (k === 'g') {
+                setTransposition(ins.transpose(-1));
+            }
+        }
+    );
+
     return (
         <>
-            <p>key: {keyMapping[keyPressed]}</p>
+            <p>transposition: {transposition}</p>
+            <p>degree: {keyMapping[keyPressed]}</p>
             <p>chord: {notesPlaying.join(', ')}</p>
         </>
     );
