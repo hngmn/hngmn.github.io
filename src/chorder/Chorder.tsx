@@ -68,6 +68,13 @@ export default function Chorder(): React.ReactElement {
             <p>transposition: {transposition}</p>
             <p>degree: {keyMapping[keyPressed]}</p>
             <p>chord: {notesPlaying.join(', ')}</p>
+
+            ---<br/>
+
+            Other controls:
+            <ul>
+                <li>Hold 'y' to double the chord root</li>
+            </ul>
         </>
     );
 }
