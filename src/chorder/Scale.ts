@@ -19,8 +19,6 @@ export default class Scale {
             note = note.up(step);
             this.notes.push(note);
         }
-
-        console.log('Scale with notes: ', this.notes)
     }
 
     // initializers
@@ -42,7 +40,6 @@ export default class Scale {
      */
     at(n: number): Note {
         const i = n-1;
-        console.log(`at(${n}): deg=${i % this.notes.length}, octave=${Math.floor(n / this.notes.length)}`)
         return this.notes[i % this.notes.length].octave(Math.floor(i / this.notes.length));
     }
 }

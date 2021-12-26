@@ -17,11 +17,11 @@ export default class Instrument {
         high: [boolean, boolean, boolean],
     };
 
-    notesPlaying: Set<Note>;
+    notesPlaying: Array<Note>;
 
     constructor() {
         this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
-	this.notesPlaying = new Set([]);
+	this.notesPlaying = [];
         this.scale = Scale.CMAJOR;
         this.transposition = 0;
 
@@ -38,20 +38,19 @@ export default class Instrument {
     }
 
     playNote(note: Note): void {
-        if (this.notesPlaying.has(note)) {
+        if (this.notesPlaying.map(n => n.noteString()).includes(note.noteString())) {
             return;
         }
 
         this.synth.triggerAttack(note.noteString(), Tone.now())
-        this.notesPlaying.add(note);
+        this.notesPlaying.push(note);
     }
 
     playNotes(chord: Chord): void {
-        const notesToPlay = new Set(chord.toPlay);
-
+        const notesToPlay = chord.toPlay.map(n => n.noteString()); // strings for comparison
         const notesToStop = [];
         for (const np of this.notesPlaying) {
-            if (!notesToPlay.has(np)) {
+            if (!notesToPlay.includes(np.noteString())) {
                 notesToStop.push(np.noteString());
             }
         }
@@ -61,12 +60,10 @@ export default class Instrument {
             this.playNote(note)
         });
 
-        this.notesPlaying = notesToPlay;
+        this.notesPlaying = chord.toPlay;
     }
 
     update(): Array<Note> {
-        console.log(`Degree: ${this.degree}`);
-
         const chord: Chord = {
             root: this.scale.at(this.degree),
             mid: this.scale.at(this.degree+2),
@@ -117,11 +114,6 @@ export default class Instrument {
     transpose(n: number): number {
         this.transposition += n;
         return this.transposition;
-    }
-
-    stop(): void {
-        //this.synth.triggerRelease(this.notesPlaying.map(n => n.noteString()), Tone.now());
-        this.notesPlaying = new Set();
     }
 }
 
