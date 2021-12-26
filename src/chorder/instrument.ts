@@ -9,8 +9,7 @@ export default class Instrument {
     synth: Tone.PolySynth
     scale: Scale;
     transposition: number;
-
-    doubleRoot: boolean;
+    degree: number;
 
     voicings: {
         root: [boolean, boolean, boolean],
@@ -18,15 +17,15 @@ export default class Instrument {
         high: [boolean, boolean, boolean],
     };
 
-    notesPlaying: Array<Note>;
+    notesPlaying: Set<Note>;
 
     constructor() {
         this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
-	this.notesPlaying = [];
+	this.notesPlaying = new Set([]);
         this.scale = Scale.CMAJOR;
         this.transposition = 0;
 
-        this.doubleRoot = false;
+        this.degree = 1;
         this.voicings = {
             root: [false, false, false],
             mid: [false, false, false],
@@ -34,27 +33,44 @@ export default class Instrument {
         };
     }
 
-    play(): void {
-        this.playChord(1);
+    getRoot(): Note {
+        return this.scale.at(this.degree);
     }
 
     playNote(note: Note): void {
-        const now = Tone.now();
-        this.synth.triggerAttack(note.noteString(), now)
-        this.notesPlaying.push(note);
+        if (this.notesPlaying.has(note)) {
+            return;
+        }
+
+        this.synth.triggerAttack(note.noteString(), Tone.now())
+        this.notesPlaying.add(note);
     }
 
-    playNotes(notes: Array<Note>): void {
-        notes.forEach(note => this.playNote(note));
+    playNotes(chord: Chord): void {
+        const notesToPlay = new Set(chord.toPlay);
+
+        const notesToStop = [];
+        for (const np of this.notesPlaying) {
+            if (!notesToPlay.has(np)) {
+                notesToStop.push(np.noteString());
+            }
+        }
+        this.synth.triggerRelease(notesToStop, Tone.now());
+
+        chord.toPlay.forEach(note => {
+            this.playNote(note)
+        });
+
+        this.notesPlaying = notesToPlay;
     }
 
-    playChord(degree: number): Array<Note> {
-        console.log(`chord: ${degree}`);
+    update(): Array<Note> {
+        console.log(`Degree: ${this.degree}`);
 
-        const chord = {
-            root: this.scale.at(degree),
-            mid: this.scale.at(degree+2),
-            high: this.scale.at(degree+4),
+        const chord: Chord = {
+            root: this.scale.at(this.degree),
+            mid: this.scale.at(this.degree+2),
+            high: this.scale.at(this.degree+4),
             toPlay: [] as Array<Note>,
         }
 
@@ -74,17 +90,28 @@ export default class Instrument {
         // apply transposition
         chord.toPlay = chord.toPlay.map(n => n.up(this.transposition));
 
-        this.playNotes(chord.toPlay);
+        this.playNotes(chord);
         return chord.toPlay;
     }
 
     // modifiers
 
-    flagSettersForKeyPresses(setFlag: (ins: Instrument, val: boolean) => void) {
+    flagSettersForKeyPresses(setFlag: (ins: Instrument, val: boolean) => void, updateNotesCallback: (notes: Array<Note>) => void) {
         return {
-            down: () => setFlag(this, true),
-            up: () => setFlag(this, false),
+            down: () => {
+                setFlag(this, true);
+                updateNotesCallback(this.update());
+            },
+            up: () => {
+                setFlag(this, false);
+                updateNotesCallback(this.update());
+            },
         };
+    }
+
+    setDegree(degree: number): number {
+        this.degree = degree;
+        return this.degree;
     }
 
     transpose(n: number): number {
@@ -92,13 +119,15 @@ export default class Instrument {
         return this.transposition;
     }
 
-    setDoubleRoot(b: boolean): boolean {
-        this.doubleRoot = b;
-        return this.doubleRoot;
-    }
-
     stop(): void {
-        this.synth.triggerRelease(this.notesPlaying.map(n => n.noteString()), Tone.now());
-        this.notesPlaying = [];
+        //this.synth.triggerRelease(this.notesPlaying.map(n => n.noteString()), Tone.now());
+        this.notesPlaying = new Set();
     }
+}
+
+interface Chord {
+    root: Note
+    mid: Note
+    high: Note
+    toPlay: Array<Note>
 }

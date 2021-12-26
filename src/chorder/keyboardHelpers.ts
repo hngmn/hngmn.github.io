@@ -50,7 +50,7 @@ export function useKeyHold(targetKey: Key, khcb: KeyHoldCallbacks): boolean {
 
     const downHandler = useCallback(
         ({ key }: KeyboardEvent) => {
-            if (key === targetKey) {
+            if (key === targetKey && !keyPressed) {
                 setKeyPressed(true);
                 khcb.down(key);
             }
