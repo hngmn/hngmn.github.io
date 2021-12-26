@@ -53,19 +53,6 @@ export default function Chorder(): React.ReactElement {
         }
     );
 
-    // double root (button)
-    useKeyHold(
-        'y',
-        {
-            down: () => {
-                ins.setDoubleRoot(true);
-            },
-            up: () => {
-                ins.setDoubleRoot(false);
-            }
-        }
-    );
-
     // voicing
     const rootLow = useKeyHold('m', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[0] = val));
     const rootMid = useKeyHold('j', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[1] = val));
@@ -87,7 +74,7 @@ export default function Chorder(): React.ReactElement {
 
             Other controls:
             <ul>
-                <li>Hold &apos;y&apos; to double the chord root</li>
+                <li>Hold the mju,ki.lo keys control voicing, left to right for the notes, low to high for the octave.</li>
             </ul>
         </>
     );
