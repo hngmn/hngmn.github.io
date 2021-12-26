@@ -87,7 +87,7 @@ export default function Chorder(): React.ReactElement {
             <ul>
                 <li>The 8 chord keys &apos;asdfqwe&apos; map to the 8 notes of the major scale. They can just be pressed
                     once to set the root for the instrument</li>
-                <li>The three columns, &apos;mju&apos;, &apos;,ki&apos;, and &apos;.lo&apos, map to the three notes in the
+                <li>The three columns, &apos;mju&apos;, &apos;,ki&apos;, and &apos;.lo&apos; map to the three notes in the
                     triad (root, third, fifth, respectively). Each key in that column map to low, medium, and high octaves.
                     For example, &apos;jkl&apos; will play C4, D4, E4. Lowering the &apos;j&apos; to &apos;m&apos; will play
                     C3, D4, E4.</li>
