@@ -15,6 +15,7 @@ export default class Instrument {
     degree: number;
 
     augdim: Switch;
+    sus: MultiSwitch;
 
     voicings: {
         root: [Switch, Switch, Switch],
@@ -38,6 +39,7 @@ export default class Instrument {
         };
 
         this.augdim = new Switch();
+        this.sus = new MultiSwitch(3);
 
         this.playNotes = debounce(this.playNotes, Instrument.DEBOUNCE_MS);
     }
@@ -69,9 +71,6 @@ export default class Instrument {
         });
 
         this.notesPlaying = chord.toPlay;
-        if (this.updateNotesPlayingCb) {
-            this.updateNotesPlayingCb(this.notesPlaying);
-        }
     }
 
     /**
@@ -84,6 +83,13 @@ export default class Instrument {
             mid: this.scale.at(this.degree+2),
             high: this.scale.at(this.degree+4),
             toPlay: [] as Array<Note>,
+        }
+
+        // sus
+        if (this.sus.value === 1) { // sus2
+            chord.mid = this.scale.at(this.degree+1);
+        } else if (this.sus.value === 2) { // sus4
+            chord.mid = this.scale.at(this.degree+3);
         }
 
         // augdim
@@ -117,19 +123,6 @@ export default class Instrument {
 
     // modifiers
 
-    flagSettersForKeyPresses(setFlag: (ins: Instrument, val: boolean) => void, updateNotesCallback: (notes: Array<Note>) => void) {
-        return {
-            down: () => {
-                setFlag(this, true);
-                updateNotesCallback(this.update());
-            },
-            up: () => {
-                setFlag(this, false);
-                updateNotesCallback(this.update());
-            },
-        };
-    }
-
     setDegree(degree: number): number {
         this.degree = degree;
         return this.degree;
@@ -161,5 +154,24 @@ export class Switch {
 
     toggle(): boolean {
         return this.on = !this.on;
+    }
+}
+
+// Switch but with greater than 2 states. n is number of states.
+export class MultiSwitch {
+    value: number;
+    n: number;
+
+    constructor(n: number) {
+        this.value = 0;
+        this.n = n;
+    }
+
+    set(v: number): number {
+        return this.value = v;
+    }
+
+    cycle(): number {
+        return this.value = (this.value + 1) % this.n;
     }
 }
