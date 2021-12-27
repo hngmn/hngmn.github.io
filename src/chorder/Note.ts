@@ -25,6 +25,10 @@ export default class Note {
     }
 
     up(n = 1): Note {
+        return this.step(n);
+    }
+
+    step(n = 1): Note {
         return new Note(this.value + n);
     }
 
@@ -34,6 +38,10 @@ export default class Note {
 
     static from(note: NoteString): Note {
         return new Note(noteToInt[note]);
+    }
+
+    static diff(n1: Note, n2: Note): number {
+        return Math.abs(n2.value - n1.value);
     }
 }
 

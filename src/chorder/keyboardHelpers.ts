@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
+import { Switch } from './instrument';
+
 type KeyCallback = (k: Key) => void;
 
 export function useSingleKeyPress(keys: Array<Key>, downCallback: KeyCallback, upCallback: KeyCallback): Key {
@@ -40,32 +42,29 @@ export function useSingleKeyPress(keys: Array<Key>, downCallback: KeyCallback, u
     return keyPressed;
 }
 
-interface KeyHoldCallbacks {
-    down: KeyCallback,
-    up: KeyCallback,
-}
+type SwitchCallback = (b: boolean) => void;
 
-export function useKeyHold(targetKey: Key, khcb: KeyHoldCallbacks): boolean {
+export function useKeyHold(targetKey: Key, cb: SwitchCallback): boolean {
     const [keyPressed, setKeyPressed] = useState(false);
 
     const downHandler = useCallback(
         ({ key }: KeyboardEvent) => {
             if (key === targetKey && !keyPressed) {
                 setKeyPressed(true);
-                khcb.down(key);
+                cb(true);
             }
         },
-        [targetKey, khcb]
+        [targetKey, cb, keyPressed]
     )
 
     const upHandler = useCallback(
         ({ key }: KeyboardEvent) => {
             if (key === targetKey) {
                 setKeyPressed(false);
-                khcb.up(key);
+                cb(false);
             }
         },
-        [targetKey, khcb]
+        [targetKey, cb]
     );
 
     useEffect(() => {

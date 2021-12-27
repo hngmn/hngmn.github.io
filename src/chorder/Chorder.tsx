@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import Instrument from './instrument';
+import { Switch } from './instrument';
 import Note from './Note';
 import { useSingleKeyPress, useKeyHold, Key } from './keyboardHelpers';
 
@@ -43,6 +44,11 @@ export default function Chorder(): React.ReactElement {
         }
     );
 
+    useKeyHold('v', (pressed: boolean) => {
+        ins.augdim.set(pressed);
+        updateNotesPlaying(ins.update());
+    });
+
     // transpose (scalar)
     useSingleKeyPress(
         ['t', 'g'],
@@ -57,15 +63,19 @@ export default function Chorder(): React.ReactElement {
     );
 
     // voicing
-    useKeyHold('m', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[0] = val, updateNotesPlaying));
-    useKeyHold('j', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[1] = val, updateNotesPlaying));
-    useKeyHold('u', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.root[2] = val, updateNotesPlaying));
-    useKeyHold(',', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[0] = val, updateNotesPlaying));
-    useKeyHold('k', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[1] = val, updateNotesPlaying));
-    useKeyHold('i', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.mid[2] = val, updateNotesPlaying));
-    useKeyHold('.', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[0] = val, updateNotesPlaying));
-    useKeyHold('l', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[1] = val, updateNotesPlaying));
-    useKeyHold('o', ins.flagSettersForKeyPresses((ins, val) => ins.voicings.high[2] = val, updateNotesPlaying));
+    const voicingSwitchCallback = (sw: Switch) => (pressed: boolean) => {
+        sw.set(pressed);
+        updateNotesPlaying(ins.update());
+    };
+    useKeyHold('m', voicingSwitchCallback(ins.voicings.root[0]));
+    useKeyHold('j', voicingSwitchCallback(ins.voicings.root[1]));
+    useKeyHold('u', voicingSwitchCallback(ins.voicings.root[2]));
+    useKeyHold(',', voicingSwitchCallback(ins.voicings.mid[0]));
+    useKeyHold('k', voicingSwitchCallback(ins.voicings.mid[1]));
+    useKeyHold('i', voicingSwitchCallback(ins.voicings.mid[2]));
+    useKeyHold('.', voicingSwitchCallback(ins.voicings.high[0]));
+    useKeyHold('l', voicingSwitchCallback(ins.voicings.high[1]));
+    useKeyHold('o', voicingSwitchCallback(ins.voicings.high[2]));
 
     return (
         <>

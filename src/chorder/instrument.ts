@@ -9,15 +9,17 @@ import Scale from './Scale';
 export default class Instrument {
     static DEBOUNCE_MS = 60;
 
-    synth: Tone.PolySynth
+    synth: Tone.PolySynth;
     scale: Scale;
     transposition: number;
     degree: number;
 
+    augdim: Switch;
+
     voicings: {
-        root: [boolean, boolean, boolean],
-        mid: [boolean, boolean, boolean],
-        high: [boolean, boolean, boolean],
+        root: [Switch, Switch, Switch],
+        mid: [Switch, Switch, Switch],
+        high: [Switch, Switch, Switch],
     };
 
     notesPlaying: Array<Note>;
@@ -30,10 +32,12 @@ export default class Instrument {
 
         this.degree = 1;
         this.voicings = {
-            root: [false, false, false],
-            mid: [false, false, false],
-            high: [false, false, false],
+            root: [new Switch(), new Switch(), new Switch()],
+            mid: [new Switch(), new Switch(), new Switch()],
+            high: [new Switch(), new Switch(), new Switch()],
         };
+
+        this.augdim = new Switch();
 
         this.playNotes = debounce(this.playNotes, Instrument.DEBOUNCE_MS);
     }
@@ -48,7 +52,6 @@ export default class Instrument {
         }
 
         this.synth.triggerAttack(note.noteString(), Tone.now())
-        this.notesPlaying.push(note);
     }
 
     playNotes(chord: Chord): void {
@@ -66,9 +69,16 @@ export default class Instrument {
         });
 
         this.notesPlaying = chord.toPlay;
+        if (this.updateNotesPlayingCb) {
+            this.updateNotesPlayingCb(this.notesPlaying);
+        }
     }
 
+    /**
+     * Instrument state logic
+     */
     update(): Array<Note> {
+        // init chord (triad)
         const chord: Chord = {
             root: this.scale.at(this.degree),
             mid: this.scale.at(this.degree+2),
@@ -76,15 +86,24 @@ export default class Instrument {
             toPlay: [] as Array<Note>,
         }
 
+        // augdim
+        if (this.augdim.on) {
+            if (Note.diff(chord.root, chord.mid) === 4) { // major; augment
+                chord.high = chord.high.up(1);
+            } else { // minor; diminish
+                chord.high = chord.high.step(-1);
+            }
+        }
+
         // voicings
         for (let i = 0; i < 3; i++) {
-            if (this.voicings.root[i]) {
+            if (this.voicings.root[i].on) {
                 chord.toPlay.push(chord.root.octave(i-1));
             }
-            if (this.voicings.mid[i]) {
+            if (this.voicings.mid[i].on) {
                 chord.toPlay.push(chord.mid.octave(i-1));
             }
-            if (this.voicings.high[i]) {
+            if (this.voicings.high[i].on) {
                 chord.toPlay.push(chord.high.octave(i-1));
             }
         }
@@ -127,4 +146,20 @@ interface Chord {
     mid: Note
     high: Note
     toPlay: Array<Note>
+}
+
+export class Switch {
+    on: boolean;
+
+    constructor() {
+        this.on = false;
+    }
+
+    set(b: boolean): boolean {
+        return this.on = b;
+    }
+
+    toggle(): boolean {
+        return this.on = !this.on;
+    }
 }
