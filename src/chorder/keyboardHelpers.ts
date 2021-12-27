@@ -53,17 +53,17 @@ export function useSingleKeyHold(keys: Array<Key>, cb: KeysCallback): [Key, numb
                 cb([key, i]);
             }
         },
-        [keyPressed, keys, cb]
+        [keys, keyPressed, cb]
     );
 
     const upHandler = useCallback(
         ({ key }: KeyboardEvent) => {
-            if (key === keys[0]) {
+            if (key === keyPressed[0]) {
                 setKeyPressed(['', -1]);
                 cb(['', -1]);
             }
         },
-        [keyPressed, cb]
+        [keys, cb]
     );
 
     useEffect(() => {
