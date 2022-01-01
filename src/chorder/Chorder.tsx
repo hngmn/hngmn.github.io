@@ -10,13 +10,13 @@ import { useSingleKeyPress, useKeyHold, useSingleKeyHold, Key } from './keyboard
 const ins = new Instrument();
 
 const keyMapping: Record<Key, number> = {
-    'q': 1,
-    'w': 3,
-    'e': 5,
-    'r': 7,
+    'a': 1,
     's': 2,
-    'd': 4,
-    'f': 6,
+    'd': 3,
+    'f': 4,
+    'q': 5,
+    'w': 6,
+    'e': 7,
 };
 
 export default function Chorder(): React.ReactElement {
