@@ -1,6 +1,6 @@
 'use strict';
 
-const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const NOTES = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
 const OCTAVES = ['-2', '-1', '0', '1', '2', '3', '4', '5', '6', '7', '8'];
 const intToNote: Array<string> = OCTAVES.map(
     octave => NOTES.map(

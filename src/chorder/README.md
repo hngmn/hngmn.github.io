@@ -13,8 +13,6 @@ Tracking TODO here for now:
     * Automatic "voice leading"?
     * Inversions (Or would that be included with above?)
     * More voices?
-
-Long TODO:
- * Chord recording mechanism
  * non-real time chord building (add/change chord parameters, then button to
    'commit')
+ * Chord recording mechanism

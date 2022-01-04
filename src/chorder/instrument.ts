@@ -28,7 +28,7 @@ export default class Instrument {
     constructor() {
         this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
 	this.notesPlaying = [];
-        this.scale = Scale.CMAJOR;
+        this.scale = Scale.aeolian(Note.from('C4'));
         this.transposition = 0;
 
         this.degree = 1;
