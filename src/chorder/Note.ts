@@ -1,12 +1,12 @@
 'use strict';
 
-const NOTES = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
+const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const OCTAVES = ['-2', '-1', '0', '1', '2', '3', '4', '5', '6', '7', '8'];
 const intToNote: Array<string> = OCTAVES.map(
     octave => NOTES.map(
         note => `${note}${octave}`
     )
-).flat().slice(3, 131);
+).flat().slice(0, 128);
 
 const noteToInt: Record<string, number> = {};
 for (const [i, note] of intToNote.entries()) {
