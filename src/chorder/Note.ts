@@ -6,7 +6,7 @@ const intToNote: Array<string> = OCTAVES.map(
     octave => NOTES.map(
         note => `${note}${octave}`
     )
-).flat().slice(0, 128);
+).flat().slice(3, 131);
 
 const noteToInt: Record<string, number> = {};
 for (const [i, note] of intToNote.entries()) {
@@ -14,14 +14,18 @@ for (const [i, note] of intToNote.entries()) {
 }
 
 export default class Note {
-    value: number;
+    #value: number;
 
     private constructor(n: number) {
-        this.value = n;
+        this.#value = n;
+    }
+
+    getValue(): number {
+        return this.#value;
     }
 
     noteString(): string {
-        return intToNote[this.value];
+        return intToNote[this.#value];
     }
 
     up(n = 1): Note {
@@ -29,11 +33,11 @@ export default class Note {
     }
 
     step(n = 1): Note {
-        return new Note(this.value + n);
+        return new Note(this.#value + n);
     }
 
     octave(n = 1): Note {
-        return new Note(this.value + (n * 12));
+        return new Note(this.#value + (n * 12));
     }
 
     static from(note: NoteString): Note {
@@ -41,7 +45,7 @@ export default class Note {
     }
 
     static diff(n1: Note, n2: Note): number {
-        return Math.abs(n2.value - n1.value);
+        return Math.abs(n2.#value - n1.#value);
     }
 }
 
