@@ -3,8 +3,8 @@
 import { debounce } from 'lodash';
 import * as Tone from 'tone';
 
-import Note from './Note';
-import Scale from './Scale';
+import { Note, Scale } from './music';
+import { Switch, MultiSwitch } from './Switches';
 
 export default class Instrument {
     static DEBOUNCE_MS = 60;
@@ -28,7 +28,7 @@ export default class Instrument {
     constructor() {
         this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
 	this.notesPlaying = [];
-        this.scale = Scale.aeolian(Note.from('C4'));
+        this.scale = Scale.CMAJOR;
         this.transposition = 0;
 
         this.degree = 1;
@@ -141,37 +141,3 @@ interface Chord {
     toPlay: Array<Note>
 }
 
-export class Switch {
-    on: boolean;
-
-    constructor() {
-        this.on = false;
-    }
-
-    set(b: boolean): boolean {
-        return this.on = b;
-    }
-
-    toggle(): boolean {
-        return this.on = !this.on;
-    }
-}
-
-// Switch but with greater than 2 states. n is number of states.
-export class MultiSwitch {
-    value: number;
-    n: number;
-
-    constructor(n: number) {
-        this.value = 0;
-        this.n = n;
-    }
-
-    set(v: number): number {
-        return this.value = v;
-    }
-
-    cycle(): number {
-        return this.value = (this.value + 1) % this.n;
-    }
-}

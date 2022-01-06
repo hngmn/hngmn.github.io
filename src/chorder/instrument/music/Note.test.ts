@@ -30,7 +30,7 @@ describe('Note', () => {
         });
 
         test('(-2)', () => {
-            expect(C4.step(-2).noteString()).toEqual('A#4');
+            expect(C4.step(-2).noteString()).toEqual('A#3');
         });
     });
 

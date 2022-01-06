@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Chorder from './Chorder';
+import App from './App';
 
 const domContainer = document.querySelector('#chorder_container');
-ReactDOM.render(<Chorder/>, domContainer);
+ReactDOM.render(<App/>, domContainer);
