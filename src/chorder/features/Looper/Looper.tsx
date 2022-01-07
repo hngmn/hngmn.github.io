@@ -2,17 +2,30 @@
 
 import * as React from 'react';
 
-import { useSingleKeySwitch } from '../../util/hooks';
+import { useSingleKeySwitch, BindingModes } from '../../util/hooks';
 import Slot from './Slot';
 
 
 export default function Looper(): React.ReactElement {
     const [isOn, setOn] = React.useState(false);
-    useSingleKeySwitch(' ', setOn);
+    const [mode, setMode] = React.useState(BindingModes.TOGGLE);
+    useSingleKeySwitch(' ', setOn, mode);
 
     return (
         <section>
             <p>Looper</p>
+
+            <button
+                onClick={() => {
+                    if (mode === BindingModes.TOGGLE) {
+                        setMode(BindingModes.HOLD);
+                    } else {
+                        setMode(BindingModes.TOGGLE);
+                    }
+                }}
+            >
+                {mode}
+            </button>
 
             <p>{isOn ? 'on' : 'off'}</p>
 

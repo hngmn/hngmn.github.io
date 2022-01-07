@@ -58,6 +58,7 @@ function useKeyBindings(keys: Array<Key>, callbacks: KeyBindings): Array<Key> {
 type BindingMode = 'Toggle' | 'Hold';
 export const BindingModes: Record<string, BindingMode> = {
     TOGGLE: 'Toggle',
+    HOLD: 'Hold',
 };
 
 export function useSingleKeySwitch(
@@ -66,25 +67,49 @@ export function useSingleKeySwitch(
     mode: BindingMode = BindingModes.TOGGLE,
     initialValue = false
 ): boolean {
-    const [active, setActive] = useState(initialValue);
+    const [isActive, setIsActive] = useState(initialValue);
     const toggle = useCallback(
         () => {
             if (mode === BindingModes.TOGGLE) {
-                setter(!active);
-                setActive(!active);
+                setter(!isActive);
+                setIsActive(!isActive);
             } else {
                 console.error(`Unexpected BindingMode ${mode}`);
             }
         },
-        [setter, mode, active]
+        [setter, mode, isActive]
     );
+
+    const setActive = useCallback(
+        () => {
+            if (mode === BindingModes.HOLD) {
+                setter(true);
+                setIsActive(true);
+            } else {
+                console.error(`setActive: Unexpected BindingMode ${mode}`);
+            }
+        },
+        [setter, mode]
+    )
+
+    const setInactive = useCallback(
+        () => {
+            if (mode === BindingModes.HOLD) {
+                setter(false);
+                setIsActive(false);
+            } else {
+                console.error(`setInactive: Unexpected BindingMode ${mode}`);
+            }
+        },
+        [setter, mode]
+    )
 
     const keysPressed = useKeyBindings(
         [key],
         {
             [key]: {
-                down: toggle,
-                up: () => { return; },
+                down: mode === BindingModes.TOGGLE ? toggle : setActive,
+                up: mode === BindingModes.TOGGLE ? () => { return; } : setInactive,
             },
         }
     );
