@@ -1,59 +1,78 @@
 'use strict';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 
 export type Key = string;
 export type KeyCallback = (k: Key) => void;
 export type KeyBindings = Record<Key, { down: KeyCallback, up: KeyCallback }>;
 
+function useEventCallback<T, R>(fn: (arg: T) => R, deps: Array<any>): (arg: T) => R {
+    const ref = useRef<typeof fn>(() => {
+        throw new Error('Cannot call an event handler while rendering.');
+    });
+
+    useEffect(() => {
+        ref.current = fn;
+    }, [fn, ...deps]);
+
+    return useCallback((arg: T) => {
+        const fn = ref.current;
+        return fn(arg);
+    }, [ref]);
+}
+
 /**
  * Most generalized key binding hook. Separate callback for every keyevent.
  */
-function useKeyBindings(keys: Array<Key>, callbacks: KeyBindings): Array<Key> {
-    const [keysPressed, setKeysPressed] = useState([] as Array<Key>);
+function useKeyBindings(keyBindings: KeyBindings): Array<Key> {
+    const initialKeysPressed = useMemo(() => {
+        console.log('initializing keysPressed. This should only run once.', keyBindings);
+        const kp = {} as Record<Key, boolean>;
+        for (const key of Object.keys(keyBindings)) {
+            kp[key] = false;
+        }
+        return kp;
+    }, [keyBindings]);
+    const [keysPressed, setKeysPressed] = useState(initialKeysPressed);
+    const downHandler = useEventCallback(({ key }: KeyboardEvent) => {
+        console.log(`keydown ${key}`);
+        if (!(key in keysPressed)) {
+            return;
+        }
 
-    const downHandler = useCallback(
-        ({ key }: KeyboardEvent) => {
-            if (keys.indexOf(key) >= 0) { // binding exists
+        setKeysPressed({...keysPressed, [key]: true});
+        keyBindings[key].down(key);
+    }, [keyBindings, keysPressed]);
 
-                // Add to keysPressed if not pressed already - keydown repeats
-                // for held keys
-                if (keysPressed.indexOf(key) < 0) {
-                    keysPressed.push(key);
-                    setKeysPressed(keysPressed);
-                    callbacks[key].down(key);
-                }
-            }
-        },
-        [keys, keysPressed, callbacks]
-    );
+    const upHandler = useEventCallback(({ key }: KeyboardEvent) => {
+        console.log(`keyup ${key}`);
+        if (!(key in keysPressed)) {
+            return;
+        }
 
-    const upHandler = useCallback(
-        ({ key }: KeyboardEvent) => {
-            if (keys.indexOf(key) >= 0) {
-                const i = keysPressed.indexOf(key);
-                if (i >= 0) {
-                    // remove
-                    delete keysPressed[i];
-                    setKeysPressed(keysPressed);
-                    callbacks[key].up(key);
-                }
-            }
-        },
-        [keys, keysPressed, callbacks]
-    );
+        setKeysPressed({...keysPressed, [key]: false});
+        keyBindings[key].up(key);
+    }, [keyBindings, keysPressed]);
+
+    // I need to call the bound key callback (a side effect) at time of
+    // state update. The problem is it depends on keysPressed state, but I don't
+    // want to redo all the event listeners on every keypress
+    // Ideally event listeners get redone as little as possible, maybe when
+    // the binding mode changes but not on every keypress
 
     useEffect(() => {
+        console.log('registering key handlers');
         window.addEventListener("keydown", downHandler);
         window.addEventListener("keyup", upHandler);
         return () => {
             window.removeEventListener("keydown", downHandler);
             window.removeEventListener("keyup", upHandler);
         };
-    }, [upHandler, downHandler]);
+    }, [downHandler, upHandler]);
 
-    return keysPressed;
+    return Object.keys(keysPressed).filter(k => keysPressed[k]);
 }
+
 
 type BindingMode = 'Toggle' | 'Hold';
 export const BindingModes: Record<string, BindingMode> = {
@@ -61,60 +80,64 @@ export const BindingModes: Record<string, BindingMode> = {
     HOLD: 'Hold',
 };
 
+
+/**
+ * Single Key boolean switch.
+ * Two modes, Toggle and Hold
+ */
 export function useSingleKeySwitch(
     key: Key,
-    setter: (b: boolean) => void,
     mode: BindingMode = BindingModes.TOGGLE,
     initialValue = false
 ): boolean {
-    const [isActive, setIsActive] = useState(initialValue);
+    const [isOn, setOn] = useState(initialValue);
+
     const toggle = useCallback(
         () => {
             if (mode === BindingModes.TOGGLE) {
-                setter(!isActive);
-                setIsActive(!isActive);
+                setOn(isOn => !isOn);
             } else {
                 console.error(`Unexpected BindingMode ${mode}`);
             }
         },
-        [setter, mode, isActive]
+        [mode]
     );
 
-    const setActive = useCallback(
+    const switchOn = useCallback(
         () => {
             if (mode === BindingModes.HOLD) {
-                setter(true);
-                setIsActive(true);
+                setOn(true);
             } else {
-                console.error(`setActive: Unexpected BindingMode ${mode}`);
+                console.error(`switchOn: Unexpected BindingMode ${mode}`);
             }
         },
-        [setter, mode]
+        [mode]
     )
 
-    const setInactive = useCallback(
+    const switchOff = useCallback(
         () => {
             if (mode === BindingModes.HOLD) {
-                setter(false);
-                setIsActive(false);
+                setOn(false);
             } else {
-                console.error(`setInactive: Unexpected BindingMode ${mode}`);
+                console.error(`switchOff: Unexpected BindingMode ${mode}`);
             }
         },
-        [setter, mode]
+        [mode]
     )
 
-    const keysPressed = useKeyBindings(
-        [key],
-        {
+    const kb = useMemo(() => {
+        console.log('keybindings memo');
+        return {
             [key]: {
-                down: mode === BindingModes.TOGGLE ? toggle : setActive,
-                up: mode === BindingModes.TOGGLE ? () => { return; } : setInactive,
+                down: mode === BindingModes.TOGGLE ? toggle : switchOn,
+                up: mode === BindingModes.TOGGLE ? () => { return; } : switchOff,
             },
-        }
-    );
+        };
+    }, [key, mode, toggle, switchOn, switchOff]);
 
-    return keysPressed.length === 1;
+    useKeyBindings(kb);
+
+    return isOn;
 }
 
 

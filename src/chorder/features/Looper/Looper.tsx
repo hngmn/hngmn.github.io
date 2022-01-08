@@ -7,9 +7,8 @@ import Slot from './Slot';
 
 
 export default function Looper(): React.ReactElement {
-    const [isOn, setOn] = React.useState(false);
     const [mode, setMode] = React.useState(BindingModes.TOGGLE);
-    useSingleKeySwitch(' ', setOn, mode);
+    const isOn = useSingleKeySwitch(' ', mode, false);
 
     return (
         <section>
