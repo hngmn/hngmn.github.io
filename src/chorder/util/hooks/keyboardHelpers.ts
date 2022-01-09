@@ -22,7 +22,8 @@ function useEventCallback<T, R>(fn: (arg: T) => R, deps: Array<any>): (arg: T) =
 }
 
 /**
- * Most generalized key binding hook. Separate callback for every keyevent.
+ * Most generalized key binding hook. Separate callback per key, keyevent in
+ * keyBindings.
  */
 function useKeyBindings(keyBindings: KeyBindings): Array<Key> {
     const initialKeysPressed = useMemo(() => {
@@ -34,21 +35,22 @@ function useKeyBindings(keyBindings: KeyBindings): Array<Key> {
         return kp;
     }, [keyBindings]);
     const [keysPressed, setKeysPressed] = useState(initialKeysPressed);
+
     const downHandler = useEventCallback(({ key }: KeyboardEvent) => {
-        console.log(`keydown ${key}`);
         if (!(key in keysPressed)) {
             return;
         }
+        console.log(`keydown ${key}`);
 
         setKeysPressed({...keysPressed, [key]: true});
         keyBindings[key].down(key);
     }, [keyBindings, keysPressed]);
 
     const upHandler = useEventCallback(({ key }: KeyboardEvent) => {
-        console.log(`keyup ${key}`);
         if (!(key in keysPressed)) {
             return;
         }
+        console.log(`keyup ${key}`);
 
         setKeysPressed({...keysPressed, [key]: false});
         keyBindings[key].up(key);
@@ -61,7 +63,6 @@ function useKeyBindings(keyBindings: KeyBindings): Array<Key> {
     // the binding mode changes but not on every keypress
 
     useEffect(() => {
-        console.log('registering key handlers');
         window.addEventListener("keydown", downHandler);
         window.addEventListener("keyup", upHandler);
         return () => {
@@ -84,11 +85,13 @@ export const BindingModes: Record<string, BindingMode> = {
 /**
  * Single Key boolean switch.
  * Two modes, Toggle and Hold
+ * Optional callback parameter will be called when switch state changes
  */
 export function useSingleKeySwitch(
     key: Key,
     mode: BindingMode = BindingModes.TOGGLE,
-    initialValue = false
+    initialValue = false,
+    cb?: (isOn: boolean) => void
 ): boolean {
     const [isOn, setOn] = useState(initialValue);
 
@@ -126,7 +129,6 @@ export function useSingleKeySwitch(
     )
 
     const kb = useMemo(() => {
-        console.log('keybindings memo');
         return {
             [key]: {
                 down: mode === BindingModes.TOGGLE ? toggle : switchOn,
@@ -136,6 +138,12 @@ export function useSingleKeySwitch(
     }, [key, mode, toggle, switchOn, switchOff]);
 
     useKeyBindings(kb);
+
+    useEffect(() => {
+        if (cb) {
+            cb(isOn);
+        }
+    }, [cb, isOn]);
 
     return isOn;
 }

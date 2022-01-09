@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import { Instrument, Switch, Note } from '../../instrument';
-import { useSingleKeyPress, useKeyHold, useSingleKeyHold, Key } from '../../util/hooks';
+import { useSingleKeySwitch, BindingModes, useSingleKeyPress, useKeyHold, useSingleKeyHold, Key } from '../../util/hooks';
 
 const ins = new Instrument();
 
@@ -43,10 +43,11 @@ export default function Chorder(): React.ReactElement {
     );
 
     // augdim
-    useKeyHold('b', (pressed: boolean) => {
+    const updateAugdim = React.useCallback((pressed: boolean) => {
         ins.augdim.set(pressed);
         updateNotesPlaying(ins.update());
-    });
+    }, []);
+    useSingleKeySwitch('b', BindingModes.HOLD, false, updateAugdim);
 
     // sus
     useSingleKeyHold(
