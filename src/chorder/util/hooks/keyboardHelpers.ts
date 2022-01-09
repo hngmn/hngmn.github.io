@@ -148,6 +148,122 @@ export function useSingleKeySwitch(
     return isOn;
 }
 
+export function useSingleActiveMultiSwitch<StateT>(
+    keyMap: Record<Key, StateT>,
+    mode: BindingMode,
+    cb?: (s: StateT) => void
+): StateT {
+    const singleStateCallback = useCallback((states: Array<StateT>) => {
+        if (states.length > 1) {
+            throw new Error(`singleStateCallback: states array greater than 1`);
+        } else if (states.length === 1 && cb) {
+            cb(states[0]);
+        } else {
+            console.log('singleStateCallback: states array empty');
+        }
+    }, [cb]);
+
+    const activeState = useMultiSwitch(keyMap, mode, 1, singleStateCallback);
+
+    return activeState[0];
+}
+
+/**
+ * Multiswitch
+* Multiple states, rather than boolean. n-active at a time.
+ */
+export function useMultiSwitch<StateT>(
+    keyMap: Record<Key, StateT>,
+    mode: BindingMode,
+    n: number,
+    cb?: (s: Array<StateT>) => void
+): Array<StateT> {
+    type KeyStatesMapQueue = {
+        [Property in keyof typeof keyMap]: boolean;
+    } & {
+        q: Array<keyof typeof keyMap>
+    };
+    // a FIFO queue for all active states
+    const [states, setStates] = useState({} as KeyStatesMapQueue);
+
+    const pushState = useCallback((key: Key) => {
+        return (prevStates: typeof states) => {
+            if (prevStates[key]) {
+                prevStates.q = prevStates.q.filter(k => k !== key);
+            } else if (prevStates.q.length === n) {
+                const keyToRemove = prevStates.q.shift();
+                prevStates[keyToRemove!] = false; // n > 0 so this is safe
+            }
+
+            prevStates[key] = true;
+            prevStates.q.push(key);
+
+            return prevStates;
+        };
+    }, [n]);
+
+    const removeState = useCallback((key: Key) => {
+        return (prevStates: typeof states) => {
+            prevStates[key] = false;
+            const i = prevStates.q.indexOf(key);
+            if (i >= 0) {
+                prevStates.q = prevStates.q.filter(k => k !== key);
+            }
+            return prevStates;
+        };
+    }, []);
+
+    const toggle = useCallback((key: Key) => {
+        setStates((prevStates: typeof states) => {
+            if (prevStates[key]) {
+                return removeState(key)(prevStates);
+            } else {
+                return pushState(key)(prevStates);
+            }
+        });
+    }, [pushState, removeState]);
+
+    const holdDown = useCallback((key: Key) => {
+        setStates(pushState(key));
+    }, [pushState]);
+
+    const holdUp = useCallback((key: Key) => {
+        setStates(removeState(key));
+    }, [removeState]);
+
+    const keyBindings = useMemo(() => {
+        const kb = {} as KeyBindings;
+        for (const key of Object.keys(keyMap)) {
+            if (mode === BindingModes.TOGGLE) {
+                kb[key] = {
+                    down: toggle,
+                    up: () => { return; },
+                };
+            } else if (mode === BindingModes.HOLD){
+                kb[key] = {
+                    down: holdDown,
+                    up: holdUp,
+                };
+            } else {
+                throw new Error(`Unexpected binding mode ${mode}`);
+            }
+        }
+
+        return kb;
+    }, []);
+
+    useKeyBindings(keyBindings);
+
+    const activeStates = Object.keys(states).filter(k => states[k] === true).map(k => keyMap[k]);
+    useEffect(() => {
+        if (cb) {
+            return cb(activeStates);
+        }
+    });
+
+    return activeStates;
+}
+
 
 export function useSingleKeyPress(keys: Array<Key>, downCallback: KeyCallback, upCallback: KeyCallback): Key {
     const keySet = useMemo(() => new Set(keys), [keys]);
