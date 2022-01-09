@@ -1,6 +1,6 @@
 'use strict';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useReducer, useRef } from 'react';
 
 export type Key = string;
 export type KeyCallback = (k: Key) => void;
@@ -25,36 +25,27 @@ function useEventCallback<T, R>(fn: (arg: T) => R, deps: Array<any>): (arg: T) =
  * Most generalized key binding hook. Separate callback per key, keyevent in
  * keyBindings.
  */
-function useKeyBindings(keyBindings: KeyBindings): Array<Key> {
-    const initialKeysPressed = useMemo(() => {
-        console.log('initializing keysPressed. This should only run once.', keyBindings);
+function useKeyBindings(keyBindings: KeyBindings): KeysState {
+    const initialKeysState = useMemo(() => {
+        console.log('initializing keysState. This should only run once.', keyBindings);
         const kp = {} as Record<Key, boolean>;
         for (const key of Object.keys(keyBindings)) {
             kp[key] = false;
         }
-        return kp;
+        return {
+            isPressed: kp,
+            pressedOrder: [],
+        };
     }, [keyBindings]);
-    const [keysPressed, setKeysPressed] = useState(initialKeysPressed);
+    const [keysState, dispatch] = useReducer(keyReducer, initialKeysState);
 
     const downHandler = useEventCallback(({ key }: KeyboardEvent) => {
-        if (!(key in keysPressed)) {
-            return;
-        }
-        console.log(`keydown ${key}`);
-
-        setKeysPressed({...keysPressed, [key]: true});
-        keyBindings[key].down(key);
-    }, [keyBindings, keysPressed]);
+        dispatch(KeyActions.down(key));
+    }, []);
 
     const upHandler = useEventCallback(({ key }: KeyboardEvent) => {
-        if (!(key in keysPressed)) {
-            return;
-        }
-        console.log(`keyup ${key}`);
-
-        setKeysPressed({...keysPressed, [key]: false});
-        keyBindings[key].up(key);
-    }, [keyBindings, keysPressed]);
+        dispatch(KeyActions.up(key));
+    }, []);
 
     // I need to call the bound key callback (a side effect) at time of
     // state update. The problem is it depends on keysPressed state, but I don't
@@ -71,7 +62,73 @@ function useKeyBindings(keyBindings: KeyBindings): Array<Key> {
         };
     }, [downHandler, upHandler]);
 
-    return Object.keys(keysPressed).filter(k => keysPressed[k]);
+    useEffect(() => {
+        if (keysState.lastKeyAction) {
+            keyBindings[keysState.lastKeyAction.payload][keysState.lastKeyAction.type](keysState.lastKeyAction.payload);
+        }
+    }, [keyBindings, keysState]);
+
+    return keysState;
+}
+
+type KeyActionType = 'down' | 'up';
+const KeyActionTypes: Record<string, KeyActionType> = {
+    DOWN: 'down',
+    UP: 'up',
+};
+
+interface KeyAction {
+    type: KeyActionType
+    payload: Key
+}
+const KeyActions = {
+    down: (key: Key) => ({ type: KeyActionTypes.DOWN, payload: key }),
+    up: (key: Key) => ({ type: KeyActionTypes.UP, payload: key }),
+};
+
+interface KeysState {
+    isPressed: Record<Key, boolean>
+    pressedOrder: Array<Key>
+    lastKeyAction?: KeyAction
+}
+
+
+function keyReducer(state: KeysState, action: KeyAction): KeysState {
+    const key = action.payload;
+    if (!(key in state.isPressed)) {
+        return state;
+    }
+
+    switch(action.type) {
+    case KeyActionTypes.DOWN:
+        if (state.isPressed[key]) {
+            if (state.pressedOrder[state.pressedOrder.length - 1] === key) {
+                // early return no state change for repeating keydowns
+                return state;
+            }
+
+            state.pressedOrder = state.pressedOrder.filter(k => k !== key)
+        } else {
+            state.isPressed[key] = true;
+        }
+
+        state.pressedOrder.push(key);
+        state.lastKeyAction = action;
+        return {...state};
+    case KeyActionTypes.UP:
+        if (state.isPressed[key]) {
+            state.isPressed[key] = false;
+            state.pressedOrder = state.pressedOrder.filter(k => k !== key)
+            state.lastKeyAction = action;
+        } else {
+            console.warn(`Got keyup '${key}' but it's not marked pressed`);
+        }
+        
+        return {...state};
+    default:
+        // shouldn't happen
+        throw new Error(`Unexpected Key Action type ${action.type}`);
+    }
 }
 
 
@@ -159,7 +216,7 @@ export function useSingleActiveMultiSwitch<StateT>(
         } else if (states.length === 1 && cb) {
             cb(states[0]);
         } else {
-            console.log('singleStateCallback: states array empty');
+            //console.log('singleStateCallback: states array empty');
         }
     }, [cb]);
 
