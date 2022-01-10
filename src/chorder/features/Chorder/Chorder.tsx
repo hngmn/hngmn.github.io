@@ -6,6 +6,7 @@ import { Instrument, Switch, Note } from '../../instrument';
 import {
     useSingleKeySwitch,
     useSingleActiveMultiSwitch,
+    useMultiSwitch,
     BindingModes,
     useSingleKeyPress,
     useKeyHold,
@@ -43,16 +44,13 @@ export default function Chorder(): React.ReactElement {
     }
 
     // chord degree
-    useSingleKeyPress(
-        Object.keys(keyMapping),
-        (k: Key) => {
-            ins.setDegree(keyMapping[k]);
+    const chordDegree = useSingleActiveMultiSwitch(keyMapping, BindingModes.TOGGLE);
+    React.useEffect(() => {
+        if (chordDegree) {
+            ins.setDegree(chordDegree);
             updateNotesPlaying(ins.update());
-        },
-        () => {
-            return;
         }
-    );
+    }, [chordDegree]);
 
     // augdim
     const updateAugdim = React.useCallback((pressed: boolean) => {

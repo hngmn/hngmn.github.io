@@ -95,7 +95,7 @@ function keyReducer(state: KeysState, action: KeyAction): KeysState {
         } else {
             console.warn(`Got keyup '${key}' but it's not marked pressed`);
         }
-        
+
         return {...state};
     default:
         // shouldn't happen
