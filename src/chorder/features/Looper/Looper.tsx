@@ -16,7 +16,7 @@ export default function Looper(): React.ReactElement {
     const [mode, setMode] = React.useState(BindingModes.TOGGLE);
     const isOn = useSingleKeySwitch(' ', mode, false);
 
-    const state = useSingleActiveMultiSwitch(keyStateMap, mode);
+    //const state = useSingleActiveMultiSwitch(keyStateMap, mode);
 
     return (
         <section>
@@ -36,7 +36,6 @@ export default function Looper(): React.ReactElement {
 
             <p>{isOn ? 'on' : 'off'}</p>
 
-            <p>{state}</p>
 
             <span>
                 <Slot n={1}/>

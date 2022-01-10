@@ -6,67 +6,40 @@ export type Key = string;
 export type KeyCallback = (k: Key) => void;
 export type KeyBindings = Record<Key, { down: KeyCallback, up: KeyCallback }>;
 
-function useEventCallback<T, R>(fn: (arg: T) => R, deps: Array<any>): (arg: T) => R {
-    const ref = useRef<typeof fn>(() => {
-        throw new Error('Cannot call an event handler while rendering.');
-    });
-
-    useEffect(() => {
-        ref.current = fn;
-    }, [fn, ...deps]);
-
-    return useCallback((arg: T) => {
-        const fn = ref.current;
-        return fn(arg);
-    }, [ref]);
-}
-
 /**
  * Most generalized key binding hook. Separate callback per key, keyevent in
  * keyBindings.
  */
-function useKeyBindings(keyBindings: KeyBindings): KeysState {
+function useKeyBindings(keys: Array<Key>): KeysState {
     const initialKeysState = useMemo(() => {
-        console.log('initializing keysState. This should only run once.', keyBindings);
+        console.log('initializing keysState. This should only run once.', keys);
         const kp = {} as Record<Key, boolean>;
-        for (const key of Object.keys(keyBindings)) {
+        for (const key of keys) {
             kp[key] = false;
         }
         return {
             isPressed: kp,
             pressedOrder: [],
         };
-    }, [keyBindings]);
+    }, [keys]);
     const [keysState, dispatch] = useReducer(keyReducer, initialKeysState);
 
-    const downHandler = useEventCallback(({ key }: KeyboardEvent) => {
-        dispatch(KeyActions.down(key));
-    }, []);
-
-    const upHandler = useEventCallback(({ key }: KeyboardEvent) => {
-        dispatch(KeyActions.up(key));
-    }, []);
-
-    // I need to call the bound key callback (a side effect) at time of
-    // state update. The problem is it depends on keysPressed state, but I don't
-    // want to redo all the event listeners on every keypress
-    // Ideally event listeners get redone as little as possible, maybe when
-    // the binding mode changes but not on every keypress
-
     useEffect(() => {
+        const downHandler = ({ key }: KeyboardEvent) => {
+            dispatch(KeyActions.down(key));
+        };
+
+        const upHandler = ({ key }: KeyboardEvent) => {
+            dispatch(KeyActions.up(key));
+        };
+
         window.addEventListener("keydown", downHandler);
         window.addEventListener("keyup", upHandler);
         return () => {
             window.removeEventListener("keydown", downHandler);
             window.removeEventListener("keyup", upHandler);
         };
-    }, [downHandler, upHandler]);
-
-    useEffect(() => {
-        if (keysState.lastKeyAction) {
-            keyBindings[keysState.lastKeyAction.payload][keysState.lastKeyAction.type](keysState.lastKeyAction.payload);
-        }
-    }, [keyBindings, keysState]);
+    }, []);
 
     return keysState;
 }
@@ -91,7 +64,6 @@ interface KeysState {
     pressedOrder: Array<Key>
     lastKeyAction?: KeyAction
 }
-
 
 function keyReducer(state: KeysState, action: KeyAction): KeysState {
     const key = action.payload;
@@ -152,50 +124,24 @@ export function useSingleKeySwitch(
 ): boolean {
     const [isOn, setOn] = useState(initialValue);
 
-    const toggle = useCallback(
-        () => {
-            if (mode === BindingModes.TOGGLE) {
-                setOn(isOn => !isOn);
-            } else {
-                console.error(`Unexpected BindingMode ${mode}`);
+    const keys = useMemo(() => [key], [key]);
+    const keysState = useKeyBindings(keys);
+
+    // update isOn
+    useEffect(() => {
+        console.log('keysState changed', keysState);
+        if (mode === BindingModes.TOGGLE) {
+            if (keysState.lastKeyAction && keysState.lastKeyAction.type === KeyActionTypes.DOWN) {
+                setOn(on => !on);
             }
-        },
-        [mode]
-    );
+        } else if (mode === BindingModes.HOLD) {
+            setOn(keysState.isPressed[key]);
+        } else {
+            throw new Error(`useSingleKeySwitch: Unexpected BindingMode ${mode}`);
+        }
+    }, [key, mode, keysState]);
 
-    const switchOn = useCallback(
-        () => {
-            if (mode === BindingModes.HOLD) {
-                setOn(true);
-            } else {
-                console.error(`switchOn: Unexpected BindingMode ${mode}`);
-            }
-        },
-        [mode]
-    )
-
-    const switchOff = useCallback(
-        () => {
-            if (mode === BindingModes.HOLD) {
-                setOn(false);
-            } else {
-                console.error(`switchOff: Unexpected BindingMode ${mode}`);
-            }
-        },
-        [mode]
-    )
-
-    const kb = useMemo(() => {
-        return {
-            [key]: {
-                down: mode === BindingModes.TOGGLE ? toggle : switchOn,
-                up: mode === BindingModes.TOGGLE ? () => { return; } : switchOff,
-            },
-        };
-    }, [key, mode, toggle, switchOn, switchOff]);
-
-    useKeyBindings(kb);
-
+    // callback if specified
     useEffect(() => {
         if (cb) {
             cb(isOn);
