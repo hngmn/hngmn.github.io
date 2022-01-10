@@ -3,7 +3,14 @@
 import * as React from 'react';
 
 import { Instrument, Switch, Note } from '../../instrument';
-import { useSingleKeySwitch, BindingModes, useSingleKeyPress, useKeyHold, useSingleKeyHold, Key } from '../../util/hooks';
+import {
+    useSingleKeySwitch,
+    useSingleActiveMultiSwitch,
+    BindingModes,
+    useSingleKeyPress,
+    useKeyHold,
+    Key
+} from '../../util/hooks';
 
 const ins = new Instrument();
 
@@ -15,6 +22,11 @@ const keyMapping: Record<Key, number> = {
     'q': 5,
     'w': 6,
     'e': 7,
+};
+
+const susKeyMapping: Record<Key, number> = {
+    'c': 1,
+    'v': 2,
 };
 
 export default function Chorder(): React.ReactElement {
@@ -50,13 +62,17 @@ export default function Chorder(): React.ReactElement {
     useSingleKeySwitch('b', BindingModes.HOLD, false, updateAugdim);
 
     // sus
-    useSingleKeyHold(
-        ['c', 'v'], // sus2, sus4
-        ([_, i]: [Key, number]) => {
-            ins.sus.set(i+1);
+    const sus = useSingleActiveMultiSwitch(susKeyMapping, BindingModes.HOLD);
+    React.useEffect(() => {
+        console.log(`updating sus: ${sus}`);
+        if (sus) {
+            ins.sus.set(sus);
+            updateNotesPlaying(ins.update());
+        } else {
+            ins.sus.set(0);
             updateNotesPlaying(ins.update());
         }
-    );
+    }, [sus]);
 
     // transpose (scalar)
     useSingleKeyPress(
