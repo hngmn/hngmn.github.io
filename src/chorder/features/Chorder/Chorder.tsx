@@ -47,7 +47,7 @@ export default function Chorder(): React.ReactElement {
         ins.augdim.set(pressed);
         updateNotesPlaying(ins.update());
     }, []);
-    //useSingleKeySwitch('b', BindingModes.HOLD, false, updateAugdim);
+    useSingleKeySwitch('b', BindingModes.HOLD, false, updateAugdim);
 
     // sus
     useSingleKeyHold(

@@ -129,7 +129,6 @@ export function useSingleKeySwitch(
 
     // update isOn
     useEffect(() => {
-        console.log('keysState changed', keysState);
         if (mode === BindingModes.TOGGLE) {
             if (keysState.lastKeyAction && keysState.lastKeyAction.type === KeyActionTypes.DOWN) {
                 setOn(on => !on);
@@ -186,85 +185,59 @@ export function useMultiSwitch<StateT>(
     } & {
         q: Array<keyof typeof keyMap>
     };
-    // a FIFO queue for all active states
-    const [states, setStates] = useState({} as KeyStatesMapQueue);
+    // a FIFO queue (with limit n) for all active states
+    const [states, setStates] = useState([] as StateT[]);
 
-    const pushState = useCallback((key: Key) => {
-        return (prevStates: typeof states) => {
-            if (prevStates[key]) {
-                prevStates.q = prevStates.q.filter(k => k !== key);
-            } else if (prevStates.q.length === n) {
-                const keyToRemove = prevStates.q.shift();
-                prevStates[keyToRemove!] = false; // n > 0 so this is safe
+    const keys = useMemo(() => Object.keys(keyMap), [keyMap]);
+    const keysState = useKeyBindings(keys);
+
+    // update states array depending on key event and binding mode
+    useEffect(() => {
+        if (mode === BindingModes.TOGGLE) {
+            if (keysState.lastKeyAction && keysState.lastKeyAction.type === KeyActionTypes.DOWN) {
+                // use a setter here so we don't have to read states. if we did
+                // this effect would loop calling itself, as it depends on
+                // state
+                setStates(prevStates => {
+                    const key = keysState.lastKeyAction!.payload;
+
+                    if (prevStates.indexOf(keyMap[key]) >= 0) {
+                        const nextStates = prevStates.filter(st => st !== keyMap[key]);
+                        nextStates.push(keyMap[key]);
+                        return nextStates;
+                    }
+
+                    const nextStates = [...prevStates, keyMap[key]];
+                    if (nextStates.length > n) {
+                        nextStates.shift();
+                    }
+
+                    return nextStates;
+                });
             }
 
-            prevStates[key] = true;
-            prevStates.q.push(key);
-
-            return prevStates;
-        };
-    }, [n]);
-
-    const removeState = useCallback((key: Key) => {
-        return (prevStates: typeof states) => {
-            prevStates[key] = false;
-            const i = prevStates.q.indexOf(key);
-            if (i >= 0) {
-                prevStates.q = prevStates.q.filter(k => k !== key);
-            }
-            return prevStates;
-        };
-    }, []);
-
-    const toggle = useCallback((key: Key) => {
-        setStates((prevStates: typeof states) => {
-            if (prevStates[key]) {
-                return removeState(key)(prevStates);
+        } else if (mode === BindingModes.HOLD) {
+            if (keysState.pressedOrder.length > n) {
+                setStates(keysState.pressedOrder
+                          .map(key => keyMap[key])
+                          .slice(keysState.pressedOrder.length - n));
             } else {
-                return pushState(key)(prevStates);
+                setStates(keysState.pressedOrder.map(key => keyMap[key]));
             }
-        });
-    }, [pushState, removeState]);
 
-    const holdDown = useCallback((key: Key) => {
-        setStates(pushState(key));
-    }, [pushState]);
-
-    const holdUp = useCallback((key: Key) => {
-        setStates(removeState(key));
-    }, [removeState]);
-
-    const keyBindings = useMemo(() => {
-        const kb = {} as KeyBindings;
-        for (const key of Object.keys(keyMap)) {
-            if (mode === BindingModes.TOGGLE) {
-                kb[key] = {
-                    down: toggle,
-                    up: () => { return; },
-                };
-            } else if (mode === BindingModes.HOLD){
-                kb[key] = {
-                    down: holdDown,
-                    up: holdUp,
-                };
-            } else {
-                throw new Error(`Unexpected binding mode ${mode}`);
-            }
+        } else {
+            throw new Error(`useMultiSwitch: Unexpected BindingMode ${mode}`);
         }
+    }, [keyMap, mode, n, keysState]);
 
-        return kb;
-    }, []);
-
-    useKeyBindings(keyBindings);
-
-    const activeStates = Object.keys(states).filter(k => states[k] === true).map(k => keyMap[k]);
+    // callback if specified
     useEffect(() => {
         if (cb) {
-            return cb(activeStates);
+            return cb(states);
         }
     });
 
-    return activeStates;
+    return states;
 }
 
 
