@@ -1,6 +1,6 @@
 
-## Development
 
+## Active Build and Dev
 ### Webpack, Java/Typescript
 `nvm` for npm/node versions
 
@@ -17,3 +17,6 @@ npm run dev
 chruby <something>
 npm run serve
 ```
+
+## New Module
+See commit c4b2659 for hello world commit
