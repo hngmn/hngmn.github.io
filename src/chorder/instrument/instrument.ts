@@ -26,7 +26,7 @@ export default class Instrument {
     notesPlaying: Array<Note>;
 
     constructor() {
-        this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
+        this.synth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'sine' }}).toDestination();
 	this.notesPlaying = [];
         this.scale = Scale.CMAJOR;
         this.transposition = 0;
