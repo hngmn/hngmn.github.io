@@ -5,8 +5,9 @@ const MODULES = [
   'boombox',
   'gallery',
   'stepsequencer',
-  'chorder'
-]
+  'chorder',
+  'viz'
+];
 
 /**
  * Given a module name, return a compile target for Bundle.
