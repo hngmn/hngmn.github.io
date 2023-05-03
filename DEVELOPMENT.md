@@ -1,6 +1,13 @@
 
+## Overview
+Project is entirely client-side, meaning the build process outputs a static site
+which Github Pages serves for free. The build process boils down to two steps:
+1. Webpack compiles the Typescript/React code in `/src/` to js, putting them in
+   the Jekyll input dir, `/docs/`.
+2. Jekyll generates the static site from `/docs/`.
 
-## Active Build and Dev
+## Dev Procedure
+
 ### Webpack, Java/Typescript
 `nvm` for npm/node versions
 
