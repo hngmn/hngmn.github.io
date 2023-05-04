@@ -15,7 +15,7 @@ export class DefaultBoid implements Boid {
     private maxSpeed: number;
     private maxForce: number;
 
-    constructor(p: p5, x = 0, y = 0) {
+    constructor(p: p5, x: number, y: number) {
         this.p = p;
         this.position = p.createVector(x, y);
         this.velocity = p.createVector(p.random(-1, 1), p.random(-1, 1));
@@ -53,29 +53,29 @@ export class DefaultBoid implements Boid {
         let count = 0;
         // For every boid in the system, check if it's too close
         for (let i = 0; i < boids.length; i++) {
-          let d = this.position.dist(boids[i].position);
-          // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
-          if ((d > 0) && (d < desiredseparation)) {
-            // Calculate vector pointing away from neighbor
-            let diff = this.position.sub(boids[i].position);
-            diff.normalize();
-            diff.div(d);        // Weight by distance
-            steer.add(diff);
-            count++;            // Keep track of how many
-          }
+            let d = this.position.dist(boids[i].position);
+            // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself)
+            if ((d > 0) && (d < desiredseparation)) {
+                // Calculate vector pointing away from neighbor
+                let diff = this.position.copy().sub(boids[i].position);
+                diff.normalize();
+                diff.div(d);        // Weight by distance
+                steer.add(diff);
+                count++;            // Keep track of how many
+            }
         }
         // Average -- divide by how many
         if (count > 0) {
-          steer.div(count);
+            steer.div(count);
         }
 
         // As long as the vector is greater than 0
         if (steer.mag() > 0) {
-          // Implement Reynolds: Steering = Desired - Velocity
-          steer.normalize();
-          steer.mult(this.maxSpeed);
-          steer.sub(this.velocity);
-          steer.limit(this.maxForce);
+            // Implement Reynolds: Steering = Desired - Velocity
+            steer.normalize();
+            steer.mult(this.maxSpeed);
+            steer.sub(this.velocity);
+            steer.limit(this.maxForce);
         }
         return steer;
     }
@@ -83,24 +83,24 @@ export class DefaultBoid implements Boid {
     // For every nearby boid in the system, calculate the average velocity
     align(boids: Boid[]): p5.Vector {
         let neighbordist = 50;
-        let sum = this.p.createVector(0,0);
+        let sum = this.p.createVector(0, 0);
         let count = 0;
         for (let i = 0; i < boids.length; i++) {
-          let d = this.position.dist(boids[i].position);
-          if ((d > 0) && (d < neighbordist)) {
-            sum.add(boids[i].velocity);
-            count++;
-          }
+            let d = this.position.dist(boids[i].position);
+            if ((d > 0) && (d < neighbordist)) {
+                sum.add(boids[i].velocity);
+                count++;
+            }
         }
         if (count > 0) {
-          sum.div(count);
-          sum.normalize();
-          sum.mult(this.maxSpeed);
-          let steer = sum.sub(this.velocity);
-          steer.limit(this.maxForce);
-          return steer;
+            sum.div(count);
+            sum.normalize();
+            sum.mult(this.maxSpeed);
+            let steer = sum.copy().sub(this.velocity);
+            steer.limit(this.maxForce);
+            return steer;
         } else {
-          return this.p.createVector(0, 0);
+            return this.p.createVector(0, 0);
         }
     }
 
@@ -110,29 +110,29 @@ export class DefaultBoid implements Boid {
         let sum = this.p.createVector(0, 0);   // Start with empty vector to accumulate all locations
         let count = 0;
         for (let i = 0; i < boids.length; i++) {
-          let d = this.position.dist(boids[i].position);
-          if ((d > 0) && (d < neighbordist)) {
-            sum.add(boids[i].position); // Add location
-            count++;
-          }
+            let d = this.position.dist(boids[i].position);
+            if ((d > 0) && (d < neighbordist)) {
+                sum.add(boids[i].position); // Add location
+                count++;
+            }
         }
         if (count > 0) {
-          sum.div(count);
-          return this.seek(sum);  // Steer towards the location
+            sum.div(count);
+            return this.seek(sum);  // Steer towards the location
         } else {
-          return this.p.createVector(0, 0);
+            return this.p.createVector(0, 0);
         }
     }
 
     // A method that calculates and applies a steering force towards a target
     // STEER = DESIRED MINUS VELOCITY
     seek(target: p5.Vector): p5.Vector {
-        let desired = target.sub(this.position);  // A vector pointing from the location to the target
+        let desired = target.copy().sub(this.position);  // A vector pointing from the location to the target
         // Normalize desired and scale to maximum speed
         desired.normalize();
         desired.mult(this.maxSpeed);
         // Steering = Desired minus Velocity
-        let steer = desired.sub(this.velocity);
+        let steer = desired.copy().sub(this.velocity);
         steer.limit(this.maxForce);  // Limit to maximum steering force
         return steer;
     }
@@ -153,8 +153,8 @@ export class DefaultBoid implements Boid {
     }
 
     borders(): void {
-        if (this.position.x < -this.r)  this.position.x = this.p.width + this.r;
-        if (this.position.y < -this.r)  this.position.y = this.p.height + this.r;
+        if (this.position.x < -this.r) this.position.x = this.p.width + this.r;
+        if (this.position.y < -this.r) this.position.y = this.p.height + this.r;
         if (this.position.x > this.p.width + this.r) this.position.x = -this.r;
         if (this.position.y > this.p.height + this.r) this.position.y = -this.r;
     }

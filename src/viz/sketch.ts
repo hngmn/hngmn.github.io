@@ -10,7 +10,7 @@ export default (p: p5) => {
 
         flock = new DefaultFlock();
         // initialize with Boids
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 200; i++) {
             let b = new DefaultBoid(p, p.width / 2, p.height / 2);
             flock.addBoid(b);
           }
