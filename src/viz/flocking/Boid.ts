@@ -33,13 +33,13 @@ export class DefaultBoid implements Boid {
     }
 
     flock(boids: Boid[]): void {
-        const sep = this.separate(boids);   // Separation
-        const ali = this.align(boids);      // Alignment
-        const coh = this.cohesion(boids);   // Cohesion
+        const sep = this.separate(boids);
+        const ali = this.align(boids);
+        const coh = this.cohesion(boids);
         // Arbitrarily weight these forces
-        sep.mult(1.5);
-        ali.mult(1.0);
-        coh.mult(1.0);
+        sep.mult(1.3);
+        ali.mult(1.2);
+        coh.mult(1.1);
         // Add the force vectors to acceleration
         this.applyForce(sep);
         this.applyForce(ali);

@@ -5,8 +5,7 @@ import { Flock, DefaultFlock, DefaultBoid } from './flocking';
 export default (p: p5) => {
     let flock: Flock;
     p.setup = () => {
-        p.createCanvas(1000, 800);
-        p.createP("Drag the mouse to generate new boids.");
+        p.createCanvas(1200, 800);
 
         flock = new DefaultFlock();
         // initialize with Boids
