@@ -37,9 +37,9 @@ export class DefaultBoid implements Boid {
         const ali = this.align(boids);
         const coh = this.cohesion(boids);
         // Arbitrarily weight these forces
-        sep.mult(1.3);
-        ali.mult(1.2);
-        coh.mult(1.1);
+        sep.mult(1.5);
+        ali.mult(1.0);
+        coh.mult(1.0);
         // Add the force vectors to acceleration
         this.applyForce(sep);
         this.applyForce(ali);
