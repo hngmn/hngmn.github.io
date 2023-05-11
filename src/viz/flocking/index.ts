@@ -1,2 +1,1 @@
-export { Flock, DefaultFlock } from './Flock';
-export { Boid, DefaultBoid } from './Boid';
+export { default as flocking } from './sketch';

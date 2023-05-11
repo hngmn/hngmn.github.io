@@ -1,10 +1,10 @@
 'use strict';
 
-import p5 from 'p5';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-import sketch from './sketch';
+import App from './App';
 
 
 const domContainer = document.querySelector('#viz_container');
-// ReactDOM.render(<App/>, domContainer);
-export const myp5 = new p5(sketch, domContainer);
+ReactDOM.render(<App/>, domContainer);

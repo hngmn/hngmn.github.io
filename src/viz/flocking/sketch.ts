@@ -1,11 +1,13 @@
 import type p5 from 'p5';
 
-import { Flock, DefaultFlock, DefaultBoid } from './flocking';
+import { DefaultBoid } from './Boid';
+import { DefaultFlock, Flock } from './Flock';
 
-export default (p: p5) => {
+
+export default function(p: p5) {
     let flock: Flock;
     p.setup = () => {
-        p.createCanvas(1200, 800);
+        p.createCanvas(1200, 600);
 
         flock = new DefaultFlock();
         // initialize with Boids
