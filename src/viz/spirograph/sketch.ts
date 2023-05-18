@@ -1,69 +1,43 @@
 import * as React from 'react';
 import p5 from 'p5';
+import { Linter } from 'eslint';
 
-export default function sketch(p: p5) {
-    let NUMSINES = 20; // how many of these things can we do at once?
-    let sines = new Array(NUMSINES); // an array to hold all the current angles
-    let rad: number; // an initial radius value for the central sine
-    let i; // a counter variable
+export default function spirograph(p: p5) {
+    let NUMSINES = 16; // how many of these things can we do at once?
+    let R = 260; // outer circle radius
+    let r = 80;  // inner circle radius
+    let rho = 17;  // inner circle point radius
+    let t = 0;
+    let dt = 0.02;
 
-    // play with these to get a sense of what's going on:
-    let fund = 0.005; // the speed of the central sine
-    let ratio = 1; // what multiplier for speed is each additional sine?
-    let alpha = 50; // how opaque is the tracing system
+    let spirofn = (t: number) => {
+        const tp = 0 - (((R - r) / r) * t);
+        return [
+            (R - r) * p.cos(t) + rho * p.cos(tp),
+            (R - r) * p.sin(t) + rho * p.sin(tp),
+        ];
+    }
 
-    let trace = false; // are we tracing?
+    let pvec = p.createVector(R - r + rho, 0);
 
     p.setup = () => {
-        p.createCanvas(710, 400);
-
-        rad = p.height / 4; // compute radius for central circle
+        p.createCanvas(1000, 700);
         p.background(204); // clear the screen
-
-        for (let i = 0; i < sines.length; i++) {
-            sines[i] = p.PI; // start EVERYBODY facing NORTH
-        }
     }
 
     p.draw = () => {
-        if (!trace) {
-            p.background(204); // clear screen if showing geometry
-            p.stroke(0, 255); // black pen
-            p.noFill(); // don't fill
-        }
-
         // MAIN ACTION
-        p.push(); // start a transformation matrix
         p.translate(p.width / 2, p.height / 2); // move to middle of screen
 
-        for (let i = 0; i < sines.length; i++) {
-            let erad = 0; // radius for small "point" within circle... this is the 'pen' when tracing
-            // setup for tracing
-            if (trace) {
-                p.stroke(0, 0, 255 * (p.float(i) / sines.length), alpha); // blue
-                p.fill(0, 0, 255, alpha / 2); // also, um, blue
-                erad = 5.0 * (1.0 - p.float(i) / sines.length); // pen width will be related to which sine
-            }
-            let radius = rad / (i + 1); // radius for circle itself
-            p.rotate(sines[i]); // rotate circle
-            if (!trace) p.ellipse(0, 0, radius * 2, radius * 2); // if we're simulating, draw the sine
-            p.push(); // go up one level
-            p.translate(0, radius); // move to sine edge
-            if (!trace) p.ellipse(0, 0, 5, 5); // draw a little circle
-            if (trace) p.ellipse(0, 0, erad, erad); // draw with erad if tracing
-            p.pop(); // go down one level
-            p.translate(0, radius); // move into position for next sine
-            sines[i] = (sines[i] + (fund + (fund * i * ratio))) % p.TWO_PI; // update angle based on fundamental
-        }
+        const vec = p.createVector(...spirofn(t));
+        p.line(pvec.x, pvec.y, vec.x, vec.y);
 
-        p.pop(); // pop down final transformation
-
+        // iterate
+        t += dt;
+        pvec = vec;
     }
 
-    p.keyReleased = () => {
-        if (p.key == ' ') {
-            trace = !trace;
-            p.background(255);
-        }
+    function polarToCartesian(r: number, theta: number): [number, number] {
+        return [r * p.cos(theta), r * p.sin(theta)];
     }
 }
