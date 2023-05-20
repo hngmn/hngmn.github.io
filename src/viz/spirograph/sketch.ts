@@ -1,4 +1,3 @@
-import * as React from 'react';
 import p5 from 'p5';
 
 type ParametricFunction = (t: number) => [number, number];
@@ -56,10 +55,12 @@ export default function spirograph(p: p5) {
         let li = 0;
         const margin = 20;
         for (let l = 0.1; l <= 0.9 ; l += dr) {
+            const spiroX = R + p.width * (l - 0.1) + (li * margin)
             let ki = 0;
             for (let k = 0.1; k <= 0.9; k += dr) {
+                const spiroY = R + p.height * (k - 0.1) + (ki * margin)
                 const spiroFn = getSpirographFnByRatio(l, k, R);
-                const drawFn = getPfnDrawFn(spiroFn, p.width * k + (ki * margin), p.height * l + (li * margin), `(${l}, ${k})`);
+                const drawFn = getPfnDrawFn(spiroFn, spiroX, spiroY, `(${l}, ${k})`);
                 drawPfnArray.push(drawFn);
                 ki++;
             }
