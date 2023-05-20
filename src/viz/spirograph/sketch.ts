@@ -1,43 +1,7 @@
 import p5 from 'p5';
-
-type ParametricFunction = (t: number) => [number, number];
+import { getPfnDrawFn, getSpirographFnByRatio } from './util';
 
 export default function spirograph(p: p5) {
-
-    // given R, r, and rho, return the parametric function f(t) for the spirograph
-    const getSpirographFn = (R: number, r: number, rho: number) => (t: number) => {
-        const tp = 0 - (((R - r) / r) * t);
-        return [
-            (R - r) * p.cos(t) + rho * p.cos(tp),
-            (R - r) * p.sin(t) + rho * p.sin(tp),
-        ];
-    }
-
-    // 0 <= l, k <= 1. R is optional bounding radius, ie the radius of the larger circle
-    const getSpirographFnByRatio = (l: number, k: number, R = 100): ParametricFunction => (t: number) => {
-        return [
-            R * ((1-k) * p.cos(t) + l * k * p.cos((1-k)/k * t)),
-            R * ((1-k) * p.sin(t) - l * k * p.sin((1-k)/k * t)),
-        ];
-    };
-
-    // given parametric function, return closure that draws it at t, translated to location x, y
-    const getPfnDrawFn = (pfn: ParametricFunction, tx: number, ty: number, label?: string) => {
-        const [ix, iy] = pfn(0); // store initial value for stopping loop
-        let [px, py] = [ix, iy];
-
-        return (t: number) => {
-            p.push();
-            p.translate(tx, ty);
-
-            // draw
-            const [x, y] = pfn(t);
-            p.line(px, py, x, y);
-
-            [px, py] = [x, y];
-            p.pop();
-        }
-    }
 
     const drawPfnArray: Array<(t: number) => void> = [];
 
@@ -60,7 +24,7 @@ export default function spirograph(p: p5) {
             for (let k = 0.1; k <= 0.9; k += dr) {
                 const spiroY = R + p.height * (k - 0.1) + (ki * margin)
                 const spiroFn = getSpirographFnByRatio(l, k, R);
-                const drawFn = getPfnDrawFn(spiroFn, spiroX, spiroY, `(${l}, ${k})`);
+                const drawFn = getPfnDrawFn(p, spiroFn, spiroX, spiroY, `(${l}, ${k})`);
                 drawPfnArray.push(drawFn);
                 ki++;
             }
@@ -75,9 +39,5 @@ export default function spirograph(p: p5) {
             drawSpiro(t);
         }
         t += dt;
-    }
-
-    function polarToCartesian(r: number, theta: number): [number, number] {
-        return [r * p.cos(theta), r * p.sin(theta)];
     }
 }
