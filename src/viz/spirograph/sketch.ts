@@ -40,22 +40,39 @@ export default function spirograph(p: p5) {
         }
     }
 
-    let R = 260; // outer circle radius
-    let r = 80;  // inner circle radius
-    let rho = 17;  // inner circle point radius
-    let drawSpiro: (t: number) => void;
+    const drawPfnArray: Array<(t: number) => void> = [];
 
     p.setup = () => {
-        p.createCanvas(1000, 700);
+        const CANVAS_WIDTH = 2400;
+        const CANVAS_HEIGHT = 1800;
+        p.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         p.background(204); // clear the screen
-        const spiro = getSpirographFnByRatio(rho / r, r / R, R);
-        drawSpiro = getPfnDrawFn(spiro, p.width / 2, p.height / 2, 'main spiro');
+
+        const dr = 0.05;                       // diff ratio per spiro (ie iteration step)
+        const nSpiros = (0.9 - 0.1) / dr + 1;  // # spiros per row
+        const R = CANVAS_HEIGHT / nSpiros / 2; // radius of single spiro (fraction of canvas size)
+
+        // initialize drawFn for each spirograph
+        let li = 0;
+        const margin = 20;
+        for (let l = 0.1; l <= 0.9 ; l += dr) {
+            let ki = 0;
+            for (let k = 0.1; k <= 0.9; k += dr) {
+                const spiroFn = getSpirographFnByRatio(l, k, R);
+                const drawFn = getPfnDrawFn(spiroFn, p.width * k + (ki * margin), p.height * l + (li * margin), `(${l}, ${k})`);
+                drawPfnArray.push(drawFn);
+                ki++;
+            }
+            li++;
+        }
     }
 
     let t = 0;
-    let dt = 0.03;
+    let dt = 0.01;
     p.draw = () => {
-        drawSpiro(t);
+        for (let drawSpiro of drawPfnArray) {
+            drawSpiro(t);
+        }
         t += dt;
     }
 
