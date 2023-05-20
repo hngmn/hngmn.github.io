@@ -1,18 +1,12 @@
 import * as React from 'react';
 import p5 from 'p5';
-import PlayButton from '../../stepsequencer/features/sequencer/PlayButton';
+
+type ParametricFunction = (t: number) => [number, number];
 
 export default function spirograph(p: p5) {
-    let R = 260; // outer circle radius
-    let r = 80;  // inner circle radius
-    let rho = 17;  // inner circle point radius
-    let t = 0;
-    let dt = 0.02;
-    let pvec = p.createVector(R - r + rho, 0);
 
-    let Rinput: p5.Element, rinput: p5.Element, rhoinput: p5.Element, button;
-
-    let spirofn = (t: number) => {
+    // given R, r, and rho, return the parametric function f(t) for the spirograph
+    const getSpirographFn = (R: number, r: number, rho: number) => (t: number) => {
         const tp = 0 - (((R - r) / r) * t);
         return [
             (R - r) * p.cos(t) + rho * p.cos(tp),
@@ -20,49 +14,49 @@ export default function spirograph(p: p5) {
         ];
     }
 
+    // 0 <= l, k <= 1. R is optional bounding radius, ie the radius of the larger circle
+    const getSpirographFnByRatio = (l: number, k: number, R = 100): ParametricFunction => (t: number) => {
+        return [
+            R * ((1-k) * p.cos(t) + l * k * p.cos((1-k)/k * t)),
+            R * ((1-k) * p.sin(t) - l * k * p.sin((1-k)/k * t)),
+        ];
+    };
+
+    // given parametric function, return closure that draws it at t, translated to location x, y
+    const getPfnDrawFn = (pfn: ParametricFunction, tx: number, ty: number, label?: string) => {
+        const [ix, iy] = pfn(0); // store initial value for stopping loop
+        let [px, py] = [ix, iy];
+
+        return (t: number) => {
+            p.push();
+            p.translate(tx, ty);
+
+            // draw
+            const [x, y] = pfn(t);
+            p.line(px, py, x, y);
+
+            [px, py] = [x, y];
+            p.pop();
+        }
+    }
+
+    let R = 260; // outer circle radius
+    let r = 80;  // inner circle radius
+    let rho = 17;  // inner circle point radius
+    let drawSpiro: (t: number) => void;
+
     p.setup = () => {
         p.createCanvas(1000, 700);
         p.background(204); // clear the screen
-
-        let inputY = 100;
-        Rinput = p.createInput(String(R));
-        Rinput.position(20, inputY);
-        inputY += 30
-        rinput = p.createInput(String(r));
-        rinput.position(20, inputY);
-        rinput.value(r);
-        inputY += 30
-        rhoinput = p.createInput();
-        rhoinput.position(20, inputY);
-        rhoinput.value(String(rho));
-        inputY += 30
-        button = p.createButton('Add');
-        button.position(20, inputY);
-        button.mousePressed(update);
-        inputY += 30;
-        let clearbutton = p.createButton('Clear');
-        clearbutton.position(20, inputY);
-        clearbutton.mousePressed(() => p.background(204));
+        const spiro = getSpirographFnByRatio(rho / r, r / R, R);
+        drawSpiro = getPfnDrawFn(spiro, p.width / 2, p.height / 2, 'main spiro');
     }
 
-    function update() {
-        R = Number(Rinput.value());
-        r = Number(rinput.value());
-        rho = Number(rhoinput.value());
-        pvec = p.createVector(R - r + rho, 0);
-        t = 0;
-    }
-
+    let t = 0;
+    let dt = 0.03;
     p.draw = () => {
-        // MAIN ACTION
-        p.translate(p.width / 2, p.height / 2); // move to middle of screen
-
-        const vec = p.createVector(...spirofn(t));
-        p.line(pvec.x, pvec.y, vec.x, vec.y);
-
-        // iterate
+        drawSpiro(t);
         t += dt;
-        pvec = vec;
     }
 
     function polarToCartesian(r: number, theta: number): [number, number] {
