@@ -13,7 +13,7 @@ export default function App(): React.ReactElement {
     return (
         <Tabs>
             <TabList>
-                <Tab>Spirograph</Tab>
+                <Tab>Spirographs</Tab>
                 <Tab>Scratch</Tab>
                 <Tab>Flocking</Tab>
             </TabList>

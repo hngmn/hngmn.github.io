@@ -28,20 +28,44 @@ export function getSpirographFnByRatio(l: number, k: number, R = 100): Parametri
     };
 }
 
-// given parametric function, return closure that draws it at t, translated to location x, y
-export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tx: number, ty: number, label?: string) {
+// given parametric function, return closure that draws it at t, translated to location specified by tx, ty, and R (radius)
+// notes on translation:
+// tx, ty specifies upper-left corner of the square that will enclose the drawing with radius R (side length 2R)
+// so the (x, y) returned by pfn will be centered at the point (tx+R, ty+R)
+interface DrawOptions {
+    tx: number;
+    ty: number;
+    R: number;
+    label?: string;
+    frameRateMult?: number; // # of times to draw per draw call
+}
+export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, options: DrawOptions) {
+    // constants
+    const TEXT_LABEL_MARGIN = 10;
+
+    const { tx, ty, R, label, frameRateMult = 1 } = options;
+
+    // iteration variables
+    let t = 0;
     const [ix, iy] = pfn(0); // store initial value for stopping loop
     let [px, py] = [ix, iy];
 
-    return (t: number) => {
+    return () => {
         p.push();
-        p.translate(tx, ty);
+        if (label) {
+            p.text(label, tx, ty + TEXT_LABEL_MARGIN);
+        }
+        p.translate(tx+R, ty+R+TEXT_LABEL_MARGIN);
 
         // draw
-        const [x, y] = pfn(t);
-        p.line(px, py, x, y);
+        for (let i = 0; i < frameRateMult; i++) {
+            const [x, y] = pfn(t);
+            p.line(px, py, x, y);
 
-        [px, py] = [x, y];
+            [px, py] = [x, y];
+            t += tStep;
+        }
+
         p.pop();
     }
 }

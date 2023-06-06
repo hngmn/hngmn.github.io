@@ -1,43 +1,41 @@
 import p5 from 'p5';
 import { getPfnDrawFn, getSpirographFnByRatio } from './util';
+import _ from 'lodash';
 
 export default function spirograph(p: p5) {
-
-    const drawPfnArray: Array<(t: number) => void> = [];
+    const drawPfnArray: Array<ReturnType<typeof getPfnDrawFn>> = [];
 
     p.setup = () => {
         const CANVAS_WIDTH = 2400;
         const CANVAS_HEIGHT = 1800;
+        const MARGIN = 16;
         p.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         p.background(204); // clear the screen
 
-        const dr = 0.05;                       // diff ratio per spiro (ie iteration step)
-        const nSpiros = (0.9 - 0.1) / dr + 1;  // # spiros per row
-        const R = CANVAS_HEIGHT / nSpiros / 2; // radius of single spiro (fraction of canvas size)
+        const ls = _.range(0.1022, 1, 0.0717);
+        const ks = _.range(0.1137, 1, 0.0929);
+
+        // radius of single spiro (fraction of canvas size)
+        // Width = #spiros * (2R + margin)
+        const R = p.min(
+            ((CANVAS_WIDTH / ls.length) - MARGIN) / 2,
+            ((CANVAS_HEIGHT / ks.length) - MARGIN) / 2);
 
         // initialize drawFn for each spirograph
-        let li = 0;
-        const margin = 20;
-        for (let l = 0.1; l <= 0.9 ; l += dr) {
-            const spiroX = R + p.width * (l - 0.1) + (li * margin)
-            let ki = 0;
-            for (let k = 0.1; k <= 0.9; k += dr) {
-                const spiroY = R + p.height * (k - 0.1) + (ki * margin)
+        ls.forEach((l, li) => {
+            const spiroX = li * ((2 * R) + MARGIN)
+            ks.forEach((k, ki) => {
+                const spiroY = ki * ((2*R) + MARGIN)
                 const spiroFn = getSpirographFnByRatio(l, k, R);
-                const drawFn = getPfnDrawFn(p, spiroFn, spiroX, spiroY, `(${l}, ${k})`);
+                const drawFn = getPfnDrawFn(p, spiroFn, 0.005, { tx: spiroX, ty: spiroY, R, label: `l=${l.toFixed(4)}, k=${k.toFixed(4)}`, frameRateMult: 8 });
                 drawPfnArray.push(drawFn);
-                ki++;
-            }
-            li++;
-        }
+            });
+        });
     }
 
-    let t = 0;
-    let dt = 0.01;
     p.draw = () => {
         for (let drawSpiro of drawPfnArray) {
-            drawSpiro(t);
+            drawSpiro();
         }
-        t += dt;
     }
 }
