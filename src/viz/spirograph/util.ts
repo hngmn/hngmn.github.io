@@ -33,17 +33,26 @@ export function getSpirographFnByRatio(l: number, k: number, R = 100): Parametri
 // tx, ty specifies upper-left corner of the square that will enclose the drawing with radius R (side length 2R)
 // so the (x, y) returned by pfn will be centered at the point (tx+R, ty+R)
 interface DrawOptions {
+    R: number;
     tx: number;
     ty: number;
-    R: number;
+    frameRateMult: number; // # of times to draw per draw call
     label?: string;
-    frameRateMult?: number; // # of times to draw per draw call
+    stroke?: (t: number, prev: [number, number], current: [number, number]) => void;
 }
-export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, options: DrawOptions) {
+const DEFAULT_DRAW_OPTIONS = {
+    R: 100,
+    tx: 0,
+    ty: 0,
+    frameRateMult: 1,
+};
+
+export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, options: Partial<DrawOptions>) {
     // constants
     const TEXT_LABEL_MARGIN = 10;
 
-    const { tx, ty, R, label, frameRateMult = 1 } = options;
+    const drawOptions: DrawOptions = { ...DEFAULT_DRAW_OPTIONS, ...options };
+    const { tx, ty, R, label, frameRateMult } = drawOptions;
 
     // iteration variables
     let stop = false;
@@ -66,6 +75,9 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, option
             // draw
             for (let i = 0; i < frameRateMult; i++) {
                 const [x, y] = pfn(t);
+                if (drawOptions.stroke) {
+                    drawOptions.stroke(t, [px, py], [x, y]);
+                }
                 p.line(px, py, x, y);
 
                 [px, py] = [x, y];
