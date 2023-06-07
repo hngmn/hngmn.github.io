@@ -1,2 +1,2 @@
-export { default as spirograph } from './sketch';
+export { spirogrid } from './spirogrid';
 export * from './util';

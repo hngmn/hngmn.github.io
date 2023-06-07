@@ -46,26 +46,42 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, option
     const { tx, ty, R, label, frameRateMult = 1 } = options;
 
     // iteration variables
-    let t = 0;
+    let stop = false;
+    let t = tStep;
     const [ix, iy] = pfn(0); // store initial value for stopping loop
     let [px, py] = [ix, iy];
 
-    return () => {
-        p.push();
-        if (label) {
-            p.text(label, tx, ty + TEXT_LABEL_MARGIN);
-        }
-        p.translate(tx+R, ty+R+TEXT_LABEL_MARGIN);
+    return {
+        draw: () => {
+            if (stop) {
+                return;
+            }
 
-        // draw
-        for (let i = 0; i < frameRateMult; i++) {
-            const [x, y] = pfn(t);
-            p.line(px, py, x, y);
+            p.push();
+            if (label) {
+                p.text(label, tx, ty + TEXT_LABEL_MARGIN);
+            }
+            p.translate(tx+R, ty+R+TEXT_LABEL_MARGIN);
 
-            [px, py] = [x, y];
-            t += tStep;
-        }
+            // draw
+            for (let i = 0; i < frameRateMult; i++) {
+                const [x, y] = pfn(t);
+                p.line(px, py, x, y);
 
-        p.pop();
-    }
+                [px, py] = [x, y];
+                t += tStep;
+            }
+
+            p.pop();
+        },
+        stop: () => {
+            stop = false;
+        },
+        start: () => {
+            stop = true;
+        },
+        toggle: () => {
+            stop = !stop;
+        },
+    };
 }

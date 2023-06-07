@@ -2,8 +2,8 @@ import p5 from 'p5';
 import { getPfnDrawFn, getSpirographFnByRatio } from './util';
 import _ from 'lodash';
 
-export default function spirograph(p: p5) {
-    const drawPfnArray: Array<ReturnType<typeof getPfnDrawFn>> = [];
+export function spirogrid(p: p5) {
+    const drawPfnArray: Array<() => void> = [];
 
     p.setup = () => {
         const CANVAS_WIDTH = 2400;
@@ -27,8 +27,8 @@ export default function spirograph(p: p5) {
             ks.forEach((k, ki) => {
                 const spiroY = ki * ((2*R) + MARGIN)
                 const spiroFn = getSpirographFnByRatio(l, k, R);
-                const drawFn = getPfnDrawFn(p, spiroFn, 0.005, { tx: spiroX, ty: spiroY, R, label: `l=${l.toFixed(4)}, k=${k.toFixed(4)}`, frameRateMult: 8 });
-                drawPfnArray.push(drawFn);
+                const { draw } = getPfnDrawFn(p, spiroFn, 0.005, { tx: spiroX, ty: spiroY, R, label: `l=${l.toFixed(4)}, k=${k.toFixed(4)}`, frameRateMult: 8 });
+                drawPfnArray.push(draw);
             });
         });
     }
