@@ -56,6 +56,10 @@ export function sketching(p: p5) {
     p.setup = () => {
         p.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
         p.background(249); // clear the screen
+        p.textAlign(p.CENTER);
+        p.textSize(20);
+        const helpString = 'Spirograph explorer. <Space> to pause/resume, <c> to clear, <s> to step frame-by-frame';
+        p.text(helpString, p.width / 2, 20);
 
         // l, k sliders
         sliderL = labeledSlider(p, {
