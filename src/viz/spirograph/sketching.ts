@@ -8,8 +8,8 @@ export function sketching(p: p5) {
     const CANVAS_HEIGHT = 1800;
 
     // mutable spiro parameters
-    let l = 0.3371;
-    let k = 0.203;
+    let l = 0.731;
+    let k = 0.601;
     let R = CANVAS_HEIGHT / 2;
     let spiro: ParametricFunction;
     let draw: () => void;
