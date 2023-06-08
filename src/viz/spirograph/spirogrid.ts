@@ -28,7 +28,7 @@ export function spirogrid(p: p5) {
             ks.forEach((k, ki) => {
                 const spiroY = ki * ((2*R) + MARGIN)
                 const spiroFn = getSpirographFnByRatio(l, k, R);
-                const label = `l=${l.toFixed(4)}, k=${k.toFixed(4)}, l/k=${(l/k).toFixed(4)}`;
+                const label = `l=${l.toFixed(4)}, k=${k.toFixed(4)}, l-k=${(l-k).toFixed(4)}`;
                 const { draw, toggle } = getPfnDrawFn(p, spiroFn, 0.005, { tx: spiroX, ty: spiroY, R, label, frameRateMult: 8 });
                 drawPfnArray.push(draw);
                 toggles.push(toggle);
