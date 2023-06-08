@@ -72,41 +72,48 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, option
     const [ix, iy] = pfn(0); // store initial value for stopping loop
     let [px, py] = [ix, iy];
 
+    // single draw step
+    const stepFrame = (n?: number) => {
+        p.push();
+        if (label) {
+            p.text(label, tx, ty + TEXT_LABEL_MARGIN);
+        }
+        p.translate(tx+R, ty+R+TEXT_LABEL_MARGIN);
+
+        // draw
+        const nframes = n !== undefined ? n : frameRateMult;
+        for (let i = 0; i < nframes; i++) {
+            const [x, y] = pfn(t);
+            if (drawOptions.stroke) {
+                drawOptions.stroke(t, [px, py], [x, y]);
+            }
+            p.line(px, py, x, y);
+
+            [px, py] = [x, y];
+            t += tStep;
+        }
+
+        p.pop();
+    }
+
     return {
         draw: () => {
             if (stop) {
                 return;
             }
-
-            p.push();
-            if (label) {
-                p.text(label, tx, ty + TEXT_LABEL_MARGIN);
-            }
-            p.translate(tx+R, ty+R+TEXT_LABEL_MARGIN);
-
-            // draw
-            for (let i = 0; i < frameRateMult; i++) {
-                const [x, y] = pfn(t);
-                if (drawOptions.stroke) {
-                    drawOptions.stroke(t, [px, py], [x, y]);
-                }
-                p.line(px, py, x, y);
-
-                [px, py] = [x, y];
-                t += tStep;
-            }
-
-            p.pop();
+            stepFrame();
         },
+        stepFrame,
         stop: () => {
-            stop = false;
+            stop = true;
         },
         start: () => {
-            stop = true;
+            stop = false;
         },
         toggle: () => {
             stop = !stop;
         },
+        isStopped: () => stop,
     };
 }
 

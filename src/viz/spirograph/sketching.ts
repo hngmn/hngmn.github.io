@@ -12,8 +12,7 @@ export function sketching(p: p5) {
     let k = 0.601;
     let R = CANVAS_HEIGHT / 2;
     let spiro: ParametricFunction;
-    let draw: () => void;
-    let toggle: () => void;
+    let pfnDrawControl: ReturnType<typeof getPfnDrawFn>;
     let sliderL: p5.Element;
     let sliderK: p5.Element;
     let colorPicker: p5.Element;
@@ -51,7 +50,7 @@ export function sketching(p: p5) {
             const r = 0.1 * R;
             return [r * p.cos(t), r * p.sin(t)];
         }
-        ({ draw, toggle } = getPfnDrawFn(p, pfnAdd(spiro, osc), 0.005, { R, frameRateMult: 24, stroke }));
+        (pfnDrawControl = getPfnDrawFn(p, pfnAdd(spiro, osc), 0.005, { R, frameRateMult: 24, stroke }));
     }
 
     p.setup = () => {
@@ -86,15 +85,20 @@ export function sketching(p: p5) {
     };
 
     p.draw = () => {
-        draw();
+        pfnDrawControl.draw();
     };
 
     p.keyTyped = () => {
         if (p.key === ' ') {
-            toggle();
+            pfnDrawControl.toggle();
         }
         if (p.key === 'c') {
             p.background(249);
+        }
+        if (p.key === 's') {
+            const STEP_NFRAMES = 8;
+            pfnDrawControl.stop(); // in case it's already running
+            pfnDrawControl.stepFrame(STEP_NFRAMES);
         }
         return false;
     }
