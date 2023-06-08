@@ -5,7 +5,19 @@
 import p5 from 'p5';
 
 
+// Parametric Function types/helpers
 export type ParametricFunction = (t: number) => [number, number];
+
+// just add two pfns
+export function pfnAdd(f1: ParametricFunction, f2: ParametricFunction): ParametricFunction {
+    return (t: number) => {
+        const [x1, y1] = f1(t);
+        const [x2, y2] = f2(t);
+        return [x1+x2, y1+y2];
+    }
+}
+
+// Spirograph-specific utils
 
 // given R, r, and rho, return the parametric function f(t) for the spirograph
 export function getSpirographFn(R: number, r: number, rho: number): ParametricFunction {
@@ -96,4 +108,46 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, option
             stop = !stop;
         },
     };
+}
+
+// p5 utils
+// todo: split out
+export interface SliderArgs {
+    x: number;
+    y: number;
+    min: number;
+    max: number;
+    initialValue?: number;
+    step?: number;
+    size?: number;
+    onClick: (newVal: number) => void;
+}
+
+export function labeledSlider(p: p5, sliderArgs: SliderArgs, labelFn?: (val: number) => string): p5.Element {
+    const {
+        x, y,
+        min, max, initialValue, step,
+        size,
+        onClick,
+    } = sliderArgs;
+
+    // slider
+    const slider = p.createSlider(min, max, initialValue, step);
+    if (size) {
+        slider.size(size);
+    }
+
+    // label
+    const labelString = labelFn ? labelFn(slider.value() as number) : slider.value() as string;
+    const label = p.createP(labelString);
+    slider.mouseClicked(() => {
+        const labelString = labelFn ? labelFn(slider.value() as number) : slider.value() as string;
+        label.html(labelString);
+        onClick(slider.value() as number);
+    })
+
+    label.position(x, y, 'fixed');
+    slider.position(x+label.size().width!, y, 'fixed');
+
+    return slider;
 }

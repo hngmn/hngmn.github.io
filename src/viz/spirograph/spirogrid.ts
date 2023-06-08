@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 export function spirogrid(p: p5) {
     const drawPfnArray: Array<() => void> = [];
+    const toggles: Array<() => void> = [];
 
     p.setup = () => {
         const CANVAS_WIDTH = 2400;
@@ -27,8 +28,10 @@ export function spirogrid(p: p5) {
             ks.forEach((k, ki) => {
                 const spiroY = ki * ((2*R) + MARGIN)
                 const spiroFn = getSpirographFnByRatio(l, k, R);
-                const { draw } = getPfnDrawFn(p, spiroFn, 0.005, { tx: spiroX, ty: spiroY, R, label: `l=${l.toFixed(4)}, k=${k.toFixed(4)}`, frameRateMult: 8 });
+                const label = `l=${l.toFixed(4)}, k=${k.toFixed(4)}, l/k=${(l/k).toFixed(4)}`;
+                const { draw, toggle } = getPfnDrawFn(p, spiroFn, 0.005, { tx: spiroX, ty: spiroY, R, label, frameRateMult: 8 });
                 drawPfnArray.push(draw);
+                toggles.push(toggle);
             });
         });
     }
@@ -37,5 +40,12 @@ export function spirogrid(p: p5) {
         for (let drawSpiro of drawPfnArray) {
             drawSpiro();
         }
+    }
+
+    p.keyTyped = () => {
+        if (p.key === ' ') {
+            toggles.forEach(toggle => toggle());
+        }
+        return false;
     }
 }
