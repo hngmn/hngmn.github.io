@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import { getPfnDrawFn, getSpirographFnByRatio, labeledRangeSelector } from './util';
+import { getPfnDrawFn, getSpirographFnByRatio, labeledInput, labeledRangeSelector } from './util';
 import _ from 'lodash';
 
 export function spirogrid(p: p5) {
@@ -145,12 +145,12 @@ export function spirogrid(p: p5) {
         lkSelector.selected('k');
         lkSelector.changed(initSpirogrid);
 
-        const fudgeLabel = p.createP('fudge %: ');
-        fudgeLabel.position(lkSelector.position().x + lkSelector.size().width + 10, 120)
-        fudgeFactorInput = p.createInput('1');
-        fudgeFactorInput.position(fudgeLabel.position().x + fudgeLabel.size().width + 10, 120);
-        fudgeFactorInput.size(60);
-        fudgeFactorInput.input(initSpirogrid);
+        fudgeFactorInput = labeledInput(p, {
+            x: lkSelector.position().x + lkSelector.size().width + 10,
+            y: 120,
+            initialValue: 0.7,
+            onInput: initSpirogrid,
+        }, 'fudge %');
 
         initSpirogrid();
     }
@@ -167,6 +167,5 @@ export function spirogrid(p: p5) {
         if (p.key === ' ') {
             toggles.forEach(toggle => toggle());
         }
-        // return false;
     }
 }

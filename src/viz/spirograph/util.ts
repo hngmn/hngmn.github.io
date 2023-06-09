@@ -119,6 +119,33 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, option
 
 // p5 utils
 // todo: split out
+
+export interface InputArgs {
+    x: number;
+    y: number;
+    initialValue: number;
+    size?: number;
+    onInput: (newVal: number) => void;
+}
+export function labeledInput(p: p5, inputArgs: InputArgs, labelString: string): p5.Element {
+    const { x, y, initialValue, size, onInput } = inputArgs;
+
+    // input
+    const input = p.createInput(String(initialValue));
+    if (size) {
+        input.size(size);
+    }
+    input.input(() => onInput(Number(input.value())));
+
+    // label
+    const label = p.createP(labelString);
+
+    label.position(x, y, 'fixed');
+    input.position(x+label.size().width!+4, y+12, 'fixed');
+
+    return input;
+}
+
 export interface SliderArgs {
     x: number;
     y: number;

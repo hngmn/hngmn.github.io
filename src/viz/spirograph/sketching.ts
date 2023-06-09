@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { ParametricFunction, getPfnDrawFn, getSpirographFnByRatio, pfnAdd, labeledSlider } from "./util";
+import { ParametricFunction, getPfnDrawFn, getSpirographFnByRatio, pfnAdd, labeledInput } from "./util";
 
 // easier, exploratory/interactive spiro sketching
 // maybe also color?
@@ -62,25 +62,20 @@ export function sketching(p: p5) {
         p.text(helpString, p.width / 2, 20);
 
         // l, k sliders
-        sliderL = labeledSlider(p, {
+        sliderL = labeledInput(p, {
             x: 10, y: 100,
-            min: 0.001,
-            max: 0.999,
             initialValue: l,
-            step: 0.001,
-            size: 600,
-            onClick: initSpiro,
-        }, (value: number) => `l=${value.toFixed(3)}`);
+            size: 60,
+            onInput: initSpiro,
+        }, 'l');
 
-        sliderK = labeledSlider(p, {
+        sliderK = labeledInput(p, {
             x: 10, y: 140,
-            min: 0.001,
-            max: 0.999,
             initialValue: k,
-            step: 0.001,
-            size: 600,
-            onClick: initSpiro,
-        }, (value: number) => `k=${value.toFixed(3)}`);
+            size: 60,
+            onInput: initSpiro,
+        }, 'k');
+
         colorPicker = p.createColorPicker(p.color(...initialColor));
         colorPicker.position(10, 180);
 
@@ -104,6 +99,5 @@ export function sketching(p: p5) {
             pfnDrawControl.stop(); // in case it's already running
             pfnDrawControl.stepFrame(STEP_NFRAMES);
         }
-        return false;
     }
 }
