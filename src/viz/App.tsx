@@ -13,18 +13,18 @@ export default function App(): React.ReactElement {
     return (
         <Tabs>
             <TabList>
-                <Tab>Spirogrid</Tab>
                 <Tab>Sketching</Tab>
+                <Tab>Spirogrid</Tab>
                 <Tab>Scratch</Tab>
                 <Tab>Flocking</Tab>
             </TabList>
 
             <TabPanel>
-                <Sketch sketch={spirogrid}/>
+                <Sketch sketch={sketching}/>
             </TabPanel>
 
             <TabPanel>
-                <Sketch sketch={sketching}/>
+                <Sketch sketch={spirogrid}/>
             </TabPanel>
 
             <TabPanel>
