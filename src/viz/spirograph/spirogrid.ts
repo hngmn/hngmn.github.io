@@ -57,7 +57,7 @@ export function spirogrid(p: p5) {
         const fudgeFactor = 1 + Number(fudgeFactorInput.value())/100;
         console.log(`fudge=${fudgeFactor}`);
 
-        const rds = _.range(rdmin, rdmax+1, 1);
+        const rds = _.range(rdmin, rdmax+1/* max is inclusive*/, 1);
 
         // radius of single spiro (fraction of canvas size)
         // Width = #spiros * (2R + margin)
@@ -68,7 +68,7 @@ export function spirogrid(p: p5) {
         // initialize drawFn for each spirograph
         rds.forEach((rd, rdi) => {
             const spiroX = rdi * ((2 * R) + MARGIN)
-            const rns = _.range(rnmin, Math.min(rnmax, rd), 1);
+            const rns = _.range(rnmin, Math.min(rnmax+1 /*max is inclusive*/, rd), 1);
 
             rns.forEach((rn, rni) => {
                 let l: number, k: number;
