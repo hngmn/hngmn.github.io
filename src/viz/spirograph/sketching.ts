@@ -20,6 +20,7 @@ export function sketching(p: p5) {
     const oscColor = [156, 20, 215] as const;
 
     function initSpiro() {
+        console.log(`initSpiro called. PreviousDrawFn stopped:${pfnDrawControl?.isStopped()}`);
         function toHex(color: readonly [number, number, number]): string {
             function convert(rgb: number): string {
                 const s = Math.floor(rgb).toString(16);
@@ -50,7 +51,13 @@ export function sketching(p: p5) {
             const r = 0.1 * R;
             return [r * p.cos(t), r * p.sin(t)];
         }
-        (pfnDrawControl = getPfnDrawFn(p, pfnAdd(spiro, osc), 0.005, { R, frameRateMult: 24, stroke }));
+        const previousDrawing = pfnDrawControl;
+        pfnDrawControl = getPfnDrawFn(p, pfnAdd(spiro, osc), 0.005, { R, frameRateMult: 24, stroke });
+
+        if (previousDrawing?.isStopped()) {
+            console.log('stopping new spiro');
+            pfnDrawControl.stop();
+        }
     }
 
     p.setup = () => {
@@ -58,7 +65,7 @@ export function sketching(p: p5) {
         p.background(249); // clear the screen
         p.textAlign(p.CENTER);
         p.textSize(20);
-        const helpString = 'Spirograph explorer. <Space> to pause/resume, <c> to clear, <s> to step frame-by-frame';
+        const helpString = 'Spirograph sketcher. <Space> to pause/resume, <c> to clear, <s> to step frame-by-frame';
         p.text(helpString, p.width / 2, 20);
 
         // l, k sliders
@@ -77,7 +84,7 @@ export function sketching(p: p5) {
         }, 'k');
 
         colorPicker = p.createColorPicker(p.color(...initialColor));
-        colorPicker.position(10, 180);
+        colorPicker.position(10, 180, 'fixed');
 
         // init spiro
         initSpiro();
@@ -90,6 +97,7 @@ export function sketching(p: p5) {
     p.keyTyped = () => {
         if (p.key === ' ') {
             pfnDrawControl.toggle();
+            return false; // disable scroll down on space
         }
         if (p.key === 'c') {
             p.background(249);

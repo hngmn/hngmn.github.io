@@ -3,9 +3,9 @@ import { getPfnDrawFn, getSpirographFnByRatio, labeledInput, labeledRangeSelecto
 import _ from 'lodash';
 
 export function spirogrid(p: p5) {
-    const CANVAS_WIDTH = 2400;
-    const CANVAS_HEIGHT = 1800;
     const CONTROLS_HEIGHT = 160;
+    const CANVAS_WIDTH = 3000;
+    const CANVAS_HEIGHT = 3000+CONTROLS_HEIGHT;
     const MARGIN = 16;
 
     let drawPfnArray: Array<() => void> = [];
@@ -139,7 +139,7 @@ export function spirogrid(p: p5) {
         rdmaxSelector = rdmaxs.selector;
 
         lkSelector = p.createSelect();
-        lkSelector.position(rnmaxSelector.position().x + rnmaxSelector.size().width + 10, 120);
+        lkSelector.position(rnmaxSelector.position().x + rnmaxSelector.size().width + 10, 120, 'fixed');
         lkSelector.option('l');
         lkSelector.option('k');
         lkSelector.selected('k');
@@ -166,6 +166,7 @@ export function spirogrid(p: p5) {
     p.keyTyped = () => {
         if (p.key === ' ') {
             toggles.forEach(toggle => toggle());
+            return false; // disable scroll down on space
         }
     }
 }
