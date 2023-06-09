@@ -19,22 +19,17 @@ export function spirogrid(p: p5) {
      */
 
     // exploring l or k
-    let lk = 'k';
     let lkSelector: p5.Element;
 
     // ratio numerator, denominator ranges
-    let rdmin = 2;
-    let rdmax = 8;
-    let rnmin = 1;
-    let rnmax = 7;
     let rdminSelector: p5.Element;
     let rdmaxSelector: p5.Element;
     let rnminSelector: p5.Element;
     let rnmaxSelector: p5.Element;
 
+    let fudgeFactorInput: p5.Element;
+
     // fixed ratio
-    let fd = 2;
-    let fn = 1;
     let fdSelector: p5.Element;
     let fnSelector: p5.Element;
 
@@ -59,6 +54,8 @@ export function spirogrid(p: p5) {
         console.log(`rnmin=${rnmin}`);
         const rnmax = Number(rnmaxSelector.value());
         console.log(`rnmax=${rnmax}`);
+        const fudgeFactor = 1 + Number(fudgeFactorInput.value())/100;
+        console.log(`fudge=${fudgeFactor}`);
 
         const rds = _.range(rdmin, rdmax+1, 1);
 
@@ -78,10 +75,10 @@ export function spirogrid(p: p5) {
                 let label: string;
                 if (lk === 'k') {
                     l = fn/fd;
-                    k = rn/rd;
+                    k = rn/rd * fudgeFactor;
                     label = `l=${fn}/${fd}=${l.toFixed(3)}, k=${rn}/${rd}=${k.toFixed(3)}`;
                 } else {
-                    l = rn/rd;
+                    l = rn/rd * fudgeFactor;
                     k = fn/fd;
                     label = `l=${rn}/${rd}=${l.toFixed(3)}, k=${fn}/${fd}=${k.toFixed(3)}`;
                 }
@@ -148,6 +145,13 @@ export function spirogrid(p: p5) {
         lkSelector.selected('k');
         lkSelector.changed(initSpirogrid);
 
+        const fudgeLabel = p.createP('fudge %: ');
+        fudgeLabel.position(lkSelector.position().x + lkSelector.size().width + 10, 120)
+        fudgeFactorInput = p.createInput('1');
+        fudgeFactorInput.position(fudgeLabel.position().x + fudgeLabel.size().width + 10, 120);
+        fudgeFactorInput.size(60);
+        fudgeFactorInput.input(initSpirogrid);
+
         initSpirogrid();
     }
 
@@ -163,6 +167,6 @@ export function spirogrid(p: p5) {
         if (p.key === ' ') {
             toggles.forEach(toggle => toggle());
         }
-        return false;
+        // return false;
     }
 }
