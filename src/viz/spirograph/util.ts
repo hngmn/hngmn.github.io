@@ -158,3 +158,33 @@ export function labeledSlider(p: p5, sliderArgs: SliderArgs, labelFn?: (val: num
 
     return slider;
 }
+
+export interface RangeSelectorArgs {
+    x: number;
+    y: number;
+    min: number;
+    max: number;
+    initialValue?: number;
+    onChange: (newVal: number) => void;
+}
+export function labeledRangeSelector(p: p5, selectorArgs: RangeSelectorArgs, labelString?: string): { label: p5.Element, selector: p5.Element } {
+    const {
+        x, y,
+        min, max, initialValue = min,
+        onChange,
+    } = selectorArgs;
+
+    const selector = p.createSelect();
+    _.range(min, max, 1).forEach(n => selector.option(n));
+    selector.selected(initialValue);
+    selector.changed(onChange);
+
+    const label = p.createP(labelString);
+    label.position(x, y, 'fixed');
+    selector.position(x+label.size().width, y, 'fixed');
+
+    return {
+        label,
+        selector,
+    };
+}
