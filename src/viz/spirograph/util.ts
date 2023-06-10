@@ -40,6 +40,25 @@ export function getSpirographFnByRatio(l: number, k: number, R = 100): Parametri
     };
 }
 
+// spiro bulk utils
+
+// (l, k, R, nFrames[, ...color vector])
+export type SpirographSpec = [number, number, number, number] | [number, number, number, number, number, number, number]
+export function getSpiroDrawFnFromSpec(p: p5, spec: SpirographSpec) {
+    const [l, k, R, nFrames] = spec;
+
+    const spiroFn = getSpirographFnByRatio(l, k, R);
+    return getPfnDrawFn(p, spiroFn, { R, nFrames, frameRateMult: 24 });
+}
+
+export function parseSpiroSpec(specString: string): SpirographSpec {
+    const arr = specString.split(',').map(Number);
+    if (!(arr.length === 4 || arr.length === 7)) {
+        throw new Error(`wrong number of arguments: ${arr}`)
+    }
+    return arr as SpirographSpec;
+}
+
 // given parametric function, return closure that draws it at t, translated to location specified by tx, ty, and R (radius)
 // notes on translation:
 // tx, ty specifies upper-left corner of the square that will enclose the drawing with radius R (side length 2R)
@@ -48,23 +67,28 @@ interface DrawOptions {
     R: number;
     tx: number;
     ty: number;
+    tStep: number;
     frameRateMult: number; // # of times to draw per draw call
     label?: string;
+    nFrames?: number;
     stroke?: (t: number, prev: [number, number], current: [number, number]) => void;
 }
 const DEFAULT_DRAW_OPTIONS = {
     R: 100,
     tx: 0,
     ty: 0,
+    tStep: 0.005,
     frameRateMult: 1,
 };
 
-export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, options: Partial<DrawOptions>) {
+export type PfnDrawControl = ReturnType<typeof getPfnDrawFn>;
+export function getPfnDrawFn(p: p5, pfn: ParametricFunction, options: Partial<DrawOptions>) {
     // constants
     const TEXT_LABEL_MARGIN = 10;
 
     const drawOptions: DrawOptions = { ...DEFAULT_DRAW_OPTIONS, ...options };
-    const { tx, ty, R, label, frameRateMult } = drawOptions;
+    const { tx, ty, R, label, tStep, frameRateMult, nFrames } = drawOptions;
+    let frameCount = nFrames;
 
     // iteration variables
     let stop = false;
@@ -74,6 +98,9 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, option
 
     // single draw step
     const stepFrame = (n?: number) => {
+        if (frameCount === 0)
+            return;
+
         p.push();
         if (label) {
             p.text(label, tx, ty + TEXT_LABEL_MARGIN);
@@ -94,6 +121,9 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, tStep = 0.1, option
         }
 
         p.pop();
+        if (frameCount) {
+            frameCount--;
+        }
     }
 
     return {

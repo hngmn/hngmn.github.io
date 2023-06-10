@@ -25,7 +25,7 @@ export function sketching(p: p5) {
     const oscColor = [156, 20, 215] as const;
 
     function initSpiro() {
-        console.log(`initSpiro called. PreviousDrawFn stopped:${pfnDrawControl?.isStopped()}`);
+        // color
         function toHex(color: readonly [number, number, number]): string {
             function convert(rgb: number): string {
                 const s = Math.floor(rgb).toString(16);
@@ -33,7 +33,6 @@ export function sketching(p: p5) {
             }
             return `#${convert(color[0])}${convert(color[1])}${convert(color[2])}`;
         }
-        // color
         p.strokeWeight(1);
         const strokeClosure = (leftColor: readonly [number, number, number], rightColor: readonly [number, number, number]) => {
             // vector math. oscillate color on a straight 'vector' between left and right color
@@ -67,7 +66,7 @@ export function sketching(p: p5) {
             return [r * Math.cos(t), r * Math.sin(t)];
         }
         const previousDrawing = pfnDrawControl;
-        pfnDrawControl = getPfnDrawFn(p, pfnAdd(spiro, osc), 0.005, { R, frameRateMult: 24, stroke });
+        pfnDrawControl = getPfnDrawFn(p, pfnAdd(spiro, osc), { R, tStep: 0.005, frameRateMult: 24, stroke });
 
         if (previousDrawing?.isStopped()) {
             console.log('stopping new spiro');

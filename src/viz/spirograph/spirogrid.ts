@@ -85,7 +85,7 @@ export function spirogrid(p: p5) {
 
                 const spiroY = rni * ((2*R) + MARGIN)
                 const spiroFn = getSpirographFnByRatio(l, k, R);
-                const { draw, toggle } = getPfnDrawFn(p, spiroFn, 0.005, { tx: spiroX, ty: spiroY, R, label, frameRateMult: 8 });
+                const { draw, toggle } = getPfnDrawFn(p, spiroFn, { tx: spiroX, ty: spiroY, R, label, tStep: 0.005, frameRateMult: 8 });
                 drawPfnArray.push(draw);
                 toggles.push(toggle);
             });
