@@ -3,7 +3,8 @@
  */
 
 import p5 from "p5";
-import { PfnDrawControl, getSpiroDrawFnFromSpec, parseSpiroSpec } from "./util";
+import { getSpiroDrawFnFromSpec, parseSpiroSpec } from "./util";
+import { PfnDrawControl } from "../pfn";
 
 const EXAMPLE = '0.625,0.333333,900,100\n0.625,0.335,900,100';
 

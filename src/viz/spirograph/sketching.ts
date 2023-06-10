@@ -1,5 +1,8 @@
 import p5 from "p5";
-import { ParametricFunction, getPfnDrawFn, getSpirographFnByRatio, pfnAdd, labeledInput } from "./util";
+
+import { getSpirographFnByRatio } from "./util";
+import { ParametricFunction, PfnDrawControl, getPfnDrawFn, pfnAdd } from "../pfn";
+import { labeledInput } from "../p5util";
 
 // easier, exploratory/interactive spiro sketching
 // maybe also color?
@@ -14,7 +17,7 @@ export function sketching(p: p5) {
     let oscRP = 4;
     let oscFreq = 4;
     let spiro: ParametricFunction;
-    let pfnDrawControl: ReturnType<typeof getPfnDrawFn>;
+    let pfnDrawControl: PfnDrawControl;
     let inputL: p5.Element;
     let inputK: p5.Element;
     let inputR: p5.Element;
@@ -66,7 +69,7 @@ export function sketching(p: p5) {
             return [r * Math.cos(t), r * Math.sin(t)];
         }
         const previousDrawing = pfnDrawControl;
-        pfnDrawControl = getPfnDrawFn(p, pfnAdd(spiro, osc), { R, tStep: 0.005, frameRateMult: 24, stroke });
+        pfnDrawControl = getPfnDrawFn(p, pfnAdd(spiro, osc), { tStep: 0.005, frameRateMult: 24, stroke });
 
         if (previousDrawing?.isStopped()) {
             console.log('stopping new spiro');

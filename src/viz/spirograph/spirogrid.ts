@@ -1,6 +1,8 @@
 import p5 from 'p5';
-import { getPfnDrawFn, getSpirographFnByRatio, labeledInput, labeledRangeSelector } from './util';
+import { getSpirographFnByRatio } from './util';
 import _ from 'lodash';
+import { getPfnDrawFn } from '../pfn';
+import { labeledInput, labeledRangeSelector } from '../p5util';
 
 export function spirogrid(p: p5) {
     const CONTROLS_HEIGHT = 160;
@@ -85,7 +87,12 @@ export function spirogrid(p: p5) {
 
                 const spiroY = rni * ((2*R) + MARGIN)
                 const spiroFn = getSpirographFnByRatio(l, k, R);
-                const { draw, toggle } = getPfnDrawFn(p, spiroFn, { tx: spiroX, ty: spiroY, R, label, tStep: 0.005, frameRateMult: 8 });
+                const { draw, toggle } = getPfnDrawFn(p, spiroFn, {
+                    translate: { tx: spiroX, ty: spiroY, R },
+                    label,
+                    tStep: 0.005,
+                    frameRateMult: 8
+                });
                 drawPfnArray.push(draw);
                 toggles.push(toggle);
             });
