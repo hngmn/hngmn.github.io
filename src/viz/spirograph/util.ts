@@ -38,7 +38,7 @@ export function getSpiroDrawFnFromSpec(p: p5, spec: SpirographSpec) {
     const [l, k, R, nFrames] = spec;
 
     const spiroFn = getSpirographFnByRatio(l, k, R);
-    return getPfnDrawFn(p, spiroFn, { R, nFrames, frameRateMult: 24 });
+    return getPfnDrawFn(p, spiroFn, { nFrames, frameRateMult: 24 });
 }
 
 export function parseSpiroSpec(specString: string): SpirographSpec {
