@@ -5,6 +5,8 @@
 import p5 from "p5";
 import { getSpirographFnByRatio } from "./util";
 import { PfnDrawControl, getPfnDrawFn, range } from "../pfn";
+import { rotate } from "../pfn/lib";
+import _ from "lodash";
 
 const EXAMPLE = '0.625,0.333333,900,100\n0.625,0.335,900,100';
 
@@ -12,6 +14,7 @@ export function bulk(p: p5) {
     const CANVAS_WIDTH = 2400;
     const CANVAS_HEIGHT = 1800;
     let spiros: PfnDrawControl[];
+    let rotateTheta = 0;
 
     p.setup = () => {
         p.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -22,6 +25,7 @@ export function bulk(p: p5) {
         spiros = range(0.2, 0.9, 0.016)
             .reverse()
             .map(([l, _, lp]) => getSpirographFnByRatio(l, 0.33333, 600 + 300*lp))
+            .map(spiro => rotate(spiro, { thetaFn: () => rotateTheta}))
             .map(spiro => getPfnDrawFn(p, spiro, {
                 tStep: 0.001,
                 frameRateMult: 32,
@@ -44,5 +48,6 @@ export function bulk(p: p5) {
             di = 1;
         }
         spiroi += di;
+        rotateTheta += 0.005;
     };
 }

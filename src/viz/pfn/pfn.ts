@@ -3,7 +3,7 @@ import p5 from "p5";
 
 // Parametric Function types/helpers
 export type Coord = [number, number];
-export type ParametricFunction = (t: number) => [number, number];
+export type ParametricFunction = (t: number) => Coord;
 
 export type ScalarTfn = (n: number) => number;
 export type Transformation = (c: Coord) => Coord;
