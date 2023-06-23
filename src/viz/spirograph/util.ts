@@ -4,7 +4,8 @@
 
 import p5 from 'p5';
 
-import { ParametricFunction, getPfnDrawFn } from '../pfn';
+import { ParametricFunction } from '../pfn';
+import { getPfnDrawFn } from '../pfn/draw';
 
 
 // Spirograph-specific utils

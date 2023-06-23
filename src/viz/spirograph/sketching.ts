@@ -1,8 +1,9 @@
-import p5, { Vector } from "p5";
+import p5 from "p5";
 
 import { getSpirographFnByRatio } from "./util";
-import { Coord, ParametricFunction, PfnDrawControl, Transformation, getPfnDrawFn, identity, parametricTransformation, parametricTransformationPolar, pfnAdd, pfnPolarToCartesian, tfnApply, tfnPolarToCartesian } from "../pfn";
+import { Coord, ParametricFunction, Transformation, parametricTransformationPolar, pfnTfn, tfnPolarToCartesian } from "../pfn";
 import { labeledInput } from "../p5util";
+import { PfnDrawControl, getPfnDrawFn } from "../pfn/draw";
 
 // easier, exploratory/interactive spiro sketching
 // maybe also color?
@@ -64,12 +65,12 @@ export function sketching(p: p5) {
         const radialOsc: Transformation = tfnPolarToCartesian(parametricTransformationPolar({
             rTfn: ([r, theta]) => r + (oscRP/100 * r) * Math.sin(theta * oscFreq),
         }));
-        const oscillatedSpiro = tfnApply(radialOsc, spiro);
+        const oscillatedSpiro = pfnTfn(radialOsc)(spiro);
         const rotate = (c: Coord) => {
             const v = new p5.Vector(...c);
             return v.rotate(2 * Math.PI * (1 + oscRP/100)).array() as Coord;
         }
-        const rotatedSpiro = tfnApply(rotate, spiro);
+        const rotatedSpiro = pfnTfn(rotate)(spiro);
 
         const previousDrawing = pfnDrawControl;
 

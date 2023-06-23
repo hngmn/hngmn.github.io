@@ -1,8 +1,8 @@
 import p5 from 'p5';
 import { getSpirographFnByRatio } from './util';
 import _ from 'lodash';
-import { getPfnDrawFn } from '../pfn';
 import { labeledInput, labeledRangeSelector } from '../p5util';
+import { getPfnDrawFn } from '../pfn/draw';
 
 export function spirogrid(p: p5) {
     const CONTROLS_HEIGHT = 160;

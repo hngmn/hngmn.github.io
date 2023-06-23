@@ -4,9 +4,10 @@
 
 import p5 from "p5";
 import { getSpirographFnByRatio } from "./util";
-import { PfnDrawControl, getPfnDrawFn, range } from "../pfn";
+import { range } from "../pfn";
 import { rotate } from "../pfn/lib";
 import _ from "lodash";
+import { PfnDrawControl, getPfnDrawFn } from "../pfn/draw";
 
 const EXAMPLE = '0.625,0.333333,900,100\n0.625,0.335,900,100';
 
