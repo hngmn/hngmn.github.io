@@ -86,6 +86,7 @@ interface DrawOptions {
     frameRateMult: number; // # of times to draw per draw call
     label?: string;
     nFrames?: number;
+    nSteps?: number;
     stroke?: (t: number, prev: [number, number], current: [number, number]) => void;
 }
 const DEFAULT_DRAW_OPTIONS = {
@@ -99,8 +100,9 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, options: Partial<Dr
     const TEXT_LABEL_MARGIN = 10;
 
     const drawOptions: DrawOptions = { ...DEFAULT_DRAW_OPTIONS, ...options };
-    const { translate, label, tStep, frameRateMult, nFrames } = drawOptions;
+    const { translate, label, tStep, frameRateMult, nFrames, nSteps } = drawOptions;
     let frameCount = nFrames;
+    let stepCount = nSteps;
 
     // iteration variables
     let stop = false;
@@ -111,8 +113,11 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, options: Partial<Dr
     // draw a single p5 'frame', consisting of the specified number of
     // points/iterations (default <frameRatemult>) of the pfn
     const stepFrame = (nPoints = frameRateMult) => {
-        if (frameCount === 0)
+        if ((frameCount !== undefined && frameCount <= 0)
+            || (stepCount !== undefined && stepCount <= 0)) {
+            stop = true;
             return;
+        }
 
         p.push();
 
@@ -147,6 +152,9 @@ export function getPfnDrawFn(p: p5, pfn: ParametricFunction, options: Partial<Dr
         p.pop();
         if (frameCount) {
             frameCount--;
+        }
+        if (stepCount) {
+            stepCount -= nPoints;
         }
     }
 

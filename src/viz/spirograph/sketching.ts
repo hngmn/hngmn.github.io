@@ -73,7 +73,7 @@ export function sketching(p: p5) {
 
         const previousDrawing = pfnDrawControl;
 
-        pfnDrawControl = getPfnDrawFn(p, rotatedSpiro, { tStep: 0.005, frameRateMult: 8, stroke });
+        pfnDrawControl = getPfnDrawFn(p, oscillatedSpiro, { tStep: 0.005, frameRateMult: 8, stroke });
 
         if (previousDrawing?.isStopped()) {
             console.log('stopping new spiro');
