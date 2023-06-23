@@ -27,7 +27,7 @@ export function bulk(p: p5) {
         const oscFactor = (t: number) => (0.5 - 0.5 * Math.cos(t / oscPeriodConstant)); // scalar on towards, to oscillate between 0 and 1
 
         return (i: number) => () => {
-            const oc = lv.copy().add(towards.copy().mult(oscFactor(i*0.2))).array();
+            const oc = lv.copy().add(towards.copy().mult(oscFactor(i*0.4))).array();
             p.stroke(oc);
         };
     };
@@ -40,9 +40,8 @@ export function bulk(p: p5) {
 
         const ls = range(0.2, 0.9, 0.0046);
         spiros = ls
-            .reverse()
             .map(([l, _, lp]) => getSpirographFnByRatio(l, 0.33333, 900 - 60*lp))
-            .map((spiro, i) => rotate(spiro, { thetaFn: () => 0.01 * i}))
+            .map((spiro, i) => rotate(i * 0.01)(spiro))
             .map((pfn, i) => getPfnDrawFn(p, pfn, {
                 tStep: 0.005,
                 frameRateMult: 32,

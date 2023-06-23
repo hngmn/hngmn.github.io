@@ -4,18 +4,20 @@ import p5 from "p5";
 // Parametric Function types/helpers
 export type Coord = [number, number];
 export type ParametricFunction = (t: number) => Coord;
+export type Pfn = ParametricFunction;
 
 export type ScalarTfn = (n: number) => number;
 export type Transformation = (c: Coord) => Coord;
-
-// syntactic sugar
-export const identity: Transformation = (c: Coord) => c;
+export type Tfn = Transformation;
+export type PfnTfn = (pfn: Pfn) => Pfn;
 
 /**
- * Given a Transformation and ParametricFunction, apply to get the new Parametric Function
+ * Given a Transformation, return a PfnTfn that just applies the tfn to the return value
  */
-export function tfnApply(tfn: Transformation, pfn: ParametricFunction): ParametricFunction {
-    return (t: number) => tfn(pfn(t));
+export function pfnTfn(tfn: Transformation): PfnTfn {
+    return (pfn: ParametricFunction) => {
+        return (t: number) => tfn(pfn(t));
+    };
 }
 
 /**

@@ -5,7 +5,7 @@
 import p5 from "p5";
 import { getSpirographFnByRatio } from "./util";
 import { PfnDrawControl, getPfnDrawFn, range } from "../pfn";
-import { rotate } from "../pfn/lib";
+import { getRotatePfn } from "../pfn/lib";
 import _ from "lodash";
 
 const EXAMPLE = '0.625,0.333333,900,100\n0.625,0.335,900,100';
@@ -42,7 +42,7 @@ export function bulk(p: p5) {
         spiros = ls
             .reverse()
             .map(([l, _, lp]) => getSpirographFnByRatio(l, 0.33333, 900 - 60*lp))
-            .map((spiro, i) => rotate(spiro, { thetaFn: () => 0.01 * i}))
+            .map((spiro, i) => getRotatePfn(spiro, { thetaFn: () => 0.01 * i}))
             .map((pfn, i) => getPfnDrawFn(p, pfn, {
                 tStep: 0.005,
                 frameRateMult: 32,
