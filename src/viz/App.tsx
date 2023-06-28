@@ -11,35 +11,23 @@ import { scratch } from './scratch';
 
 
 export default function App(): React.ReactElement {
+    type NameSketch = [string, typeof flocking];
+    const sketches: NameSketch[] = [
+        ['Bulk', bulk],
+        ['Sketching', sketching],
+        ['Flocking', flocking],
+    ];
     return (
         <Tabs>
             <TabList>
-                <Tab>Bulk</Tab>
-                <Tab>Sketching</Tab>
-                <Tab>Spirogrid</Tab>
-                <Tab>Scratch</Tab>
-                <Tab>Flocking</Tab>
+                {sketches.map(s => s[0]).map(name => (<Tab>{name}</Tab>))}
             </TabList>
 
-            <TabPanel>
-                <Sketch sketch={bulk}/>
-            </TabPanel>
-
-            <TabPanel>
-                <Sketch sketch={sketching}/>
-            </TabPanel>
-
-            <TabPanel>
-                <Sketch sketch={spirogrid}/>
-            </TabPanel>
-
-            <TabPanel>
-                <Sketch sketch={scratch}/>
-            </TabPanel>
-
-            <TabPanel>
-                <Sketch sketch={flocking}/>
-            </TabPanel>
+            {sketches.map(s => s[1]).map(sketch => (
+                <TabPanel>
+                    <Sketch sketch={sketch}/>
+                </TabPanel>
+            ))}
         </Tabs>
     )
 }
