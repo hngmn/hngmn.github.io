@@ -12,8 +12,8 @@ import { PfnDrawControl, getPfnDrawFn } from "../pfn/draw";
 const EXAMPLE = '0.625,0.333333,900,100\n0.625,0.335,900,100';
 
 export function bulk(p: p5) {
-    const CANVAS_WIDTH = 2400;
-    const CANVAS_HEIGHT = 1800;
+    const CANVAS_WIDTH = p.windowWidth;
+    const CANVAS_HEIGHT = p.windowHeight;
     let spiros: PfnDrawControl[];
     let si = 0;
     const initialColor = [206, 112, 112] as const;

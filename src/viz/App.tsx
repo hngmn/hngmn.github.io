@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
+import './App.css';
 import { Sketch } from './Sketch';
 import { flocking } from './flocking';
 import { sketching, spirogrid, bulk } from './spirograph';

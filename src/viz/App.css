@@ -1,0 +1,39 @@
+.react-tabs__tab {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+
+  float: left;
+  width: 8%;
+  padding: 15px; /* this will be applied internally, due to
+                    box-sizing property */
+
+  list-style-type: none; /* Remove bullets */
+  padding: 0; /* Remove padding */
+  margin: 0; /* Remove margins */
+  text-align: center;
+}
+
+.react-tabs__tab--selected {
+  font-weight: bold;
+  border-left: 2px solid black;
+  border-right: 2px solid black;
+}
+
+.react-tabs__tab-panel {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+}
+
+.p5Canvas {
+  margin: 0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
