@@ -1,6 +1,45 @@
 import p5 from 'p5';
+import { Pfn } from './pfn';
 
 // p5 utils
+
+// drawing
+export type Color = readonly [number, number, number];
+
+export function toHex(color: Color): string {
+    function convert(rgb: number): string {
+        const s = Math.floor(rgb).toString(16);
+        return s.length === 2 ? s : '0'+s;
+    }
+    return `#${convert(color[0])}${convert(color[1])}${convert(color[2])}`;
+}
+
+
+/**
+ *
+ * @returns A closure which oscillates color between left and right color.
+ */
+export function oscColor(leftColor: Color, rightColor: Color, oscSpeed = 1): (t: number) => Color {
+    // vector math. oscillate color on a straight 'vector' between left and right color
+    const lv = new p5.Vector(...leftColor);
+    const rv = new p5.Vector(...rightColor);
+    const towards = rv.copy().sub(lv);
+    const oscFactor = (t: number) => (0.5 - 0.5 * Math.cos(t / oscSpeed)); // scalar on towards, to oscillate between 0 and 1
+
+    return (t: number) => {
+        const oc = lv.copy().add(towards.copy().mult(oscFactor(t))).array();
+        if (oc.length !== 3) {
+            throw new Error('color.length !== 3');
+        }
+
+        return oc as unknown as Color;
+    };
+};
+
+// return a closure that oscillates between two colors
+
+
+// input wrappers
 
 export interface InputArgs {
     x: number;

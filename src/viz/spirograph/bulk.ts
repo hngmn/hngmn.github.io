@@ -8,46 +8,31 @@ import { range } from "../pfn";
 import { rotate } from "../pfn/lib";
 import _ from "lodash";
 import { PfnDrawControl, getPfnDrawFn } from "../pfn/draw";
+import { oscColor } from "../p5util";
 
-const EXAMPLE = '0.625,0.333333,900,100\n0.625,0.335,900,100';
 
 export function bulk(p: p5) {
-    const CANVAS_WIDTH = p.windowWidth;
-    const CANVAS_HEIGHT = p.windowHeight;
     let spiros: PfnDrawControl[];
     let si = 0;
     const initialColor = [206, 112, 112] as const;
-    const oscColor = [156, 20, 215] as const;
+    const endColor = [156, 20, 215] as const;
     // todo: move
-    const strokeClosure = (leftColor: readonly [number, number, number], rightColor: readonly [number, number, number]) => {
-        // vector math. oscillate color on a straight 'vector' between left and right color
-        const lv = new p5.Vector(...leftColor);
-        const rv = new p5.Vector(...rightColor);
-        const towards = rv.copy().sub(lv);
-        const oscPeriodConstant = 12; // control speed of color oscillation
-        const oscFactor = (t: number) => (0.5 - 0.5 * Math.cos(t / oscPeriodConstant)); // scalar on towards, to oscillate between 0 and 1
-
-        return (i: number) => () => {
-            const oc = lv.copy().add(towards.copy().mult(oscFactor(i*0.4))).array();
-            p.stroke(oc);
-        };
-    };
-    const stroke = strokeClosure(initialColor, oscColor);
+    const stroke = oscColor(initialColor, endColor);
 
     p.setup = () => {
-        p.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+        p.createCanvas(p.windowWidth, p.windowHeight);
         p.background(249); // clear the screen
         p.frameRate(30);
 
         const ls = range(0.2, 0.9, 0.0046);
         spiros = ls
-            .map(([l, _, lp]) => getSpirographFnByRatio(l, 0.33333, 900 - 60*lp))
+            .map(([l, _, lp]) => getSpirographFnByRatio(l, 0.33333, (p.height/2) - (p.height*0.2)*lp))
             .map((spiro, i) => rotate(i * 0.01)(spiro))
             .map((pfn, i) => getPfnDrawFn(p, pfn, {
                 tStep: 0.005,
                 frameRateMult: 32,
                 nSteps: 1300,
-                stroke: stroke(i),
+                stroke: () => stroke(i*0.4),
             }));
         console.log(`drawing ${spiros.length} spiros`)
     };

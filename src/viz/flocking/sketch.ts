@@ -7,7 +7,7 @@ import { DefaultFlock, Flock } from './Flock';
 export default function(p: p5) {
     let flock: Flock;
     p.setup = () => {
-        p.createCanvas(1200, 600);
+        p.createCanvas(p.windowWidth, p.windowHeight);
 
         flock = new DefaultFlock();
         // initialize with Boids
