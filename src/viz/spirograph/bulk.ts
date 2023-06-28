@@ -16,7 +16,6 @@ export function bulk(p: p5) {
     let si = 0;
     const initialColor = [206, 112, 112] as const;
     const endColor = [156, 20, 215] as const;
-    // todo: move
     const stroke = oscColor(initialColor, endColor);
 
     p.setup = () => {

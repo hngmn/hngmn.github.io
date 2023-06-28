@@ -6,16 +6,15 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './App.css';
 import { Sketch } from './Sketch';
 import { flocking } from './flocking';
-import { sketching, spirogrid, bulk } from './spirograph';
-import { scratch } from './scratch';
+import { sketching } from './spirograph';
+import { rotateShrink } from './spirograph/rotateshrink';
 
 
 export default function App(): React.ReactElement {
     type NameSketch = [string, typeof flocking];
     const sketches: NameSketch[] = [
-        ['Bulk', bulk],
+        ['rs', rotateShrink],
         ['Sketching', sketching],
-        ['Flocking', flocking],
     ];
     return (
         <Tabs>
