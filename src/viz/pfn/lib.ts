@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { Coord, ParametricFunction, PfnTfn, Tfn, pfnTfn } from "./pfn";
+import { Coord, ParametricFunction, PfnTfn, Tfn, parameterizedPfnTfn, pfnTfn } from "./pfn";
 
 interface RotateOptions {
     thetaFn?: (t: number) => number;
@@ -14,9 +14,7 @@ function rotateTfn(theta: number): Tfn {
     }
 }
 
-export function rotate(theta: number): PfnTfn {
-    return pfnTfn(rotateTfn(theta));
-}
+export const rotate = parameterizedPfnTfn(rotateTfn);
 
 // dep
 export function getRotatePfn(f: ParametricFunction, options?: RotateOptions): ParametricFunction {

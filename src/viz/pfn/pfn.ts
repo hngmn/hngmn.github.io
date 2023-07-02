@@ -9,6 +9,7 @@ export type ScalarTfn = (n: number) => number;
 export type Transformation = (c: Coord) => Coord;
 export type Tfn = Transformation;
 export type PfnTfn = (pfn: Pfn) => Pfn;
+export type ParameterizedPfnTfn<Args extends any[]> = (...args: Args) => PfnTfn;
 
 /**
  * Given a Transformation, return a PfnTfn that just applies the tfn to the return value
@@ -17,6 +18,13 @@ export function pfnTfn(tfn: Transformation): PfnTfn {
     return (pfn: ParametricFunction) => {
         return (t: number) => tfn(pfn(t));
     };
+}
+
+export function parameterizedPfnTfn<Args extends any[]>(ptfn: (...args: Args) => Tfn): ParameterizedPfnTfn<Args> {
+    return (...args: Args) => {
+        const tfn = ptfn(...args);
+        return (pfn: Pfn) => (t: number) => (tfn(pfn(t)));
+    }
 }
 
 // polar coords
