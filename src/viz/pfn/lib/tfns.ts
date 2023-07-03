@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { Coord, ParametricFunction, PfnTfn, Tfn, parameterizedPfnTfn, pfnTfn } from "./pfn";
+import { Coord, ParametricFunction, Tfn, parameterizedPfnTfn } from "../pfn";
 
 interface RotateOptions {
     thetaFn?: (t: number) => number;
