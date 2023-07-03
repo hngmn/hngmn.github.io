@@ -7,4 +7,4 @@ slider. The audio is just a random drum sample.
 
 <audio src="/assets/audio/lazertom.wav" crossorigin="anonymous"></audio>
 
-{% include reactcomponent.html id='boombox_container' scriptpath='/js/boombox/bundle.js' %}
+{% include reactcomponent.html id='boombox_container' scriptpath='/js/boombox.bundle.js' %}
