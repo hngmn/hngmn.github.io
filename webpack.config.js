@@ -36,11 +36,6 @@ module.exports = {
             }
         ]
     },
-    optimization: {
-        splitChunks: {
-            chunks: 'all',
-        },
-    },
     plugins: [new ESLintPlugin({})],
     resolve: {
         extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
