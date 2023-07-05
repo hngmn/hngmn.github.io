@@ -12,11 +12,13 @@ export const rotatePTfn = (scaleT = 1) => pfnPTfn((t: number) => (c: Coord) => {
     return new p5.Vector(...c).rotate(t * scaleT).array() as Coord;
 });
 
-function radialOsc(R: number, scaleT: number): Tfn {
+function radialOscTfn(R: number, scaleT = 1): Tfn {
     return tfnPolarToCartesian(parametricTransformationPolar({
-        rTfn: ([r, theta]) => r + (R * Math.sin(theta * scaleT)),
+        rTfn: ([r, theta]) => r + (R * Math.sin(scaleT * theta)),
     }));
 }
+
+export const radialOsc = parameterizedPfnTfn(radialOscTfn);
 
 
 export const scaleT: PPfnTfn<[number]> =

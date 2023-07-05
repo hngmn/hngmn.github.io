@@ -7,14 +7,14 @@ import './App.css';
 import { Sketch } from './Sketch';
 import { flocking } from './flocking';
 import { sketching } from './spirograph';
-import { another } from './spirograph/another';
+import { radialOscSpiro } from './spirograph/radialosc';
 import { rotateShrink } from './spirograph/rotateshrink';
 
 
 export default function App(): React.ReactElement {
     type NameSketch = [string, typeof flocking];
     const sketches: NameSketch[] = [
-        ['another', another],
+        ['radialosc', radialOscSpiro],
         ['rs', rotateShrink],
         ['Sketching', sketching],
     ];
