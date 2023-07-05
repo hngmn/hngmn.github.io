@@ -97,6 +97,16 @@ export function tfnPolarToCartesian(polarTfn: Transformation): Transformation {
 
 // misc
 
+export type ArgProvider = number | (() => number);
+
+export function getArg(argProvider: ArgProvider): number {
+    if (typeof(argProvider) === 'number') {
+        return argProvider;
+    } else {
+        return argProvider();
+    }
+}
+
 // [number, index, index as a percent]
 type RangeIterationVariables = [number, number, number];
 export function range(start: number, end: number, step: number): RangeIterationVariables[] {

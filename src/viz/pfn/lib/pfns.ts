@@ -1,5 +1,6 @@
-import { Coord, PPfn } from "../pfn";
+import { ArgProvider, Coord, PPfn, getArg } from "../pfn";
 
-export const circle: PPfn<[number]> = (r: number) => (t: number): Coord => {
-    return [r * Math.cos(t), r * Math.sin(t)];
+export const circle: PPfn<[number]> = (r: ArgProvider) => (t: number): Coord => {
+    const rr = getArg(r);
+    return [rr * Math.cos(t), rr * Math.sin(t)];
 }
