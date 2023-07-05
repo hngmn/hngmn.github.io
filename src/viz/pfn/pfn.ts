@@ -97,13 +97,13 @@ export function tfnPolarToCartesian(polarTfn: Transformation): Transformation {
 
 // misc
 
-export type ArgProvider = number | (() => number);
+export type ArgProvider = number | ((t: number) => number);
 
-export function getArg(argProvider: ArgProvider): number {
+export function getArg(argProvider: ArgProvider, t: number): number {
     if (typeof(argProvider) === 'number') {
         return argProvider;
     } else {
-        return argProvider();
+        return argProvider(t);
     }
 }
 

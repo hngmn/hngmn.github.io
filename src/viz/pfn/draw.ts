@@ -121,3 +121,32 @@ export function getPfnDrawFn(p: p5, pfn: Pfn, options: Partial<DrawOptions>) {
         isStopped: () => stop,
     };
 }
+
+// return a closure for adding dcs to be controlled by keyboard
+export function addDrawControl(p: p5) {
+    let dcs: PfnDrawControl[] = [];
+
+    p.draw = () => {
+        dcs.forEach(dc => dc.draw());
+    };
+
+    // setup keyboard controls for every dc added
+    p.keyTyped = () => {
+        if (p.key === ' ') {
+            dcs.forEach(dc => dc.toggle());
+            return false; // disable scroll down on space
+        }
+        if (p.key === 'c') {
+            p.background(249);
+        }
+        if (p.key === 's') {
+            const STEP_NFRAMES = 8;
+            dcs.forEach(dc => dc.stop());
+            dcs.forEach(dc => dc.stepFrame(STEP_NFRAMES));
+        }
+    }
+
+    return (dc: PfnDrawControl) => {
+        dcs.push(dc);
+    }
+}

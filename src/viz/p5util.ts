@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import { Pfn } from './pfn';
+import { Pfn, oscillator } from './pfn';
 
 // p5 utils
 
@@ -24,7 +24,7 @@ export function oscColor(leftColor: Color, rightColor: Color, oscSpeed = 1): (t:
     const lv = new p5.Vector(...leftColor);
     const rv = new p5.Vector(...rightColor);
     const towards = rv.copy().sub(lv);
-    const oscFactor = (t: number) => (0.5 - 0.5 * Math.cos(t / oscSpeed)); // scalar on towards, to oscillate between 0 and 1
+    const oscFactor = oscillator(0.5, oscSpeed, 0.5); // scalar on towards, to oscillate between 0 and 1
 
     return (t: number) => {
         const oc = lv.copy().add(towards.copy().mult(oscFactor(t))).array();
