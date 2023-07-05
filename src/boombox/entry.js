@@ -3,8 +3,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const e = React.createElement;
-
 class BoomBox extends React.Component {
     constructor(props) {
         super(props);
@@ -18,7 +16,7 @@ class BoomBox extends React.Component {
 
         this.audioElement = document.querySelector('audio');
         // handle end of sound
-        this.audioElement.addEventListener('ended', (event) => {
+        this.audioElement.addEventListener('ended', () => {
             this.setState({...this.state, playing: false });
         }, false);
 
@@ -31,14 +29,14 @@ class BoomBox extends React.Component {
         this.track.connect(this.gainNode).connect(this.audioContext.destination);
     }
 
-    render(props) {
+    render() {
 
         return (
             <div>
                 <span>{`BoomBox is ${this.state.playing ? 'playing' : 'paused'}`}</span>
 
                 <button
-                    onClick={(event) => {
+                    onClick={() => {
 
                         // check if context is in suspended state (autoplay policy)
                         if (this.audioContext.state === 'suspended') {

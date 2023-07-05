@@ -1,32 +1,25 @@
 import p5 from "p5";
-import { Coord, ParametricFunction, Tfn, parameterizedPfnTfn } from "../pfn";
-
-interface RotateOptions {
-    thetaFn?: (t: number) => number;
-}
-const defaultRotateOptions = {
-    thetaFn: (t: number) => t,
-};
+import { Coord, PPfnTfn, Pfn, Tfn, parameterizedPfnTfn, parametricTransformationPolar, pfnPTfn, tfnPolarToCartesian } from "../pfn";
 
 function rotateTfn(theta: number): Tfn {
     return (c: Coord) => {
         return new p5.Vector(...c).rotate(theta).array() as Coord;
     }
 }
-
 export const rotate = parameterizedPfnTfn(rotateTfn);
 
-// dep
-export function getRotatePfn(f: ParametricFunction, options?: RotateOptions): ParametricFunction {
-    const { thetaFn } = { ...defaultRotateOptions, ...options};
+export const rotatePTfn = (scaleT = 1) => pfnPTfn((t: number) => (c: Coord) => {
+    return new p5.Vector(...c).rotate(t * scaleT).array() as Coord;
+});
 
-    return (t: number) => {
-        const c = f(t);
-        const v = new p5.Vector(...c);
-        return v.rotate(thetaFn(t)).array() as Coord;
+function radialOsc(R: number, scaleT: number): Tfn {
+    return tfnPolarToCartesian(parametricTransformationPolar({
+        rTfn: ([r, theta]) => r + (R * Math.sin(theta * scaleT)),
+    }));
+}
+
+
+export const scaleT: PPfnTfn<[number]> =
+    (factor: number) => (pfn: Pfn) => (t: number) => {
+        return pfn(t * factor);
     };
-}
-
-const rotatePPfn = (theta: number) => {
-
-}

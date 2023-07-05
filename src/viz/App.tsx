@@ -14,8 +14,8 @@ import { rotateShrink } from './spirograph/rotateshrink';
 export default function App(): React.ReactElement {
     type NameSketch = [string, typeof flocking];
     const sketches: NameSketch[] = [
-        ['rs', rotateShrink],
         ['another', another],
+        ['rs', rotateShrink],
         ['Sketching', sketching],
     ];
     return (

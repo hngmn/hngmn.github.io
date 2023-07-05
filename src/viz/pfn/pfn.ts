@@ -4,12 +4,19 @@ import _ from "lodash";
 export type Coord = [number, number];
 export type ParametricFunction = (t: number) => Coord;
 export type Pfn = ParametricFunction;
+export type PPfn<Args extends any[]> = (...args: Args) => Pfn;
 
+// Tfns
 export type ScalarTfn = (n: number) => number;
 export type Transformation = (c: Coord) => Coord;
 export type Tfn = Transformation;
+export type PTfn = (t: number) => Tfn;
+
+// PfnTfn, ie applied Tfns
 export type PfnTfn = (pfn: Pfn) => Pfn;
-export type ParameterizedPfnTfn<Args extends any[]> = (...args: Args) => PfnTfn;
+export type PPfnTfn<Args extends any[]> = (...args: Args) => PfnTfn;
+
+// Tfn applications
 
 /**
  * Given a Transformation, return a PfnTfn that just applies the tfn to the return value
@@ -20,7 +27,16 @@ export function pfnTfn(tfn: Transformation): PfnTfn {
     };
 }
 
-export function parameterizedPfnTfn<Args extends any[]>(ptfn: (...args: Args) => Tfn): ParameterizedPfnTfn<Args> {
+/**
+ * Given a PTfn, return the PfnTfn
+ */
+export function pfnPTfn(ptfn: PTfn): PfnTfn {
+    return (pfn: Pfn) => {
+        return (t: number) => ptfn(t)(pfn(t));
+    }
+}
+
+export function parameterizedPfnTfn<Args extends any[]>(ptfn: (...args: Args) => Tfn): PPfnTfn<Args> {
     return (...args: Args) => {
         const tfn = ptfn(...args);
         return (pfn: Pfn) => (t: number) => (tfn(pfn(t)));
