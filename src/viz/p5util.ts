@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import { Pfn, oscillator } from './pfn';
+import { Pfn, oscillator, range } from './pfn';
 
 // p5 utils
 
@@ -15,26 +15,58 @@ export function toHex(color: Color): string {
 }
 
 
+export type StrokeColorGenerator = ReturnType<typeof singleColor>;
+export function *singleColor(c: Color) {
+    while (true) {
+        yield c;
+    }
+}
+
+export function *gradient(c1: Color, c2: Color, speedMultiplier = 1) {
+    const nSteps = 100 / speedMultiplier;
+    const v1 = new p5.Vector(...c1);
+    const v2 = new p5.Vector(...c2);
+    const towards = v2.copy().sub(v1);
+    towards.setMag(towards.mag() / nSteps)
+    for (let i = 0; i < nSteps; i++) {
+        yield vToColor(v1);
+        v1.add(towards);
+    }
+}
+
 /**
  *
  * @returns A closure which oscillates color between left and right color.
  */
-export function oscColor(leftColor: Color, rightColor: Color, oscSpeed = 1): (t: number) => Color {
-    // vector math. oscillate color on a straight 'vector' between left and right color
-    const lv = new p5.Vector(...leftColor);
-    const rv = new p5.Vector(...rightColor);
-    const towards = rv.copy().sub(lv);
-    const oscFactor = oscillator(0.5, oscSpeed, 0.5); // scalar on towards, to oscillate between 0 and 1
+export const oscColor = (leftColor: Color, rightColor: Color, oscSpeed = 1) => cycleColors(oscSpeed, leftColor, rightColor);
+export const oscThreeColors = (c1: Color, c2: Color, c3: Color, scaleT = 1) => cycleColors(scaleT, c1, c2, c3);
 
-    return (t: number) => {
-        const oc = lv.copy().add(towards.copy().mult(oscFactor(t))).array();
-        if (oc.length !== 3) {
-            throw new Error('color.length !== 3');
+// pairwise cycle
+export function *cycleColors(scaleT: number, ...colors: Color[]) {
+    // rolling window index into colors
+    let i=0, j=1;
+    let gr = gradient(colors[i], colors[j], scaleT);
+    const inc = () => {
+        i = (i+1) % colors.length;
+        j = (j+1) % colors.length;
+        gr = gradient(colors[i], colors[j], scaleT);
+    }
+
+    while (true) {
+        for (const c of gr) {
+            yield c;
         }
+        inc();
+    }
+}
 
-        return oc as unknown as Color;
-    };
-};
+function vToColor(v: p5.Vector): Color {
+    const c = v.array();
+    if (c.length !== 3) {
+        throw new Error('color.length !== 3');
+    }
+    return c as unknown as Color;
+}
 
 // return a closure that oscillates between two colors
 

@@ -1,7 +1,7 @@
 
 import p5 from "p5";
 import { Pfn } from "./pfn";
-import { Color } from "../p5util";
+import { Color, StrokeColorGenerator } from "../p5util";
 
 // Drawing utils
 
@@ -22,7 +22,7 @@ interface DrawOptions {
     label?: string;
     nFrames?: number;
     nSteps?: number;
-    stroke?: (t: number) => Color;
+    stroke?: StrokeColorGenerator;
 }
 const DEFAULT_DRAW_OPTIONS = {
     tStep: 0.005,
@@ -76,7 +76,10 @@ export function getPfnDrawFn(p: p5, pfn: Pfn, options: Partial<DrawOptions>) {
         for (let i = 0; i < nPoints; i++) {
             const [x, y] = pfn(t);
             if (drawOptions.stroke) {
-                p.stroke(...drawOptions.stroke(t));
+                const c = drawOptions.stroke.next().value;
+                if (c) {
+                    p.stroke(...c);
+                }
             }
             p.line(px, py, x, y);
 

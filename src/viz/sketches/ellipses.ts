@@ -13,7 +13,6 @@ export function ellipses(p: p5) {
     const dc = addDrawControl(p);
     const initialColor = [206, 112, 112] as const;
     const endColor = [156, 20, 215] as const;
-    const stroke = oscColor(initialColor, endColor, 0.003);
 
     p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
@@ -35,9 +34,10 @@ export function ellipses(p: p5) {
         dc(getPfnDrawFn(p, c, {
             tStep: 0.01,
             frameRateMult: 256,
-            stroke,
+            stroke: oscColor(initialColor, endColor, 0.0008),
         }));
 
+        // inner smaller loop
         const a2 = R/8;
         const b2 = R/10;
         const rotateSyncedEllipse2 = rotatePTfn(outerCircleScaleT)(rotate(Math.PI)(ellipse(a2, b2)));
@@ -48,7 +48,7 @@ export function ellipses(p: p5) {
         dc(getPfnDrawFn(p, c2, {
             tStep: 0.01,
             frameRateMult: 256,
-            stroke,
+            stroke: oscColor(endColor, initialColor, 0.0019),
         }));
     };
 }
