@@ -8,7 +8,7 @@ import { range } from "../pfn";
 import { rotate } from "../pfn/lib";
 import _ from "lodash";
 import { PfnDrawControl, getPfnDrawFn } from "../pfn/draw";
-import { oscColor } from "../p5util";
+import { gradient, oscColor, oscTwoColors, singleColor } from "../p5util";
 
 
 export function rotateShrink(p: p5) {
@@ -16,7 +16,7 @@ export function rotateShrink(p: p5) {
     let si = 0;
     const initialColor = [206, 112, 112] as const;
     const endColor = [156, 20, 215] as const;
-    const stroke = oscColor(initialColor, endColor);
+    const stroke = oscColor(initialColor, endColor, 0.1);
 
     p.setup = () => {
         p.createCanvas(p.windowWidth, p.windowHeight);
@@ -28,11 +28,11 @@ export function rotateShrink(p: p5) {
         spiros = ls
             .map(([l, _, lp]) => getSpirographFnByRatio(l, 0.33333, iR - (iR*0.4)*lp))
             .map((spiro, i) => rotate(i * 0.04)(spiro))
-            .map((pfn, i) => getPfnDrawFn(p, pfn, {
+            .map((pfn) => getPfnDrawFn(p, pfn, {
                 tStep: 0.005,
                 frameRateMult: 32,
                 nSteps: 1300,
-                stroke: () => stroke(i*0.1),
+                stroke: singleColor(stroke.next().value!),
             }));
         console.log(`drawing ${spiros.length} spiros`)
     };

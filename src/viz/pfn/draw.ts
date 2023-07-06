@@ -57,19 +57,21 @@ export function getPfnDrawFn(p: p5, pfn: Pfn, options: Partial<DrawOptions>) {
         p.push();
 
         // center coordinate system for 'radial' pfn drawing
-        let upperLeft: [number, number], R: number;
+        let upperLeft: [number, number], centerX: number, centerY: number;
         if (translate) {
             upperLeft = [translate.tx, translate.ty];
-            R = translate.R;
+            centerX = translate.R;
+            centerY = translate.R;
         } else {
             upperLeft = [0, 0];
-            R = Math.min(p.width / 2, p.height / 2);
+            centerX = p.width / 2;
+            centerY = p.height / 2;
         }
         if (label) {
             // convenient to label at upperLeft here, just before translation
             p.text(label, upperLeft[0], upperLeft[1] + TEXT_LABEL_MARGIN);
         }
-        p.translate(upperLeft[0] + R, upperLeft[1] + TEXT_LABEL_MARGIN + R);
+        p.translate(upperLeft[0] + centerX, upperLeft[1] + TEXT_LABEL_MARGIN + centerY);
         p.scale(1, -1); // flip coordinate axis upright
 
         // draw

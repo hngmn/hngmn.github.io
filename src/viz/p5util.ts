@@ -14,6 +14,16 @@ export function toHex(color: Color): string {
     return `#${convert(color[0])}${convert(color[1])}${convert(color[2])}`;
 }
 
+export function fromHex(hex: string): Color {
+    let bytes = [];
+    for (let c = 0; c < hex.length; c += 2) {
+        bytes.push(parseInt(hex.slice(c, c+2), 16));
+    }
+    if (bytes.length !== 3) {
+        throw new Error('bad hex');
+    }
+    return bytes as unknown as Color;
+}
 
 export type StrokeColorGenerator = ReturnType<typeof singleColor>;
 export function *singleColor(c: Color) {
@@ -22,8 +32,17 @@ export function *singleColor(c: Color) {
     }
 }
 
-export function *gradient(c1: Color, c2: Color, speedMultiplier = 1) {
-    const nSteps = 100 / speedMultiplier;
+type SpeedOptions = { nSteps: number } | { speedMultiplier: number }
+const defaultSpeedOptions = {
+    nSteps: 100,
+};
+export function *gradient(c1: Color, c2: Color, speedOptions: SpeedOptions = defaultSpeedOptions) {
+    let nSteps;
+    if ('nSteps' in speedOptions) {
+        nSteps = speedOptions.nSteps
+    } else {
+        nSteps = 100 / speedOptions.speedMultiplier;
+    }
     const v1 = new p5.Vector(...c1);
     const v2 = new p5.Vector(...c2);
     const towards = v2.copy().sub(v1);
@@ -35,21 +54,22 @@ export function *gradient(c1: Color, c2: Color, speedMultiplier = 1) {
 }
 
 /**
- *
+ * Dep
  * @returns A closure which oscillates color between left and right color.
  */
-export const oscColor = (leftColor: Color, rightColor: Color, oscSpeed = 1) => cycleColors(oscSpeed, leftColor, rightColor);
-export const oscThreeColors = (c1: Color, c2: Color, c3: Color, scaleT = 1) => cycleColors(scaleT, c1, c2, c3);
+export const oscColor = (leftColor: Color, rightColor: Color, speedMultiplier = 1) => cycleColors({ speedMultiplier }, leftColor, rightColor);
+export const oscTwoColors = (leftColor: Color, rightColor: Color, speedOptions: SpeedOptions) => cycleColors(speedOptions, leftColor, rightColor);
+export const oscThreeColors = (c1: Color, c2: Color, c3: Color, speedOptions: SpeedOptions) => cycleColors(speedOptions, c1, c2, c3);
 
 // pairwise cycle
-export function *cycleColors(scaleT: number, ...colors: Color[]) {
+export function *cycleColors(speedOptions: SpeedOptions, ...colors: Color[]) {
     // rolling window index into colors
     let i=0, j=1;
-    let gr = gradient(colors[i], colors[j], scaleT);
+    let gr = gradient(colors[i], colors[j], speedOptions);
     const inc = () => {
         i = (i+1) % colors.length;
         j = (j+1) % colors.length;
-        gr = gradient(colors[i], colors[j], scaleT);
+        gr = gradient(colors[i], colors[j], speedOptions);
     }
 
     while (true) {
