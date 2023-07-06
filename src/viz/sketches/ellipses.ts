@@ -21,15 +21,31 @@ export function ellipses(p: p5) {
         p.frameRate(30);
 
         const R = p.height/2; // screen radius
-        const outerR = R*0.75;
-        const a = oscillator(R/8 * 0.6, 0.017, R/8);
-        const b = oscillator(R/10 * 0.4, 0.0041, R/10);
-        const rotatedSpiro = rotatePTfn(0.002)(rotate(Math.PI)(ellipse(a, b)));
+        const outerR = R*0.7;
+        const a = R/4;
+        const b = R/6;
+        const outerCircleScaleT = 0.002;
+        const outerEllipse = ellipse(outerR*1.8, outerR);
+        // rotation synced to outer circle movement
+        const rotateSyncedEllipse = rotatePTfn(outerCircleScaleT)(rotate(Math.PI)(ellipse(a, b)));
         const c = pfnAdd(
-            radialOsc(outerR*0.12, 8)(scaleT(0.002)(circle(outerR))),
-            scaleT(1)(rotatedSpiro),
+            radialOsc(outerR*0.05, 5.7)(scaleT(outerCircleScaleT)(outerEllipse)),
+            scaleT(1)(rotateSyncedEllipse),
         );
         dc(getPfnDrawFn(p, c, {
+            tStep: 0.01,
+            frameRateMult: 256,
+            stroke,
+        }));
+
+        const a2 = R/8;
+        const b2 = R/10;
+        const rotateSyncedEllipse2 = rotatePTfn(outerCircleScaleT)(rotate(Math.PI)(ellipse(a2, b2)));
+        const c2 = pfnAdd(
+            radialOsc(outerR*0.04, 9.7)(scaleT(outerCircleScaleT)(outerEllipse)),
+            scaleT(1)(rotateSyncedEllipse2),
+        );
+        dc(getPfnDrawFn(p, c2, {
             tStep: 0.01,
             frameRateMult: 256,
             stroke,

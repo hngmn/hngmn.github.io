@@ -119,6 +119,11 @@ export function getPfnDrawFn(p: p5, pfn: Pfn, options: Partial<DrawOptions>) {
             stop = !stop;
         },
         isStopped: () => stop,
+
+        // without drawing
+        advanceT: (nSteps: number) => {
+            t += nSteps * tStep;
+        }
     };
 }
 
