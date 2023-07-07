@@ -117,3 +117,7 @@ export function range(start: number, end: number, step: number): RangeIterationV
     });
     return r;
 }
+
+export function coordString(c: Coord): string {
+    return `[${c[0].toFixed(2)}, ${c[1].toFixed(2)}}]`;
+}
